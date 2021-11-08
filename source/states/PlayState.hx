@@ -1,5 +1,7 @@
 package states;
 
+import CustomButton;
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
@@ -8,24 +10,28 @@ import inputManager.InputManager;
 import inputManager.KeyboardHandler;
 
 class PlayState extends FlxState {
-	public var input:InputManager;
-
 	override public function create() {
 		super.create();
 
-		add(new FlxButton(100, 100, "a", function() {
-			trace("Aaaaaaaaaaaaaaa");
+		add(new FlxText(10, 10, 0, "hi"));
+
+		add(new CustomButton(100, 100, "a", function(player:PlayerSlotIdentifier) {
+			trace(player + ": button 1");
 		}));
 
-		add(new FlxButton(200, 100, "b", function() {
-			trace("bbbbadsbdfba");
+		add(new CustomButton(200, 100, "b", function(player:PlayerSlotIdentifier) {
+			trace(player + ": button 2");
 		}));
 
-		add(new FlxButton(150, 200, "c", function() {
-			trace("button 3");
+		add(new CustomButton(150, 200, "c", function(player:PlayerSlotIdentifier) {
+			trace(player + ": button 3");
 		}));
 
-		add(new KeyboardHandler());
+		InputManager.setInputType(P1, KeyboardAndMouseInput);
+		InputManager.setInputType(P2, KeyboardInput);
+
+		add(InputManager.getPlayer(P1));
+		add(InputManager.getPlayer(P2));
 	}
 
 	override public function update(elapsed:Float) {

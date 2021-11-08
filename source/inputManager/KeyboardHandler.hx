@@ -1,43 +1,86 @@
 package inputManager;
 
 import flixel.FlxG;
+import flixel.input.keyboard.FlxKey;
 import flixel.ui.FlxButton;
+import inputManager.GenericInput.INPUT_STATE;
 
+/**
+	input handler for keyboard
+**/
 class KeyboardHandler extends GenericInput {
-	override public function getConfirm():Bool {
-		return false;
+	public static function getKeyStateAsInputState(key:FlxKey) {
+		var k = [key];
+
+		if (FlxG.keys.anyJustPressed(k)) {
+			return JUST_PRESSED;
+		}
+
+		if (FlxG.keys.anyJustReleased(k)) {
+			return JUST_RELEASED;
+		}
+
+		if (FlxG.keys.anyPressed(k)) {
+			return PRESSED;
+		}
+
+		return NOT_PRESSED;
 	}
 
-	override public function getCancel():Bool {
-		return false;
+	override public function getConfirm():INPUT_STATE {
+		return getKeyStateAsInputState(Z);
 	}
 
-	override public function getAttack():Bool {
-		return false;
+	override public function getCancel():INPUT_STATE {
+		return getKeyStateAsInputState(X);
 	}
 
-	override public function getJump():Bool {
-		return false;
+	override public function getMenuAction():INPUT_STATE {
+		return getKeyStateAsInputState(C);
 	}
 
-	override public function getSpecial():Bool {
-		return false;
+	override public function getMenuLeft():INPUT_STATE {
+		return getKeyStateAsInputState(A);
 	}
 
-	override public function getStrong():Bool {
-		return false;
+	override public function getMenuRight():INPUT_STATE {
+		return getKeyStateAsInputState(S);
 	}
 
-	override public function getTaunt():Bool {
-		return false;
+	override public function getAttack():INPUT_STATE {
+		return getKeyStateAsInputState(X);
 	}
 
-	override public function getQuit():Bool {
-		return false;
+	override public function getJump():INPUT_STATE {
+		return getKeyStateAsInputState(Z);
 	}
 
-	override public function getPause():Bool {
-		return false;
+	override public function getSpecial():INPUT_STATE {
+		return getKeyStateAsInputState(C);
+	}
+
+	override public function getStrong():INPUT_STATE {
+		return getKeyStateAsInputState(D);
+	}
+
+	override public function getDodge():INPUT_STATE {
+		return getKeyStateAsInputState(S);
+	}
+
+	override public function getWalk():INPUT_STATE {
+		return getKeyStateAsInputState(A);
+	}
+
+	override public function getTaunt():INPUT_STATE {
+		return getKeyStateAsInputState(F);
+	}
+
+	override public function getQuit():INPUT_STATE {
+		return getKeyStateAsInputState(BACKSPACE);
+	}
+
+	override public function getPause():INPUT_STATE {
+		return getKeyStateAsInputState(ENTER);
 	}
 
 	override public function getUp():Float {
@@ -64,7 +107,7 @@ class KeyboardHandler extends GenericInput {
 		y -= this.getUp();
 		y += this.getDown();
 		x -= this.getLeft();
-		y += this.getRight();
+		x += this.getRight();
 
 		return new StickVector(x, y);
 	}

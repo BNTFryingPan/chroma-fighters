@@ -9,11 +9,15 @@ class StickVector {
 		this.y = y;
 	}
 
-	function withX(x:Float) {
+	public function withX(x:Float) {
 		return new StickVector(x, this.y);
 	}
 
-	function withY(y:Float) {
+	public function withY(y:Float) {
 		return new StickVector(this.x, y);
+	}
+
+	public function toString() {
+		return 'StickVector(${this.x}, ${this.y})';
 	}
 }

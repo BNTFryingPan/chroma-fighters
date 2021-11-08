@@ -1,15 +1,73 @@
 package inputManager;
 
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 
 typedef Position = {
 	var x:Int;
 	var y:Int;
+}
+
+enum INPUT_STATE {
+	JUST_PRESSED;
+	JUST_RELEASED;
+	PRESSED;
+	NOT_PRESSED;
+}
+
+class InputHelper {
+	static public function isPressed(state:INPUT_STATE) {
+		if (state == JUST_PRESSED) {
+			return true;
+		}
+		return state == PRESSED;
+	}
+
+	static public function isNotPressed(state:INPUT_STATE) {
+		if (state == JUST_RELEASED) {
+			return true;
+		}
+		return state == NOT_PRESSED;
+	}
+
+	static public function justChanged(state:INPUT_STATE) {
+		if (state == JUST_PRESSED) {
+			return true;
+		}
+		return state == JUST_RELEASED;
+	}
+
+	static public function notChanged(state:INPUT_STATE) {
+		if (state == PRESSED) {
+			return true;
+		}
+		return state == NOT_PRESSED;
+	}
+
+	static public function getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool) {
+		if (justPressed)
+			return JUST_PRESSED;
+		if (justReleased)
+			return JUST_RELEASED;
+		if (pressed)
+			return PRESSED;
+		return NOT_PRESSED;
+	}
+}
+
+enum CursorRotation {
+	LEFT;
+	RIGHT;
+	UP_LEFT;
+	UP_RIGHT;
+	DOWN_LEFT;
+	DOWN_RIGHT;
 }
 
 /**
@@ -19,20 +77,74 @@ typedef Position = {
 **/
 class GenericInput extends FlxBasic {
 	public var cursorSprite:FlxSprite;
+	public var coinSprite:FlxSprite;
+	public var debugSprite:FlxSprite;
 	public var cursor:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
-	public var debugText:FlxText;
+	public var cursorAngle:CursorRotation = RIGHT;
+	public var spriteOffset:Position = {x: 0, y: 0};
+	public var isvisible:Bool = true;
 
-	public function new() {
-		super();
+	public var enabled:Bool = false;
 
-		this.cursorSprite = new FlxSprite();
-		this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/test_cursor")));
-		this.cursor = {x: 0, y: 0};
+	public final slot:PlayerSlotIdentifier;
 
-		this.debugText.text = '';
+	public static function getOffset(angle:CursorRotation):Position {
+		if (angle == LEFT) {
+			return {x: 30, y: 15};
+		} else if (angle == RIGHT) {
+			return {x: 30, y: 15};
+		} else if (angle == UP_LEFT) {
+			return {x: 30, y: 15};
+		} else if (angle == UP_RIGHT) {
+			return {x: 27, y: 0};
+		} else if (angle == DOWN_LEFT) {
+			return {x: 30, y: 15};
+		} else if (angle == DOWN_RIGHT) {
+			return {x: 30, y: 15};
+		}
+
+		return {x: 30, y: 15};
 	}
 
-	override function update(elapsed:Float) {
+	public function new(slot:PlayerSlotIdentifier) {
+		super();
+
+		trace("creating generic input for slot " + slot);
+
+		this.coinSprite = new FlxSprite();
+		this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
+		this.cursorSprite = new FlxSprite();
+
+		this.debugSprite = new FlxSprite();
+		this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
+
+		this.setCursorAngle(RIGHT);
+
+		this.cursor = {x: 0, y: 0};
+		this.enabled = slot == P1;
+
+		this.slot = slot;
+	}
+
+	public function setCursorAngle(angle:CursorRotation) {
+		if (angle == LEFT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left")));
+		} else if (angle == RIGHT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right")));
+		} else if (angle == UP_LEFT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left")));
+		} else if (angle == UP_RIGHT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right")));
+		} else if (angle == DOWN_LEFT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left")));
+		} else if (angle == DOWN_RIGHT) {
+			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right")));
+		}
+
+		this.spriteOffset = GenericInput.getOffset(angle);
+	}
+
+	function updateCursorPos(elapsed:Float) {
 		var stick = getStick();
 
 		this.cursor.x += Math.round(stick.x * 5);
@@ -42,24 +154,42 @@ class GenericInput extends FlxBasic {
 		this.cursor.x = Std.int(Math.max(this.cursor.x, 0));
 		this.cursor.y = Std.int(Math.min(this.cursor.y, FlxG.height));
 		this.cursor.y = Std.int(Math.max(this.cursor.y, 0));
+	}
+
+	override function update(elapsed:Float) {
+		if (!this.enabled)
+			return;
+		this.updateCursorPos(elapsed);
+		var cursorPos = this.getCursorPosition();
+
+		this.cursorSprite.x = cursorPos.x - this.spriteOffset.x;
+		this.cursorSprite.y = cursorPos.y - this.spriteOffset.y;
+
+		this.debugSprite.x = cursorPos.x;
+		this.debugSprite.y = cursorPos.y;
 
 		super.update(elapsed);
 
-		if (this.getConfirm()) {
-			for (mem in FlxG.state.members) {
-				if (Std.isOfType(mem, FlxButton)) {
-					var button:FlxButton = cast mem;
-					if (button.overlapsPoint(FlxPoint.get(this.cursor.x, this.cursor.y))) {
-						button.onUp.fire();
-					}
+		for (mem in FlxG.state.members) {
+			if (Std.isOfType(mem, CustomButton)) {
+				var button:CustomButton = cast mem;
+				if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
+					button.cursorClick(this.getConfirm(), this.slot);
 				}
 			}
 		}
+
+		// if (this.isvisible)
+		//	this.debugText.text = 'cursor: (${this.cursor.x}, ${this.cursor.y})\nstick: ${this.getStick()}\ncon ${this.getConfirm()} can ${this.getCancel()}\n';
 	}
 
 	override function draw() {
+		if (!this.enabled)
+			return;
 		super.draw();
 		this.cursorSprite.draw();
+
+		this.debugSprite.draw();
 	}
 
 	/**
@@ -69,40 +199,60 @@ class GenericInput extends FlxBasic {
 		return this.cursor;
 	}
 
-	public function getConfirm():Bool {
-		return false;
+	public function getConfirm():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getCancel():Bool {
-		return false;
+	public function getCancel():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getAttack():Bool {
-		return false;
+	public function getMenuAction():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getJump():Bool {
-		return false;
+	public function getMenuLeft():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getSpecial():Bool {
-		return false;
+	public function getMenuRight():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getStrong():Bool {
-		return false;
+	public function getAttack():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getTaunt():Bool {
-		return false;
+	public function getJump():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getQuit():Bool {
-		return false;
+	public function getSpecial():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
-	public function getPause():Bool {
-		return false;
+	public function getStrong():INPUT_STATE {
+		return NOT_PRESSED;
+	}
+
+	public function getDodge():INPUT_STATE {
+		return NOT_PRESSED;
+	}
+
+	public function getWalk():INPUT_STATE {
+		return NOT_PRESSED;
+	}
+
+	public function getTaunt():INPUT_STATE {
+		return NOT_PRESSED;
+	}
+
+	public function getQuit():INPUT_STATE {
+		return NOT_PRESSED;
+	}
+
+	public function getPause():INPUT_STATE {
+		return NOT_PRESSED;
 	}
 
 	public function getUp():Float {
