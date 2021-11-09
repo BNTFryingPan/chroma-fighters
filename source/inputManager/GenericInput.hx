@@ -157,8 +157,6 @@ class GenericInput extends FlxBasic {
 	}
 
 	override function update(elapsed:Float) {
-		if (!this.enabled)
-			return;
 		this.updateCursorPos(elapsed);
 		var cursorPos = this.getCursorPosition();
 
@@ -170,17 +168,19 @@ class GenericInput extends FlxBasic {
 
 		super.update(elapsed);
 
-		for (mem in FlxG.state.members) {
-			if (Std.isOfType(mem, CustomButton)) {
-				var button:CustomButton = cast mem;
-				if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
-					button.cursorClick(this.getConfirm(), this.slot);
+		if (this.enabled) {
+			for (mem in FlxG.state.members) {
+				if (Std.isOfType(mem, CustomButton)) {
+					var button:CustomButton = cast mem;
+					if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
+						button.cursorClick(this.getConfirm(), this.slot);
+					}
 				}
 			}
 		}
 
 		// if (this.isvisible)
-		//	this.debugText.text = 'cursor: (${this.cursor.x}, ${this.cursor.y})\nstick: ${this.getStick()}\ncon ${this.getConfirm()} can ${this.getCancel()}\n';
+		Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] cursor: (${this.cursor.x}, ${this.cursor.y})\nstick: ${this.getStick()}\ncon ${this.getConfirm()} can ${this.getCancel()}\n';
 	}
 
 	override function draw() {

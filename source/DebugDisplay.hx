@@ -19,16 +19,22 @@ class DebugDisplay extends FlxBasic {
 	public var rightPrepend:String = "";
 	public var rightAppend:String = "";
 
+	private var finalLeftText:String = "";
+	private var finalRightText:String = "";
+
 	public var maxMemory:Float = 0;
+
+	public static final fontSize:Int = 8;
 
 	public function new() {
 		super();
 
-		this.active = false;
+		this.active = true;
+		this.visible = true;
 
-		this.leftText = new FlxText(10, 10, 0, "debug-left", 20);
+		this.leftText = new FlxText(10, 10, 0, "debug-left", DebugDisplay.fontSize);
 
-		this.rightText = new FlxText(10, 10, FlxG.width - 20, "debug-right", 20);
+		this.rightText = new FlxText(10, 10, FlxG.width - 20, "debug-right", DebugDisplay.fontSize);
 		this.rightText.alignment = RIGHT;
 	}
 
@@ -72,6 +78,11 @@ class DebugDisplay extends FlxBasic {
 			// this.rightText.text += 'CPU: \n';
 
 			this.rightText.text += this.rightAppend;
+
+			this.rightPrepend = "";
+			this.rightAppend = "";
+			this.leftPrepend = "";
+			this.leftAppend = "";
 		}
 	}
 
