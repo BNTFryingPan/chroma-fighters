@@ -121,7 +121,7 @@ class GenericInput extends FlxBasic {
 		this.setCursorAngle(RIGHT);
 
 		this.cursor = {x: 0, y: 0};
-		this.enabled = slot == P1;
+		this.enabled = true;
 
 		this.slot = slot;
 	}
@@ -173,8 +173,13 @@ class GenericInput extends FlxBasic {
 				if (Std.isOfType(mem, CustomButton)) {
 					var button:CustomButton = cast mem;
 					if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
-						button.cursorClick(this.getConfirm(), this.slot);
-					}
+						button.overHandler(this.slot);
+						if (InputHelper.isPressed(this.getConfirm()))
+							button.downHandler(this.slot);
+						else
+							button.upHandler(this.slot);
+					} else
+						button.outHandler(this.slot);
 				}
 			}
 		}

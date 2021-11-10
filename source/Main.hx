@@ -15,6 +15,7 @@ class Main extends Sprite {
 	public function new() {
 		super();
 		FlxG.log.redirectTraces = true;
+		FlxG.autoPause = false;
 
 		// TODO : load fps setting from settings file (i dont think it can be changed without a restart)
 		// Main.targetFps = 60;

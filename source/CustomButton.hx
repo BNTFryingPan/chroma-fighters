@@ -12,25 +12,38 @@ class CustomButton extends FlxButton {
 	public var cursorOnOver:Null<PlayerSlotIdentifier->Void> = null;
 	public var cursorOnOut:Null<PlayerSlotIdentifier->Void> = null;
 
+	private var currentHoveredCursors:Map<PlayerSlotIdentifier, Bool> = [
+		P1 => false,
+		P2 => false,
+		P3 => false,
+		P4 => false,
+		P5 => false,
+		P6 => false,
+		P7 => false,
+		P8 => false
+	];
+
+	private var currentClickedCursors:Map<PlayerSlotIdentifier, Bool> = [
+		P1 => false,
+		P2 => false,
+		P3 => false,
+		P4 => false,
+		P5 => false,
+		P6 => false,
+		P7 => false,
+		P8 => false
+	];
+
+	private function getIsClickedBy(slot:PlayerSlotIdentifier):Bool {
+		if (this.currentHoveredCursors.get(slot) == true) {
+			return this.currentClickedCursors.get(slot) == true;
+		}
+		return false;
+	}
+
 	public function new(x:Float = 0, y:Float = 0, ?text:String, ?onClick:PlayerSlotIdentifier->Void) {
 		super(x, y, text);
 		this.cursorOnUp = onClick;
-	}
-
-	public function cursorClick(state:Null<INPUT_STATE>, player:PlayerSlotIdentifier) {
-		if (state == JUST_PRESSED) {
-			this.onDownHandler();
-			this.cursorOnDown(player);
-		} else if (state == JUST_RELEASED) {
-			this.onUpHandler();
-			this.cursorOnUp(player);
-		} else if (state == NOT_PRESSED) {
-			this.onOverHandler();
-			this.cursorOnDown(player);
-		} else if (state == null) {
-			this.onOutHandler();
-			this.cursorOnOut(player);
-		}
 	}
 
 	function checkCursorOverlap():Array<PlayerSlotIdentifier> {
@@ -68,22 +81,68 @@ class CustomButton extends FlxButton {
 		return output;
 	}
 
-	override function updateButton() {
-		return;
-		var overlapsFound = checkCursorOverlap();
-		var overlapFound = overlapsFound.length > 0;
+	function updateState() {
+		var isHovered:Bool = false;
+		var isClicked:Bool = false;
+		for (slot => state in this.currentHoveredCursors.keyValueIterator())
+			if (state) {
+				isHovered = true;
+				break;
+			}
 
-		if (currentInput != null && currentInput.justReleased && overlapFound) {
-			onUpHandler();
-			// clickHandler(overlapsFound);
-		}
+		if (isHovered)
+			for (slot => state in this.currentClickedCursors.keyValueIterator())
+				if (state) {
+					isClicked = true;
+					break;
+				}
 
-		if (status != FlxButton.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased))) {
-			onOutHandler();
+		if (isClicked) {
+			this.status = FlxButton.PRESSED;
+		} else if (isHovered) {
+			this.status = FlxButton.HIGHLIGHT;
+		} else {
+			this.status = FlxButton.NORMAL;
 		}
 	}
 
-	public function clickHandler(players:Array<PlayerSlotIdentifier>):Void {
-		// Other code to run?
+	public function overHandler(slot:PlayerSlotIdentifier) {
+		if (this.currentHoveredCursors.get(slot) == true)
+			return;
+		this.currentHoveredCursors.set(slot, true);
+		this.updateState();
+		if (this.cursorOnOver != null)
+			this.cursorOnOver(slot);
+	}
+
+	public function upHandler(slot:PlayerSlotIdentifier) {
+		if (this.currentClickedCursors.get(slot) == false)
+			return;
+		this.currentClickedCursors.set(slot, false);
+		this.updateState();
+		if (this.cursorOnUp != null)
+			this.cursorOnUp(slot);
+	}
+
+	public function outHandler(slot:PlayerSlotIdentifier) {
+		if (this.currentHoveredCursors.get(slot) == false)
+			return;
+		this.currentHoveredCursors.set(slot, false);
+		this.updateState();
+		if (this.cursorOnOut != null)
+			this.cursorOnOut(slot);
+	}
+
+	public function downHandler(slot:PlayerSlotIdentifier) {
+		if (this.currentClickedCursors.get(slot) == true)
+			return;
+		this.currentClickedCursors.set(slot, true);
+		this.updateState();
+		if (this.cursorOnDown != null)
+			this.cursorOnDown(slot);
+	}
+
+	override function updateButton() {
+		return; // i think i literally need to do nothing here lol
 	}
 }

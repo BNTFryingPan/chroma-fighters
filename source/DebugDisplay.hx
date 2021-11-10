@@ -3,12 +3,12 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxBitmapText;
 import flixel.text.FlxText;
+import flixel.util.typeLimit.OneOfTwo;
 import hl.Gc;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
-import openfl.system.System as FlSys;
 
 class DebugDisplay extends FlxBasic {
 	public var leftText:FlxText;
@@ -33,8 +33,10 @@ class DebugDisplay extends FlxBasic {
 		this.visible = true;
 
 		this.leftText = new FlxText(10, 10, 0, "debug-left", DebugDisplay.fontSize);
+		// this.leftText = new MonospaceText(10, 10, 0, "debug-left");
 
 		this.rightText = new FlxText(10, 10, FlxG.width - 20, "debug-right", DebugDisplay.fontSize);
+		// this.rightText = new MonospaceText(10, 10, FlxG.width - 20, "debug-right");
 		this.rightText.alignment = RIGHT;
 	}
 

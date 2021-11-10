@@ -13,7 +13,7 @@ class PlayState extends FlxState {
 	override public function create() {
 		super.create();
 
-		add(new FlxText(10, 10, 0, "hi"));
+		// add(new MonospaceText(100, 200, 0, "HI"));
 
 		add(new CustomButton(100, 100, "a", function(player:PlayerSlotIdentifier) {
 			trace(player + ": button 1");

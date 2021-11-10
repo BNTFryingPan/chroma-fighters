@@ -1,0 +1,53 @@
+// technically every animation is optional, but standard characters will have all
+// ? indicates that of the standard animations, that one is "optional"
+// anything after a // is a comment on that animations name or use
+// technially double this list and add _right to this one, and _left to the new one, and the second is all optional
+// animations:
+idle
+walk
+dash
+dash_reverse
+dash_attack
+jump
+?airjump // double jump, if excluded will use normal jump animation
+fall // regular falling animation
+freefall // used after up-b usually, basically when you arent allowed to do something. might rename to pratfall like in rivals
+roll_right
+?roll_left
+dodge_spot // idk what to call this, but ive heard it called a spot dodge in smash (rivals has parrys instead)
+?dodge_air // no direction air dodge
+?dodge_air_right
+?dodge_air_left
+?dodge_air_up
+?dodge_air_down
+special // neutral special on the ground
+?special_air
+side_special
+?side_special_air
+up_special
+?up_special_air
+down_special
+?down_special_air
+side_strong
+up_strong
+down_strong
+jab_1
+?jab_2
+?jab_3
+?rapid_jab
+taunt
+air_attack_neutral
+air_attack_forward
+air_attack_backward
+air_attack_upward
+air_attack_downward
+tilt_forward
+tilt_upward
+tilt_downward
+hit
+launched
+stun
+land
+hard_land
+spawn
+respawn
