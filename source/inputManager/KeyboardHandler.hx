@@ -112,6 +112,10 @@ class KeyboardHandler extends GenericInput {
 		return new StickVector(x, y);
 	}
 
+	override public function getCursorStick():StickVector {
+		return this.getStick().normalize();
+	}
+
 	override public function getDirection():StickVector {
 		return new StickVector(0, 0);
 	}

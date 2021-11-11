@@ -8,6 +8,7 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import haxe.Constraints.NotVoid;
 
 typedef Position = {
 	var x:Int;
@@ -59,6 +60,63 @@ class InputHelper {
 			return PRESSED;
 		return NOT_PRESSED;
 	}
+
+	static public function or(state1:INPUT_STATE, state2:INPUT_STATE) {
+		if (state1 == state2)
+			return state1;
+
+		if (state1 == NOT_PRESSED)
+			return state2;
+
+		if (state2 == NOT_PRESSED)
+			return state1;
+
+		return PRESSED;
+
+		/*if (state1 == PRESSED)
+				return PRESSED;
+
+			if (state2 == PRESSED)
+				return PRESSED;
+
+			return PRESSED; */
+	}
+
+	static public function badUnitTest():Bool {
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		///
+		//
+		//
+		//
+		//
+		trace('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
+		trace('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
+		trace('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
+		trace('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
+		trace('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
+		trace('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
+		trace('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
+		trace('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
+		trace('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
+		trace('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
+		trace('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
+		trace('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
+		trace('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
+		trace('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
+		trace('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
+		trace('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
+		return true;
+	}
+
+	static public var a = badUnitTest();
 }
 
 enum CursorRotation {
@@ -144,8 +202,12 @@ class GenericInput extends FlxBasic {
 		this.spriteOffset = GenericInput.getOffset(angle);
 	}
 
+	public function getCursorStick():StickVector {
+		return this.getStick();
+	}
+
 	function updateCursorPos(elapsed:Float) {
-		var stick = getStick();
+		var stick = getCursorStick();
 
 		this.cursor.x += Math.round(stick.x * 5);
 		this.cursor.y += Math.round(stick.y * 5);

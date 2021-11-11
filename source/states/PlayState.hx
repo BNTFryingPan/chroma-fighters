@@ -27,14 +27,23 @@ class PlayState extends FlxState {
 			trace(player + ": button 3");
 		}));
 
-		InputManager.setInputType(P1, KeyboardAndMouseInput);
-		InputManager.setInputType(P2, KeyboardInput);
-
+		InputManager.setInputType(P1, KeyboardInput);
 		add(InputManager.getPlayer(P1));
-		add(InputManager.getPlayer(P2));
+
+		if (FlxG.gamepads.lastActive != null) {
+			InputManager.setInputType(P2, ControllerInput);
+			InputManager.setInputDevice(P2, FlxG.gamepads.lastActive);
+			add(InputManager.getPlayer(P2));
+		} else {
+			trace(FlxG.gamepads.lastActive);
+		}
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		// if (!Std.isOfType(InputManager.getPlayer(P2), ControllerInput)) {
+		// if ( != null)
+		// }
 	}
 }
