@@ -26,10 +26,10 @@ class StickVector {
 	}
 
 	public function toString() {
-		return 'StickVector(${this.x}, ${this.y})';
+		return 'StickVector(${this.x}, ${this.y}, ${this.length})';
 	}
 
-	public var length(default, null):Float;
+	public var length(get, null):Float;
 
 	function get_length() {
 		var xs = this.x * this.x;

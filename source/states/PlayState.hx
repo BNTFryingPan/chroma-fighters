@@ -4,10 +4,8 @@ import CustomButton;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
+import flixel.input.gamepad.FlxGamepadManager;
 import inputManager.InputManager;
-import inputManager.KeyboardHandler;
 
 class PlayState extends FlxState {
 	override public function create() {
@@ -16,15 +14,15 @@ class PlayState extends FlxState {
 		// add(new MonospaceText(100, 200, 0, "HI"));
 
 		add(new CustomButton(100, 100, "a", function(player:PlayerSlotIdentifier) {
-			trace(player + ": button 1");
+			Main.log(player + ": button 1");
 		}));
 
 		add(new CustomButton(200, 100, "b", function(player:PlayerSlotIdentifier) {
-			trace(player + ": button 2");
+			Main.log(player + ": button 2");
 		}));
 
 		add(new CustomButton(150, 200, "c", function(player:PlayerSlotIdentifier) {
-			trace(player + ": button 3");
+			Main.log(player + ": button 3");
 		}));
 
 		InputManager.setInputType(P1, KeyboardInput);
@@ -35,15 +33,11 @@ class PlayState extends FlxState {
 			InputManager.setInputDevice(P2, FlxG.gamepads.lastActive);
 			add(InputManager.getPlayer(P2));
 		} else {
-			trace(FlxG.gamepads.lastActive);
+			// Main.log(FlxG.gamepads.lastActive);
 		}
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
-
-		// if (!Std.isOfType(InputManager.getPlayer(P2), ControllerInput)) {
-		// if ( != null)
-		// }
 	}
 }

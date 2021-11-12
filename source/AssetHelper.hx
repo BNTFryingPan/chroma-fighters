@@ -13,9 +13,9 @@ class AssetHelper {
 	private function new() {}
 
 	public static function getImageAsset(key:NamespacedKey):BitmapData {
-		// trace(key);
+		// Main.log(key);
 		var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-		// trace(assetDir);
+		// Main.log(assetDir);
 		if (assetDir != null) {
 			return BitmapData.fromFile(assetDir);
 		}
@@ -96,10 +96,10 @@ class AssetHelper {
 			namespacedPath += key.namespace + "/";
 		}
 
-		// trace(rootPath + namespacedPath + fileName);
-		// trace(rootPath + namespacedPath + fileName);
+		// Main.log(rootPath + namespacedPath + fileName);
+		// Main.log(rootPath + namespacedPath + fileName);
 		if (FileSystem.exists(rootPath + namespacedPath + fileName)) {
-			// trace("exists");
+			// Main.log("exists");
 			return rootPath + namespacedPath + fileName;
 		} else
 			return null;

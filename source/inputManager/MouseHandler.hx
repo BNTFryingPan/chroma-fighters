@@ -1,11 +1,17 @@
 package inputManager;
 
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import inputManager.GenericInput.INPUT_STATE;
 import inputManager.GenericInput.InputHelper;
 import inputManager.GenericInput.Position;
 
 class MouseHandler extends KeyboardHandler {
+	override public function new(slot:PlayerSlotIdentifier) {
+		this.inputType = "Keyboard + Mouse";
+		super(slot);
+	}
+
 	override function getCursorPosition():Position {
 		return {x: FlxG.mouse.screenX, y: FlxG.mouse.screenY}
 	}

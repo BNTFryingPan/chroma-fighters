@@ -5,10 +5,7 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import haxe.Constraints.NotVoid;
 
 typedef Position = {
 	var x:Int;
@@ -61,15 +58,28 @@ class InputHelper {
 		return NOT_PRESSED;
 	}
 
-	static public function or(state1:INPUT_STATE, state2:INPUT_STATE) {
-		if (state1 == state2)
-			return state1;
+	static public function or(...inputs:INPUT_STATE) {
+		if (inputs.length == 0) {
+			return NOT_PRESSED;
+		}
 
-		if (state1 == NOT_PRESSED)
-			return state2;
+		if (inputs.length == 1) {
+			return inputs[0];
+		}
 
-		if (state2 == NOT_PRESSED)
-			return state1;
+		var first = inputs[0];
+		var matched:Bool = true;
+
+		for (input in inputs) {
+			if (input == PRESSED)
+				return PRESSED;
+
+			if (input != first)
+				matched = false;
+		}
+
+		if (matched)
+			return first;
 
 		return PRESSED;
 
@@ -82,41 +92,32 @@ class InputHelper {
 			return PRESSED; */
 	}
 
-	static public function badUnitTest():Bool {
-		//
-		//
-		//
-		//
-		//
-		//
-		//
-		//
-		//
-		///
-		//
-		//
-		//
-		//
-		trace('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
-		trace('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
-		trace('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
-		trace('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
-		trace('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
-		trace('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
-		trace('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
-		trace('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
-		trace('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
-		trace('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
-		trace('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
-		trace('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
-		trace('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
-		trace('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
-		trace('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
-		trace('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
-		return true;
+	static public function asInt(state:INPUT_STATE):Int {
+		return InputHelper.isPressed(state) ? 1 : 0;
 	}
+	/*
+		static public function badUnitTest():Bool {
+			Main.log('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
+			Main.log('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
+			Main.log('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
+			Main.log('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
+			Main.log('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
+			Main.log('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
+			Main.log('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
+			Main.log('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
+			Main.log('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
+			Main.log('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
+			Main.log('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
+			Main.log('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
+			Main.log('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
+			Main.log('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
+			Main.log('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
+			Main.log('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
+			return true;
+		}
 
-	static public var a = badUnitTest();
+		static public var a = badUnitTest();
+	 */
 }
 
 enum CursorRotation {
@@ -144,6 +145,8 @@ class GenericInput extends FlxBasic {
 
 	public var enabled:Bool = false;
 
+	public var inputType:String = "Generic";
+
 	public final slot:PlayerSlotIdentifier;
 
 	public static function getOffset(angle:CursorRotation):Position {
@@ -167,7 +170,7 @@ class GenericInput extends FlxBasic {
 	public function new(slot:PlayerSlotIdentifier) {
 		super();
 
-		trace("creating generic input for slot " + slot);
+		Main.log('creating ${this.inputType} input for slot ' + slot);
 
 		this.coinSprite = new FlxSprite();
 		this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
@@ -247,7 +250,7 @@ class GenericInput extends FlxBasic {
 		}
 
 		// if (this.isvisible)
-		Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] cursor: (${this.cursor.x}, ${this.cursor.y})\nstick: ${this.getStick()}\ncon ${this.getConfirm()} can ${this.getCancel()}\n';
+		Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
 	}
 
 	override function draw() {

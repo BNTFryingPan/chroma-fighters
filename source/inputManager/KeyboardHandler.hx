@@ -1,14 +1,19 @@
 package inputManager;
 
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
-import flixel.ui.FlxButton;
 import inputManager.GenericInput.INPUT_STATE;
 
 /**
 	input handler for keyboard
 **/
 class KeyboardHandler extends GenericInput {
+	override public function new(slot:PlayerSlotIdentifier) {
+		this.inputType = "Keyboard";
+		super(slot);
+	}
+
 	public static function getKeyStateAsInputState(key:FlxKey) {
 		var k = [key];
 
