@@ -8,348 +8,352 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 
 typedef Position = {
-	var x:Int;
-	var y:Int;
+    var x:Int;
+    var y:Int;
 }
 
 enum INPUT_STATE {
-	JUST_PRESSED;
-	JUST_RELEASED;
-	PRESSED;
-	NOT_PRESSED;
+    JUST_PRESSED;
+    JUST_RELEASED;
+    PRESSED;
+    NOT_PRESSED;
 }
 
 class InputHelper {
-	static public function isPressed(state:INPUT_STATE) {
-		if (state == JUST_PRESSED) {
-			return true;
-		}
-		return state == PRESSED;
-	}
+    static public function isPressed(state:INPUT_STATE) {
+        if (state == JUST_PRESSED) {
+            return true;
+        }
+        return state == PRESSED;
+    }
 
-	static public function isNotPressed(state:INPUT_STATE) {
-		if (state == JUST_RELEASED) {
-			return true;
-		}
-		return state == NOT_PRESSED;
-	}
+    static public function isNotPressed(state:INPUT_STATE) {
+        if (state == JUST_RELEASED) {
+            return true;
+        }
+        return state == NOT_PRESSED;
+    }
 
-	static public function justChanged(state:INPUT_STATE) {
-		if (state == JUST_PRESSED) {
-			return true;
-		}
-		return state == JUST_RELEASED;
-	}
+    static public function justChanged(state:INPUT_STATE) {
+        if (state == JUST_PRESSED) {
+            return true;
+        }
+        return state == JUST_RELEASED;
+    }
 
-	static public function notChanged(state:INPUT_STATE) {
-		if (state == PRESSED) {
-			return true;
-		}
-		return state == NOT_PRESSED;
-	}
+    static public function notChanged(state:INPUT_STATE) {
+        if (state == PRESSED) {
+            return true;
+        }
+        return state == NOT_PRESSED;
+    }
 
-	static public function getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool) {
-		if (justPressed)
-			return JUST_PRESSED;
-		if (justReleased)
-			return JUST_RELEASED;
-		if (pressed)
-			return PRESSED;
-		return NOT_PRESSED;
-	}
+    static public function getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool) {
+        if (justPressed)
+            return JUST_PRESSED;
+        if (justReleased)
+            return JUST_RELEASED;
+        if (pressed)
+            return PRESSED;
+        return NOT_PRESSED;
+    }
 
-	static public function or(...inputs:INPUT_STATE) {
-		if (inputs.length == 0) {
-			return NOT_PRESSED;
-		}
+    static public function or(...inputs:INPUT_STATE) {
+        if (inputs.length == 0) {
+            return NOT_PRESSED;
+        }
 
-		if (inputs.length == 1) {
-			return inputs[0];
-		}
+        if (inputs.length == 1) {
+            return inputs[0];
+        }
 
-		var first = inputs[0];
-		var matched:Bool = true;
+        var first = inputs[0];
+        var matched:Bool = true;
 
-		for (input in inputs) {
-			if (input == PRESSED)
-				return PRESSED;
+        for (input in inputs) {
+            if (input == PRESSED)
+                return PRESSED;
 
-			if (input != first)
-				matched = false;
-		}
+            if (input != first)
+                matched = false;
+        }
 
-		if (matched)
-			return first;
+        if (matched)
+            return first;
 
-		return PRESSED;
+        return PRESSED;
 
-		/*if (state1 == PRESSED)
-				return PRESSED;
+        /*if (state1 == PRESSED)
+                return PRESSED;
 
-			if (state2 == PRESSED)
-				return PRESSED;
+            if (state2 == PRESSED)
+                return PRESSED;
 
-			return PRESSED; */
-	}
+            return PRESSED; */
+    }
 
-	static public function asInt(state:INPUT_STATE):Int {
-		return InputHelper.isPressed(state) ? 1 : 0;
-	}
-	/*
-		static public function badUnitTest():Bool {
-			Main.log('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
-			Main.log('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
-			Main.log('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
-			Main.log('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
-			Main.log('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
-			Main.log('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
-			Main.log('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
-			Main.log('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
-			Main.log('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
-			Main.log('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
-			Main.log('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
-			Main.log('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
-			Main.log('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
-			Main.log('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
-			Main.log('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
-			Main.log('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
-			return true;
-		}
+    static public function asInt(state:INPUT_STATE):Int {
+        return InputHelper.isPressed(state) ? 1 : 0;
+    }
+    /*
+        static public function badUnitTest():Bool {
+            Main.log('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
+            Main.log('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
+            Main.log('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
+            Main.log('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
+            Main.log('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
+            Main.log('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
+            Main.log('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
+            Main.log('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
+            Main.log('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
+            Main.log('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
+            Main.log('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
+            Main.log('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
+            Main.log('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
+            Main.log('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
+            Main.log('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
+            Main.log('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
+            return true;
+        }
 
-		static public var a = badUnitTest();
-	 */
+        static public var a = badUnitTest();
+     */
 }
 
 enum CursorRotation {
-	LEFT;
-	RIGHT;
-	UP_LEFT;
-	UP_RIGHT;
-	DOWN_LEFT;
-	DOWN_RIGHT;
+    LEFT;
+    RIGHT;
+    UP_LEFT;
+    UP_RIGHT;
+    DOWN_LEFT;
+    DOWN_RIGHT;
 }
 
 /**
-	A basic input handler, used as a base for all other input types.
+    A basic input handler, used as a base for all other input types.
 
-	this handler always returns false for any input checks, and reports the cursor position as (0, 0)
+    this handler always returns false for any input checks, and reports the cursor position as (0, 0)
 **/
 class GenericInput extends FlxBasic {
-	public var cursorSprite:FlxSprite;
-	public var coinSprite:FlxSprite;
-	public var debugSprite:FlxSprite;
-	public var cursor:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
-	public var cursorAngle:CursorRotation = RIGHT;
-	public var spriteOffset:Position = {x: 0, y: 0};
-	public var isvisible:Bool = true;
+    public var cursorSprite:FlxSprite;
+    public var coinSprite:FlxSprite;
+    public var debugSprite:FlxSprite;
+    public var cursor:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
+    public var cursorAngle:CursorRotation = RIGHT;
+    public var spriteOffset:Position = {x: 0, y: 0};
+    public var isvisible:Bool = true;
 
-	public var enabled:Bool = false;
+    public var enabled:Bool = false;
 
-	public var inputType:String = "Generic";
+    public var inputType(get, never):String;
 
-	public final slot:PlayerSlotIdentifier;
+    public function get_inputType() {
+        return "Generic";
+    }
 
-	public static function getOffset(angle:CursorRotation):Position {
-		if (angle == LEFT) {
-			return {x: 30, y: 15};
-		} else if (angle == RIGHT) {
-			return {x: 30, y: 15};
-		} else if (angle == UP_LEFT) {
-			return {x: 30, y: 15};
-		} else if (angle == UP_RIGHT) {
-			return {x: 27, y: 0};
-		} else if (angle == DOWN_LEFT) {
-			return {x: 30, y: 15};
-		} else if (angle == DOWN_RIGHT) {
-			return {x: 30, y: 15};
-		}
+    public final slot:PlayerSlotIdentifier;
 
-		return {x: 30, y: 15};
-	}
+    public static function getOffset(angle:CursorRotation):Position {
+        if (angle == LEFT) {
+            return {x: 30, y: 15};
+        } else if (angle == RIGHT) {
+            return {x: 30, y: 15};
+        } else if (angle == UP_LEFT) {
+            return {x: 30, y: 15};
+        } else if (angle == UP_RIGHT) {
+            return {x: 27, y: 0};
+        } else if (angle == DOWN_LEFT) {
+            return {x: 30, y: 15};
+        } else if (angle == DOWN_RIGHT) {
+            return {x: 30, y: 15};
+        }
 
-	public function new(slot:PlayerSlotIdentifier) {
-		super();
+        return {x: 30, y: 15};
+    }
 
-		Main.log('creating ${this.inputType} input for slot ' + slot);
+    public function new(slot:PlayerSlotIdentifier) {
+        super();
 
-		this.coinSprite = new FlxSprite();
-		this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
-		this.cursorSprite = new FlxSprite();
+        Main.log('creating ${this.inputType} input for slot ' + slot);
 
-		this.debugSprite = new FlxSprite();
-		this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
+        this.coinSprite = new FlxSprite();
+        this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
+        this.cursorSprite = new FlxSprite();
 
-		this.setCursorAngle(RIGHT);
+        this.debugSprite = new FlxSprite();
+        this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
 
-		this.cursor = {x: 0, y: 0};
-		this.enabled = true;
+        this.setCursorAngle(RIGHT);
 
-		this.slot = slot;
-	}
+        this.cursor = {x: 0, y: 0};
+        this.enabled = true;
 
-	public function setCursorAngle(angle:CursorRotation) {
-		if (angle == LEFT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left")));
-		} else if (angle == RIGHT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right")));
-		} else if (angle == UP_LEFT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left")));
-		} else if (angle == UP_RIGHT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right")));
-		} else if (angle == DOWN_LEFT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left")));
-		} else if (angle == DOWN_RIGHT) {
-			this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right")));
-		}
+        this.slot = slot;
+    }
 
-		this.spriteOffset = GenericInput.getOffset(angle);
-	}
+    public function setCursorAngle(angle:CursorRotation) {
+        if (angle == LEFT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left")));
+        } else if (angle == RIGHT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right")));
+        } else if (angle == UP_LEFT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left")));
+        } else if (angle == UP_RIGHT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right")));
+        } else if (angle == DOWN_LEFT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left")));
+        } else if (angle == DOWN_RIGHT) {
+            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right")));
+        }
 
-	public function getCursorStick():StickVector {
-		return this.getStick();
-	}
+        this.spriteOffset = GenericInput.getOffset(angle);
+    }
 
-	function updateCursorPos(elapsed:Float) {
-		var stick = getCursorStick();
+    public function getCursorStick():StickVector {
+        return this.getStick();
+    }
 
-		this.cursor.x += Math.round(stick.x * 5);
-		this.cursor.y += Math.round(stick.y * 5);
+    function updateCursorPos(elapsed:Float) {
+        var stick = getCursorStick();
 
-		this.cursor.x = Std.int(Math.min(this.cursor.x, FlxG.width));
-		this.cursor.x = Std.int(Math.max(this.cursor.x, 0));
-		this.cursor.y = Std.int(Math.min(this.cursor.y, FlxG.height));
-		this.cursor.y = Std.int(Math.max(this.cursor.y, 0));
-	}
+        this.cursor.x += Math.round(stick.x * 5);
+        this.cursor.y += Math.round(stick.y * 5);
 
-	override function update(elapsed:Float) {
-		this.updateCursorPos(elapsed);
-		var cursorPos = this.getCursorPosition();
+        this.cursor.x = Std.int(Math.min(this.cursor.x, FlxG.width));
+        this.cursor.x = Std.int(Math.max(this.cursor.x, 0));
+        this.cursor.y = Std.int(Math.min(this.cursor.y, FlxG.height));
+        this.cursor.y = Std.int(Math.max(this.cursor.y, 0));
+    }
 
-		this.cursorSprite.x = cursorPos.x - this.spriteOffset.x;
-		this.cursorSprite.y = cursorPos.y - this.spriteOffset.y;
+    override function update(elapsed:Float) {
+        this.updateCursorPos(elapsed);
+        var cursorPos = this.getCursorPosition();
 
-		this.debugSprite.x = cursorPos.x;
-		this.debugSprite.y = cursorPos.y;
+        this.cursorSprite.x = cursorPos.x - this.spriteOffset.x;
+        this.cursorSprite.y = cursorPos.y - this.spriteOffset.y;
 
-		super.update(elapsed);
+        this.debugSprite.x = cursorPos.x;
+        this.debugSprite.y = cursorPos.y;
 
-		if (this.enabled) {
-			for (mem in FlxG.state.members) {
-				if (Std.isOfType(mem, CustomButton)) {
-					var button:CustomButton = cast mem;
-					if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
-						button.overHandler(this.slot);
-						if (InputHelper.isPressed(this.getConfirm()))
-							button.downHandler(this.slot);
-						else
-							button.upHandler(this.slot);
-					} else
-						button.outHandler(this.slot);
-				}
-			}
-		}
+        super.update(elapsed);
 
-		// if (this.isvisible)
-		Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
-	}
+        if (this.enabled) {
+            for (mem in FlxG.state.members) {
+                if (Std.isOfType(mem, CustomButton)) {
+                    var button:CustomButton = cast mem;
+                    if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
+                        button.overHandler(this.slot);
+                        if (InputHelper.isPressed(this.getConfirm()))
+                            button.downHandler(this.slot);
+                        else
+                            button.upHandler(this.slot);
+                    } else
+                        button.outHandler(this.slot);
+                }
+            }
+        }
 
-	override function draw() {
-		if (!this.enabled)
-			return;
-		super.draw();
-		this.cursorSprite.draw();
+        // if (this.isvisible)
+        Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
+    }
 
-		this.debugSprite.draw();
-	}
+    override function draw() {
+        if (!this.enabled)
+            return;
+        super.draw();
+        this.cursorSprite.draw();
 
-	/**
-		returns the screen position where the cursor should be drawn and the "click point"
-	**/
-	public function getCursorPosition():Position {
-		return this.cursor;
-	}
+        this.debugSprite.draw();
+    }
 
-	public function getConfirm():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    /**
+        returns the screen position where the cursor should be drawn and the "click point"
+    **/
+    public function getCursorPosition():Position {
+        return this.cursor;
+    }
 
-	public function getCancel():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getConfirm():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getMenuAction():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getCancel():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getMenuLeft():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getMenuAction():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getMenuRight():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getMenuLeft():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getAttack():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getMenuRight():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getJump():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getAttack():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getSpecial():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getJump():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getStrong():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getSpecial():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getDodge():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getStrong():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getWalk():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getDodge():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getTaunt():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getWalk():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getQuit():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getTaunt():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getPause():INPUT_STATE {
-		return NOT_PRESSED;
-	}
+    public function getQuit():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getUp():Float {
-		return 0;
-	}
+    public function getPause():INPUT_STATE {
+        return NOT_PRESSED;
+    }
 
-	public function getDown():Float {
-		return 0;
-	}
+    public function getUp():Float {
+        return 0;
+    }
 
-	public function getLeft():Float {
-		return 0;
-	}
+    public function getDown():Float {
+        return 0;
+    }
 
-	public function getRight():Float {
-		return 0;
-	}
+    public function getLeft():Float {
+        return 0;
+    }
 
-	public function getStick():StickVector {
-		return new StickVector(0, 0);
-	}
+    public function getRight():Float {
+        return 0;
+    }
 
-	public function getDirection():StickVector {
-		return new StickVector(0, 0);
-	}
+    public function getStick():StickVector {
+        return new StickVector(0, 0);
+    }
 
-	public function getRawDirection():StickVector {
-		return new StickVector(0, 0);
-	}
+    public function getDirection():StickVector {
+        return new StickVector(0, 0);
+    }
+
+    public function getRawDirection():StickVector {
+        return new StickVector(0, 0);
+    }
 }

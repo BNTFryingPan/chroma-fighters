@@ -82,5 +82,6 @@
 
 	<!-- _________________________________ Custom _______________________________ -->
 
+	<dependency name="parsec" unless="mobile"/>
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 </project>
