@@ -58,6 +58,16 @@ class InputHelper {
         return NOT_PRESSED;
     }
 
+    static public function getFromFlxInput(input:FlxInput) {
+        if (input.justPressed)
+            return JUST_PRESSED;
+        if (input.justReleased)
+            return JUST_RELEASED;
+        if (input.pressed)
+            return PRESSED;
+        return NOT_PRESSED;
+    }
+
     static public function or(...inputs:INPUT_STATE) {
         if (inputs.length == 0) {
             return NOT_PRESSED;
@@ -152,6 +162,7 @@ class GenericInput extends FlxBasic {
     }
 
     public final slot:PlayerSlotIdentifier;
+    public var profile:Profile;
 
     public static function getOffset(angle:CursorRotation):Position {
         if (angle == LEFT) {
