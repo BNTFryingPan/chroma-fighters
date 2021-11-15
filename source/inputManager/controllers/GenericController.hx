@@ -167,7 +167,9 @@ class GenericController extends GenericInput {
             case TRUE:
                 PRESSED;
             case FACE_A:
-                this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
+                // this seems pretty good. a bit harder to read, but it should work with all controllers like this?
+                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mappings.getRawID(A)))
+                //this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
             case FACE_B:
                 this._flixelGamepad.pressed.B ? PRESSED : NOT_PRESSED;
             case FACE_X:
@@ -195,13 +197,13 @@ class GenericController extends GenericInput {
             case RIGHT_STICK_CLICK:
                 this._flixelGamepad.pressed.RIGHT_STICK_CLICK ? PRESSED : NOT_PRESSED;
             case PLUS:
-                this._flixelGamepad.pressed.GUIDE ? PRESSED : NOT_PRESSED;
-            case MINUS:
                 this._flixelGamepad.pressed.START ? PRESSED : NOT_PRESSED;
+            case MINUS:
+                this._flixelGamepad.pressed.BACK ? PRESSED : NOT_PRESSED;
             case HOME:
-                this._flixelGamepad.pressed.EXTRA_0 ? PRESSED : NOT_PRESSED;
+                this._flixelGamepad.pressed.GUIDE ? PRESSED : NOT_PRESSED;
             case CAPTURE:
-                this._flixelGamepad.pressed.EXTRA_1 ? PRESSED : NOT_PRESSED;
+                this._flixelGamepad.pressed.EXTRA_0 ? PRESSED : NOT_PRESSED;
             default:
                 NOT_PRESSED;
         }
