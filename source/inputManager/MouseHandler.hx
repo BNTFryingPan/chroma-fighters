@@ -11,8 +11,8 @@ class MouseHandler extends KeyboardHandler {
         return "Keyboard + Mouse";
     }
 
-    override public function new(slot:PlayerSlotIdentifier) {
-        super(slot);
+    override public function new(slot:PlayerSlotIdentifier, ?profile:String) {
+        super(slot, profile);
     }
 
     override function getCursorPosition():Position {

@@ -136,8 +136,17 @@ class GenericController extends GenericInput {
         return "Controller (Generic)";
     }
 
-    public function new(slot:PlayerSlotIdentifier) {
-        super(slot);
+    override public function get_inputEnabled() {
+        if (this._flixelGamepad.connected != true) {
+            // Main.log('controller connected: ${this._flixelGamepad.connected}');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function new(slot:PlayerSlotIdentifier, ?profile:String) {
+        super(slot, profile);
     }
 
     function set__flixelGamepad(newInput:FlxGamepad):FlxGamepad {
@@ -149,6 +158,9 @@ class GenericController extends GenericInput {
     private function handleNewInput() {}
 
     public function getButtonState(button:GenericButton):INPUT_STATE {
+        if (this._flixelGamepad.connected != true) {
+            return NOT_PRESSED;
+        }
         return switch (button) {
             case NULL:
                 NOT_PRESSED;

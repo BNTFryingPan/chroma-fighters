@@ -13,8 +13,12 @@ class KeyboardHandler extends GenericInput {
         return "Keyboard";
     }
 
-    override public function new(slot:PlayerSlotIdentifier) {
-        super(slot);
+    override public function get_inputEnabled() {
+        return true;
+    }
+
+    override public function new(slot:PlayerSlotIdentifier, ?profile:String) {
+        super(slot, profile);
     }
 
     public static function getKeyStateAsInputState(key:FlxKey) {

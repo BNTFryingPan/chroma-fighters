@@ -5,12 +5,12 @@ import flixel.FlxGame;
 import lime.app.Application;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import states.PlayState;
+import states.TitleScreenState;
 
 class Main extends Sprite {
     public static var fpsCounter:FPS;
     public static var debugDisplay:DebugDisplay;
-    public static var targetFps:Int = 60;
+    public static var targetFps:Int = 144;
 
     public static function log(data:Dynamic) {
         try {
@@ -29,15 +29,7 @@ class Main extends Sprite {
         // TODO : load fps setting from settings file (i dont think it can be changed without a restart)
         // Main.targetFps = 60;
 
-        addChild(new FlxGame(0, 0, PlayState, 1, 60, 60, true, false));
-
-        FlxG.gamepads.deviceConnected.add(gp -> {
-            Main.log('${gp.name}.${gp.id} connected');
-        });
-
-        FlxG.gamepads.deviceDisconnected.add(gp -> {
-            Main.log('${gp.name}.${gp.id} disconnected');
-        });
+        addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
 
         Main.debugDisplay = new DebugDisplay();
         FlxG.state.add(Main.debugDisplay);

@@ -3,6 +3,7 @@ package;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
+import flixel.ui.FlxSpriteButton;
 import inputManager.InputManager;
 
 class CustomButton extends FlxButton {

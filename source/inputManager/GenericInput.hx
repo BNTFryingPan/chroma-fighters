@@ -143,9 +143,13 @@ class GenericInput extends FlxBasic {
     public var spriteOffset:Position = {x: 0, y: 0};
     public var isvisible:Bool = true;
 
-    public var enabled:Bool = false;
+    public var inputEnabled(get, default):Bool = false;
 
     public var inputType(get, never):String;
+
+    public function get_inputEnabled() {
+        return false;
+    }
 
     public function get_inputType() {
         return "Generic";
@@ -171,7 +175,7 @@ class GenericInput extends FlxBasic {
         return {x: 30, y: 15};
     }
 
-    public function new(slot:PlayerSlotIdentifier) {
+    public function new(slot:PlayerSlotIdentifier, ?profile:String) {
         super();
 
         Main.log('creating ${this.inputType} input for slot ' + slot);
@@ -186,7 +190,7 @@ class GenericInput extends FlxBasic {
         this.setCursorAngle(RIGHT);
 
         this.cursor = {x: 0, y: 0};
-        this.enabled = true;
+        // this.inputEnabled = true;
 
         this.slot = slot;
     }
@@ -216,8 +220,8 @@ class GenericInput extends FlxBasic {
     function updateCursorPos(elapsed:Float) {
         var stick = getCursorStick();
 
-        this.cursor.x += Math.round(stick.x * 5);
-        this.cursor.y += Math.round(stick.y * 5);
+        this.cursor.x += Math.round(stick.x * 500 * elapsed);
+        this.cursor.y += Math.round(stick.y * 500 * elapsed);
 
         this.cursor.x = Std.int(Math.min(this.cursor.x, FlxG.width));
         this.cursor.x = Std.int(Math.max(this.cursor.x, 0));
@@ -237,7 +241,7 @@ class GenericInput extends FlxBasic {
 
         super.update(elapsed);
 
-        if (this.enabled) {
+        if (this.inputEnabled) {
             for (mem in FlxG.state.members) {
                 if (Std.isOfType(mem, CustomButton)) {
                     var button:CustomButton = cast mem;
@@ -254,11 +258,14 @@ class GenericInput extends FlxBasic {
         }
 
         // if (this.isvisible)
-        Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
+        if (this.inputEnabled)
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
+        else
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}} ----DISABLED----';
     }
 
     override function draw() {
-        if (!this.enabled)
+        if (!this.inputEnabled)
             return;
         super.draw();
         this.cursorSprite.draw();

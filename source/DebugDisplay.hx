@@ -76,6 +76,7 @@ class DebugDisplay extends FlxBasic {
             this.rightText.text += 'Mem: ${memStats.currentMemory} / ${maxMemory}MB\n';
             this.rightText.text += 'Alloc: ${memStats.allocationCount} / ${memStats.totalAllocated}\n';
             this.rightText.text += 'System: ${LimeSys.platformName} (${FlCap.cpuArchitecture})\n\n';
+            // this.rightText.text += 'Elapsed: ${}';
             // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
             // this.rightText.text += 'CPU: \n';
 
