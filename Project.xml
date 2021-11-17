@@ -51,6 +51,9 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
+	<!-- i do this because i think -debug causes some other things to change maybe (more logging on android) -->
+	<haxedef name="debug" if="d4" />
+
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->
 
