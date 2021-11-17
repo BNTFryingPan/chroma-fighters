@@ -33,6 +33,12 @@
 	<source path="source" />
 	<assets path="assets" />
 
+	<config:android permission="android.permission.READ_EXTERNAL_STORAGE" />
+	<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+	<config:android permission="com.android.permission.READ_EXTERNAL_STORAGE" />
+	<config:android permission="comd.android.permission.WRITE_EXTERNAL_STORAGE" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
