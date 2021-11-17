@@ -4,6 +4,7 @@ import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.input.FlxInput;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 
@@ -58,7 +59,7 @@ class InputHelper {
         return NOT_PRESSED;
     }
 
-    static public function getFromFlxInput(input:FlxInput) {
+    static public function getFromFlxInput(input:FlxInput<Int>) {
         if (input.justPressed)
             return JUST_PRESSED;
         if (input.justReleased)
@@ -192,7 +193,9 @@ class GenericInput extends FlxBasic {
         Main.log('creating ${this.inputType} input for slot ' + slot);
 
         this.coinSprite = new FlxSprite();
+        // Main.log('loading graphic');
         this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
+        // Main.log('loaded graphic');
         this.cursorSprite = new FlxSprite();
 
         this.debugSprite = new FlxSprite();

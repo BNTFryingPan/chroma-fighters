@@ -62,7 +62,7 @@ class TitleScreenState extends BaseState {
         this.main_localButton.screenCenter(X);
 
         this.main_onlineButton = new CustomButton(0, -100, "Online (coming soon?)", function(player:PlayerSlotIdentifier) {
-            Main.log(player + ":  online button");
+            Main.log(player + ": online button");
         });
         this.main_onlineButton.screenCenter(X);
 
@@ -82,7 +82,7 @@ class TitleScreenState extends BaseState {
         add(this.main_settingsButton);
         add(this.main_exitButton);
 
-        if (TitleScreenState.pastStartScreen) {
+        if (TitleScreenState.hasEverPassedStartScreenThisSession) {
             this.main_localButton.y = 100;
             this.main_onlineButton.y = 150;
             this.main_settingsButton.y = 200;
@@ -129,6 +129,13 @@ class TitleScreenState extends BaseState {
                     InputManager.setInputType(P1, KeyboardInput);
                 this.moveOn();
             }
+        } else if (!TitleScreenState.pastStartScreen && this.hasPressedButtons) {
+            this.main_localButton.y = 100;
+            this.main_onlineButton.y = 150;
+            this.main_settingsButton.y = 200;
+            this.main_exitButton.y = 250;
+            this.pressStartText.y = 500;
+            this.movedOn();
         } else if (TitleScreenState.pastStartScreen && !this.hasPressedButtons) {
             if (InputManager.getPlayerArray().filter(player -> InputHelper.isPressed(player.getCancel())).length > 0) {
                 this.pressStartText.y = 400;

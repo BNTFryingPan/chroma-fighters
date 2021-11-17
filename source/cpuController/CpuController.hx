@@ -1,5 +1,5 @@
 package cpuController;
 
-class CpuController extends GenericInput {
-    
-}
+import inputManager.GenericInput;
+
+class CpuController extends GenericInput {}

@@ -13,8 +13,9 @@ class AssetHelper {
     private function new() {}
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        // Main.log(key);
+        // Main.log("getImageAsset");
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
+        // Main.log('got directory: ' + assetDir);
         // Main.log(assetDir);
         if (assetDir != null) {
             return BitmapData.fromFile(assetDir);
@@ -70,7 +71,7 @@ class AssetHelper {
     }
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
-        #if debug
+        #if (debug && !mobile)
         var rootPath = "./../../../assets/";
         var namespacedPath = "debug_mods/";
         #else

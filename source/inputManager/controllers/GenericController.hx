@@ -157,6 +157,7 @@ class GenericController extends GenericInput {
 
     private function handleNewInput() {}
 
+    @:access(flixel.input.gamepad.FlxGamepad)
     public function getButtonState(button:GenericButton):INPUT_STATE {
         if (this._flixelGamepad.connected != true) {
             return NOT_PRESSED;
@@ -168,8 +169,8 @@ class GenericController extends GenericInput {
                 PRESSED;
             case FACE_A:
                 // this seems pretty good. a bit harder to read, but it should work with all controllers like this?
-                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mappings.getRawID(A)))
-                //this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
+                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(A)));
+            // this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
             case FACE_B:
                 this._flixelGamepad.pressed.B ? PRESSED : NOT_PRESSED;
             case FACE_X:

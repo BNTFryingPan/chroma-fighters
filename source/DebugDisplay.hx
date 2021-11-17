@@ -3,12 +3,12 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.text.FlxBitmapText;
 import flixel.text.FlxText;
-import flixel.util.typeLimit.OneOfTwo;
-import hl.Gc;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
+#if hl
+import hl.Gc;
+#end
 
 class DebugDisplay extends FlxBasic {
     public var leftText:FlxText;
@@ -47,12 +47,20 @@ class DebugDisplay extends FlxBasic {
     }
 
     public override function update(elapsed:Float) {
+        #if hl
         var memStatsRaw = Gc.stats();
         var memStats = {
             totalAllocated: Math.round(memStatsRaw.totalAllocated / 1024 / 1024 * 100) / 10,
             currentMemory: Math.round(memStatsRaw.currentMemory / 1024 / 1024 * 100) / 10,
             allocationCount: Math.round(memStatsRaw.allocationCount / 1024 / 1024 * 100) / 10,
         };
+        #else
+        var memStats = {
+            totalAllocated: 0,
+            currentMemory: 0,
+            allocationCount: 0,
+        }
+        #end
 
         if (memStats.currentMemory > maxMemory)
             maxMemory = memStats.currentMemory;
