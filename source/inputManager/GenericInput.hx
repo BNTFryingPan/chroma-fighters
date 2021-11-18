@@ -193,9 +193,9 @@ class GenericInput extends FlxBasic {
         Main.log('creating ${this.inputType} input for slot ' + slot);
 
         this.coinSprite = new FlxSprite();
-        // Main.log('loading graphic');
+        Main.log('loading graphic');
         this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
-        // Main.log('loaded graphic');
+        Main.log('loaded graphic');
         this.cursorSprite = new FlxSprite();
 
         this.debugSprite = new FlxSprite();

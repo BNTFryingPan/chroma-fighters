@@ -4,6 +4,7 @@ import hscript.Expr;
 import hscript.Parser;
 import openfl.display.BitmapData;
 import sys.FileSystem;
+import sys.io.File;
 
 class AssetHelper {
     public static final instance = new AssetHelper();
@@ -12,10 +13,17 @@ class AssetHelper {
 
     private function new() {}
 
+    /*private static function getNullBitmap():BitmapData {
+        return 
+    }*/
+    private static function getNullText():String {
+        return "NOT_FOUND";
+    }
+
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        // Main.log("getImageAsset");
+        Main.log("getImageAsset");
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-        // Main.log('got directory: ' + assetDir);
+        Main.log('got directory: ' + assetDir);
         // Main.log(assetDir);
         if (assetDir != null) {
             return BitmapData.fromFile(assetDir);
@@ -28,7 +36,7 @@ class AssetHelper {
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir).split("\n");
         }
-        return null;
+        return [AssetHelper.getNullText()];
     }
 
     public static function getRawTextAsset(key:NamespacedKey):String {
@@ -36,7 +44,7 @@ class AssetHelper {
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
         }
-        return null;
+        return AssetHelper.getNullText();
     }
 
     public static var scriptCache:Map<NamespacedKey, Expr> = new Map<NamespacedKey, Expr>();
@@ -59,7 +67,7 @@ class AssetHelper {
         if (assetDir != null) {
             return haxe.Json.parse(sys.io.File.getContent(assetDir));
         }
-        return null;
+        return {};
     }
 
     public static function getRawJsonAsset(key:NamespacedKey):String {
@@ -67,14 +75,16 @@ class AssetHelper {
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
         }
-        return null;
+        return "{}";
     }
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
         #if (debug && !mobile)
+        Main.log('debug paths');
         var rootPath = "./../../../assets/";
         var namespacedPath = "debug_mods/";
         #else
+        Main.log('normal paths');
         var rootPath = "./assets/";
         var namespacedPath = "mods/";
         #end
@@ -98,11 +108,15 @@ class AssetHelper {
         }
 
         // Main.log(rootPath + namespacedPath + fileName);
-        // Main.log(rootPath + namespacedPath + fileName);
+        #if (!mobile)
         if (FileSystem.exists(rootPath + namespacedPath + fileName)) {
             // Main.log("exists");
             return rootPath + namespacedPath + fileName;
         } else
             return null;
+        #else
+        // if (sys.io.)
+        return null;
+        #end
     }
 }
