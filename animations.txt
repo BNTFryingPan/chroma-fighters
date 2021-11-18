@@ -49,5 +49,12 @@ launched
 stun
 land
 hard_land
-spawn
-respawn
+get_up // after landing hard and not teching, neutral get up
+get_up_attack // like above but when you attack
+spawn // the inital spawning animation
+respawn // respawn animation, not including any spawn platform or object (that has its own sprite)
+
+ledge_hang
+ledge_jump
+ledge_attack
+ledge_neutral // used for getting up of the ledge but not jumping or attacking
