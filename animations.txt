@@ -4,9 +4,11 @@
 // technially double this list and add _right to this one, and _left to the new one, and the second is all optional
 // animations:
 idle
+crouch
 walk
+?crawl // might not add crawling
 dash
-dash_reverse
+dash_reverse // when you start going the other way while in a dash
 dash_attack
 jump
 ?airjump // double jump, if excluded will use normal jump animation
@@ -20,6 +22,7 @@ dodge_spot // idk what to call this, but ive heard it called a spot dodge in sma
 ?dodge_air_left
 ?dodge_air_up
 ?dodge_air_down
+shield_parry // perfect shield in smash
 special // neutral special on the ground
 ?special_air
 side_special
@@ -47,6 +50,20 @@ tilt_downward
 hit
 launched
 stun
+shield_activate 
+shield_idle
+shield_deactivate
+shield_break
+?shield_damaged_activate // 3-4 shields left
+?shield_damaged_idle
+?shield_damaged_deactivate
+?shield_damaged_break
+?shield_very_damaged_activate // 1 shield left
+?shield_very_damaged_idle
+?shield_very_damaged_deactivate
+?shield_very_damaged_break
+shield_broken_stun // used after shields 1-4 are broken
+?shield_broken_long_stun // used after the last shield is broken
 land
 hard_land
 get_up // after landing hard and not teching, neutral get up
