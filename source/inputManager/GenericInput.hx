@@ -5,6 +5,7 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.input.FlxInput;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 
@@ -67,6 +68,11 @@ class InputHelper {
         if (input.pressed)
             return PRESSED;
         return NOT_PRESSED;
+    }
+
+    @:access(flixel.input.FlxKeyManager)
+    static public function getFromFlxKey(key:FlxKey) {
+        return InputHelper.getFromFlxInput(FlxG.keys.getKey(key));
     }
 
     static public function or(...inputs:INPUT_STATE) {

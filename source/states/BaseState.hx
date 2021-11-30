@@ -57,16 +57,9 @@ class BaseState extends FlxState {
         if (!InputManager.enabled)
             return;
 
-        FlxG.gamepads.getActiveGamepads().filter(p -> {
-            if (!p.anyJustPressed([A]))
-                return false;
-            InputManager.tryToAddPlayerFromInputDevice(p);
-            return true;
-        });
-
         var emptySlot = InputManager.getFirstOpenPlayerSlot();
 
-        if (emptySlot != null)
+        if (emptySlot != null) {
             if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S]))
                 if (InputManager.getPlayerSlotByInput(KeyboardInput) == null)
                     InputManager.setInputType(emptySlot, KeyboardInput);
@@ -78,5 +71,12 @@ class BaseState extends FlxState {
                     else
                         InputManager.setInputType(keyboardSlot, KeyboardAndMouseInput);
                 }
+            FlxG.gamepads.getActiveGamepads().filter(p -> {
+                if (!p.anyJustPressed([A]))
+                    return false;
+                InputManager.tryToAddPlayerFromInputDevice(p);
+                return true;
+            });
+        }
     }
 }

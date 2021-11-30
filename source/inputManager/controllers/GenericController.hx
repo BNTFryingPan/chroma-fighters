@@ -5,6 +5,27 @@ import flixel.input.gamepad.FlxGamepad;
 import inputManager.GenericInput.INPUT_STATE;
 import inputManager.GenericInput.InputHelper;
 
+enum GenericAxis { // easier access to various forms of analog inputs
+    LEFT_STICK_X; // -1.0 to 1.0
+    LEFT_STICK_X_INV; // above but *-1
+    LEFT_STICK_X_POS; // first but 0.0 to 1.0
+    LEFT_STICK_X_NEG; // above but for the negative values and *-1 (so -1.0 - 1.0 -> -1.0 - 0.0 -> 0.0 - 1.0)
+    LEFT_STICK_Y;
+    LEFT_STICK_Y_INV;
+    LEFT_STICK_Y_POS;
+    LEFT_STICK_Y_NEG;
+    RIGHT_STICK_X;
+    RIGHT_STICK_X_INV;
+    RIGHT_STICK_X_POS;
+    RIGHT_STICK_X_NEG;
+    RIGHT_STICK_Y;
+    RIGHT_STICK_Y_INV;
+    RIGHT_STICK_Y_POS;
+    RIGHT_STICK_Y_NEG;
+    LEFT_TRIGGER;
+    RIGHT_TRIGGER;
+}
+
 enum GenericButton { // based off a combo of an xinput controller layout (xbone) and switch controller layout
     FACE_A;
     FACE_B;
@@ -172,11 +193,14 @@ class GenericController extends GenericInput {
                 InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(A)));
             // this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
             case FACE_B:
-                this._flixelGamepad.pressed.B ? PRESSED : NOT_PRESSED;
+                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(B)));
+            // this._flixelGamepad.pressed.B ? PRESSED : NOT_PRESSED;
             case FACE_X:
-                this._flixelGamepad.pressed.X ? PRESSED : NOT_PRESSED;
+                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(X)));
+            // this._flixelGamepad.pressed.X ? PRESSED : NOT_PRESSED;
             case FACE_Y:
-                this._flixelGamepad.pressed.Y ? PRESSED : NOT_PRESSED;
+                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(Y)));
+            // this._flixelGamepad.pressed.Y ? PRESSED : NOT_PRESSED;
             case DPAD_UP:
                 this._flixelGamepad.pressed.DPAD_UP ? PRESSED : NOT_PRESSED;
             case DPAD_DOWN:
