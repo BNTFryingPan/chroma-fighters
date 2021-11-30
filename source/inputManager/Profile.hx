@@ -33,8 +33,6 @@ typedef ProfileInputOptions = {
     public var ?value:Float; // the axis value if the source type is a button
 }
 
-class ProfileInput
-
 class ProfileInput {
     public static function getFromProfileAction(action:ProfileAction):ProfileInput {
         if (Std.isOfType(action, ProfileInput))
@@ -99,6 +97,18 @@ class ProfileInput {
         }
         if (Std.isOfType(this.source, FlxKey)) {
 
+        }
+    }
+
+    public function getInputValue(?gamepad:GenericController):Float {
+        if (this.type == AXIS) {
+            if (!this.getDigitalState(gamepad)) return 0.0;
+            else if (Std.isOfType(this.source, FlxKey) || Std.isOfType(this.source, GenericButton)) return this.value;
+            else {
+                return // get axis value
+            }
+        } else {
+            
         }
     }
 }
