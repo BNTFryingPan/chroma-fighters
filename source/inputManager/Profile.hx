@@ -81,13 +81,16 @@ class ProfileInput {
     }
 
     public function getDigitalState(?gamepad:GenericController):Bool {
-        if (Std.isOfType(this.source, FlxKey)) {} else {
+        if (Std.isOfType(this.source, FlxKey)) {
+            return InputHelper.isPressed(InputHelper.getFromFlxKey(cast this.source));
+        } else {
             if (Std.isOfType(gamepad, Null)) {
-                return false
-            } else if (Std.isOfType(this.source, GenericButton))
-                return InputHelper.isPressed(gamepad.getButtonState(this.source))
-            else
-                return
+                return false;
+            } else if (Std.isOfType(this.source, GenericButton)) {
+                return InputHelper.isPressed(gamepad.getButtonState(cast this.source));
+            } else {
+                return (axisValue > this.digitalThreshold ? true : false);
+            }
         }
     }
 
@@ -96,20 +99,36 @@ class ProfileInput {
             return NOT_PRESSED; // you cant really "press" an output axis. axis input can be "pressed" though
         }
         if (Std.isOfType(this.source, FlxKey)) {
-
+            return InputHelper.getFromFlxKey(cast this.source);
         }
+        if (Std.isOfType(this.source, GenericButton)) {
+            return gamepad.getButtonState(cast this.source);
+        }
+
+        return NOT_PRESSED; // fall back
     }
 
+    /**
+    * returns the actual value of the input as a float between -1.0 or 0.0 and 1.0
+    **/
     public function getInputValue(?gamepad:GenericController):Float {
         if (this.type == AXIS) {
-            if (!this.getDigitalState(gamepad)) return 0.0;
-            else if (Std.isOfType(this.source, FlxKey) || Std.isOfType(this.source, GenericButton)) return this.value;
-            else {
-                return // get axis value
+            else if (Std.isOfType(this.source, FlxKey) || Std.isOfType(this.source, GenericButton)) {
+                return this.value;
+            }
+            else if (this.deadzone < axisValue) {
+                return axisValue;
             }
         } else {
-            
+            if (Std.isOfType(this.source, GenericAxis)) {
+                if (this.minThreshold < axisValue && axisValue < this.maxThreshold) {
+                    return 1.0
+                }
+            } else if (this.getDigitalState(gamepad)) {
+                return 1.0;
+            }
         }
+        return 0.0
     }
 }
 
