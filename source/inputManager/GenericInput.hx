@@ -80,33 +80,18 @@ class InputHelper {
             return NOT_PRESSED;
         }
 
-        if (inputs.length == 1) {
-            return inputs[0];
+        if (inputs.contains(PRESSED)) 
+            return PRESSED;
+        
+
+        if (inputs.contains(JUST_PRESSED)) {
+            if (inputs.contains(JUST_RELEASED)) return PRESSED;
+            return JUST_PRESSED;
         }
 
-        var first = inputs[0];
-        var matched:Bool = true;
+        if (inputs.contains(JUST_RELEASED)) return JUST_RELEASED;
 
-        for (input in inputs) {
-            if (input == PRESSED)
-                return PRESSED;
-
-            if (input != first)
-                matched = false;
-        }
-
-        if (matched)
-            return first;
-
-        return PRESSED;
-
-        /*if (state1 == PRESSED)
-                return PRESSED;
-
-            if (state2 == PRESSED)
-                return PRESSED;
-
-            return PRESSED; */
+        return NOT_PRESSED;
     }
 
     static public function asInt(state:INPUT_STATE):Int {

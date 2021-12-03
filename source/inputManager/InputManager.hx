@@ -8,6 +8,7 @@ import inputManager.GenericInput.Position;
 import inputManager.controllers.GenericController;
 
 enum Action {
+    NULL;
     MENU_CONFIRM;
     MENU_CANCEL;
     MENU_ACTION;
@@ -21,6 +22,10 @@ enum Action {
     TAUNT;
     SHIELD; // might only do parries, not sure yet
     WALK;
+    DIRECTION_X;
+    DIRECTION_Y;
+    MOVE_X;
+    MOVE_Y;
 }
 
 enum InputType {

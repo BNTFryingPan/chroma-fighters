@@ -153,6 +153,22 @@ class Profile {
     public var fileName:String;
 
     public static var defaultBindings:Map<Action, Array<ProfileAction>> = [
+        MOVE_X => [
+            ProfileInput.getFromProfileAction(LEFT_STICK_X),
+            new ProfileInput({source: FlxKey.LEFT_ARROW, type: AXIS, value: -1.0}),
+            new ProfileInput({source: FlxKey.RIGHT_ARROW, type: AXIS, value: 1.0}),
+        ],
+        MOVE_Y => [
+            ProfileInput.getFromProfileAction(LEFT_STICK_Y),
+            new ProfileInput({source: FlxKey.DOWN_ARROW, type: AXIS, value: -1.0}),
+            new ProfileInput({source: FlxKey.UP_ARROW, type: AXIS, value: 1.0}),
+        ],
+        MODIFIER_X => [ // used for aerials with the c-stick on controller. doesnt apply to keyboard though
+            ProfileInput.getFromProfileAction(RIGHT_STICK_X)
+        ],
+        MODIFIER_Y => [
+            ProfileInput.getFromProfileAction(RIGHT_STICK_Y)
+        ],
         MENU_CONFIRM => [
             ProfileInput.getFromProfileAction(FlxKey.Z),
             ProfileInput.getFromProfileAction(FACE_A)
@@ -265,5 +281,20 @@ class Profile {
         return NOT_PRESSED; // switch (action) {
         // case MENU_CONFIRM;
         // }
+    }
+
+    public funtion getActionValue(action:Action, ?gamepad:GenericController):Float {
+        if (action == NULL) return 0.0;
+        var actionValues = this.bindings[action].map(act -> act.getInputValue(gamepad));
+        var output = sum(actionValues);
+        if (output > 1.0) return 1.0;
+        if (output < -1.0) return -1.0;
+        return output;
+    }
+
+    public function getActionState(action:Action, ?gamepad:GenericController):INPUT_STATE {
+        if (action == NULL) return NOT_PRESSED;
+        var actionStates = this.bindings[action].map(act -> act.getInputState(gamepad));
+        return InputHelper.or(...actionStates);
     }
 }

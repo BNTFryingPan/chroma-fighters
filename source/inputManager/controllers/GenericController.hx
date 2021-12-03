@@ -179,6 +179,10 @@ class GenericController extends GenericInput {
     private function handleNewInput() {}
 
     @:access(flixel.input.gamepad.FlxGamepad)
+    public function getFromFlixelGamepadButton(button:FlxGamepadButton):INPUT_STATE {
+        return InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(button)))
+    }
+
     public function getButtonState(button:GenericButton):INPUT_STATE {
         if (this._flixelGamepad.connected != true) {
             return NOT_PRESSED;
@@ -189,104 +193,113 @@ class GenericController extends GenericInput {
             case TRUE:
                 PRESSED;
             case FACE_A:
-                // this seems pretty good. a bit harder to read, but it should work with all controllers like this?
-                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(A)));
-            // this._flixelGamepad.pressed.A ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(A);
             case FACE_B:
-                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(B)));
-            // this._flixelGamepad.pressed.B ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(B);
             case FACE_X:
-                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(X)));
-            // this._flixelGamepad.pressed.X ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(X);
             case FACE_Y:
-                InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(Y)));
-            // this._flixelGamepad.pressed.Y ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(Y);
             case DPAD_UP:
-                this._flixelGamepad.pressed.DPAD_UP ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(DPAD_UP);
             case DPAD_DOWN:
-                this._flixelGamepad.pressed.DPAD_DOWN ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(DPAD_DOWN);
             case DPAD_LEFT:
-                this._flixelGamepad.pressed.DPAD_LEFT ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(DPAD_LEFT);
             case DPAD_RIGHT:
-                this._flixelGamepad.pressed.DPAD_RIGHT ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(DPAD_RIGHT);
             case LEFT_TRIGGER:
-                this._flixelGamepad.pressed.LEFT_TRIGGER ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(LEFT_TRIGGER);
             case RIGHT_TRIGGER:
-                this._flixelGamepad.pressed.RIGHT_TRIGGER ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(RIGHT_TRIGGER);
             case LEFT_BUMPER:
-                this._flixelGamepad.pressed.LEFT_SHOULDER ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(LEFT_SHOULDER);
             case RIGHT_BUMPER:
-                this._flixelGamepad.pressed.RIGHT_SHOULDER ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(RIGHT_SHOULDER);
             case LEFT_STICK_CLICK:
-                this._flixelGamepad.pressed.LEFT_STICK_CLICK ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(LEFT_STICK_CLICK);
             case RIGHT_STICK_CLICK:
-                this._flixelGamepad.pressed.RIGHT_STICK_CLICK ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(RIGHT_STICK_CLICK);
             case PLUS:
-                this._flixelGamepad.pressed.START ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(START);
             case MINUS:
-                this._flixelGamepad.pressed.BACK ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(BACK);
             case HOME:
-                this._flixelGamepad.pressed.GUIDE ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(GUIDE);
             case CAPTURE:
-                this._flixelGamepad.pressed.EXTRA_0 ? PRESSED : NOT_PRESSED;
+                this.getFromFlixelGamepadButton(EXTRA_0);
             default:
                 NOT_PRESSED;
         }
     }
 
     override public function getConfirm():INPUT_STATE {
+        return this.profile.getActionState(MENU_CONFIRM);
         return getButtonState(FACE_A);
     }
 
     override public function getCancel():INPUT_STATE {
+        return this.profile.getActionState(MENU_CANCEL);
         return getButtonState(FACE_B);
     }
 
     override public function getMenuAction():INPUT_STATE {
+        return this.profile.getActionState(MENU_ACTION);
         return getButtonState(FACE_X);
     }
 
     override public function getMenuLeft():INPUT_STATE {
+        return this.profile.getActionState(MENU_LEFT);
         return InputHelper.or(getButtonState(LEFT_TRIGGER), getButtonState(LEFT_BUMPER));
     }
 
     override public function getMenuRight():INPUT_STATE {
+        return this.profile.getActionState(MENU_RIGHT);
         return InputHelper.or(getButtonState(RIGHT_TRIGGER), getButtonState(RIGHT_BUMPER));
     }
 
     override public function getAttack():INPUT_STATE {
+        return this.profile.getActionState(ATTACK);
         return getButtonState(FACE_A);
     }
 
     override public function getJump():INPUT_STATE {
+        return this.profile.getActionState(JUMP);
         return InputHelper.or(getButtonState(FACE_X), getButtonState(FACE_Y));
     }
 
     override public function getSpecial():INPUT_STATE {
+        return this.profile.getActionState(SPECIAL);
         return getButtonState(FACE_B);
     }
 
     override public function getStrong():INPUT_STATE {
+        return this.profile.getActionState(STRONG);
         return getButtonState(NULL);
     }
 
-    override public function getDodge():INPUT_STATE {
+    override public function getShield():INPUT_STATE {
+        return this.profile.getActionState(SHIELD);
         return getButtonState(LEFT_TRIGGER);
     }
 
     override public function getWalk():INPUT_STATE {
+        return this.profile.getActionState(WALK);
         return NOT_PRESSED; // unused on controller
     }
 
     override public function getTaunt():INPUT_STATE {
+        return this.profile.getActionState(TAUNT);
         return InputHelper.or(getButtonState(DPAD_UP), getButtonState(DPAD_DOWN), getButtonState(DPAD_LEFT), getButtonState(DPAD_RIGHT));
     }
 
     override public function getQuit():INPUT_STATE {
+        return this.profile.getActionState(NULL);
         return getButtonState(MINUS);
     }
 
     override public function getPause():INPUT_STATE {
+        return this.profile.getActionState(NULL);
         return getButtonState(PLUS);
     }
 
