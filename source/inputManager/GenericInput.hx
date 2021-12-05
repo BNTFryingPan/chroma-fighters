@@ -80,16 +80,19 @@ class InputHelper {
             return NOT_PRESSED;
         }
 
-        if (inputs.contains(PRESSED)) 
-            return PRESSED;
-        
+        var asArray = inputs.toArray();
 
-        if (inputs.contains(JUST_PRESSED)) {
-            if (inputs.contains(JUST_RELEASED)) return PRESSED;
+        if (asArray.contains(PRESSED))
+            return PRESSED;
+
+        if (asArray.contains(JUST_PRESSED)) {
+            if (asArray.contains(JUST_RELEASED))
+                return PRESSED;
             return JUST_PRESSED;
         }
 
-        if (inputs.contains(JUST_RELEASED)) return JUST_RELEASED;
+        if (asArray.contains(JUST_RELEASED))
+            return JUST_RELEASED;
 
         return NOT_PRESSED;
     }
@@ -198,6 +201,12 @@ class GenericInput extends FlxBasic {
         // this.inputEnabled = true;
 
         this.slot = slot;
+
+        if (profile == null) {
+            this.profile = Profile.getProfile("", true);
+        } else {
+            this.profile = Profile.getProfile(profile);
+        }
     }
 
     public function setCursorAngle(angle:CursorRotation) {
@@ -318,6 +327,10 @@ class GenericInput extends FlxBasic {
     }
 
     public function getStrong():INPUT_STATE {
+        return NOT_PRESSED;
+    }
+
+    public function getShield():INPUT_STATE {
         return NOT_PRESSED;
     }
 

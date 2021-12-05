@@ -26,6 +26,9 @@ enum Action {
     DIRECTION_Y;
     MOVE_X;
     MOVE_Y;
+
+    MODIFIER_X;
+    MODIFIER_Y;
 }
 
 enum InputType {

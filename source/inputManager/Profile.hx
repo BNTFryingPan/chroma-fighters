@@ -34,7 +34,7 @@ typedef ProfileInputOptions = {
 }
 
 class ProfileInput {
-    public static function getFromProfileAction(action:ProfileAction):ProfileInput {
+    public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
         if (Std.isOfType(action, ProfileInput))
             return cast action;
 
@@ -80,16 +80,26 @@ class ProfileInput {
         }
     }
 
+    private function isDigitalSource():Bool {
+        return (Std.isOfType(this.source, Int) || Std.isOfType(this.source, GenericButton));
+    }
+
+    private function getAxisValue(?gamepad:GenericController):Float {
+        if (this.isDigitalSource())
+            return 0.0;
+        return 0.0;
+    }
+
     public function getDigitalState(?gamepad:GenericController):Bool {
-        if (Std.isOfType(this.source, FlxKey)) {
+        if (Std.isOfType(this.source, Int)) {
             return InputHelper.isPressed(InputHelper.getFromFlxKey(cast this.source));
         } else {
-            if (Std.isOfType(gamepad, Null)) {
+            if (gamepad == null) {
                 return false;
             } else if (Std.isOfType(this.source, GenericButton)) {
                 return InputHelper.isPressed(gamepad.getButtonState(cast this.source));
             } else {
-                return (axisValue > this.digitalThreshold ? true : false);
+                return (this.getAxisValue() > this.digitalThreshold ? true : false);
             }
         }
     }
@@ -98,7 +108,7 @@ class ProfileInput {
         if (this.type == AXIS) {
             return NOT_PRESSED; // you cant really "press" an output axis. axis input can be "pressed" though
         }
-        if (Std.isOfType(this.source, FlxKey)) {
+        if (Std.isOfType(this.source, Int)) {
             return InputHelper.getFromFlxKey(cast this.source);
         }
         if (Std.isOfType(this.source, GenericButton)) {
@@ -109,27 +119,30 @@ class ProfileInput {
     }
 
     /**
-    * returns the actual value of the input as a float between -1.0 or 0.0 and 1.0
+     * returns the actual value of the input as a float between -1.0 or 0.0 and 1.0
     **/
     public function getInputValue(?gamepad:GenericController):Float {
         if (this.type == AXIS) {
-            else if (Std.isOfType(this.source, FlxKey) || Std.isOfType(this.source, GenericButton)) {
-                return this.value;
-            }
-            else if (this.deadzone < axisValue) {
-                return axisValue;
-            }
-        } else {
-            if (Std.isOfType(this.source, GenericAxis)) {
-                if (this.minThreshold < axisValue && axisValue < this.maxThreshold) {
-                    return 1.0
-                }
-            } else if (this.getDigitalState(gamepad)) {
-                return 1.0;
-            }
+            if (this.isDigitalSource())
+                return this.getDigitalState(gamepad) ? this.value : 0.0;
+            return this.getAxisValue() > this.deadzone ? this.getAxisValue() : 0.0;
+        } else if (this.getDigitalState(gamepad)) {
+            return 1.0;
         }
-        return 0.0
+        return 0.0;
     }
+
+    // else {
+    //     if (Std.isOfType(this.source, GenericAxis)) {
+    //         if (this.minThreshold < axisValue && axisValue < this.maxThreshold) {
+    //             return 1.0
+    //         }
+    //     } else if (this.getDigitalState(gamepad)) {
+    //         return 1.0;
+    //     }
+    // }
+    //     return 0.0
+    // }
 }
 
 class Profile {
@@ -152,23 +165,22 @@ class Profile {
     public var name:String;
     public var fileName:String;
 
-    public static var defaultBindings:Map<Action, Array<ProfileAction>> = [
+    public static var defaultBindings:Map<Action, Array<ProfileInput>> = [
         MOVE_X => [
             ProfileInput.getFromProfileAction(LEFT_STICK_X),
-            new ProfileInput({source: FlxKey.LEFT_ARROW, type: AXIS, value: -1.0}),
-            new ProfileInput({source: FlxKey.RIGHT_ARROW, type: AXIS, value: 1.0}),
+            new ProfileInput({source: FlxKey.LEFT, type: AXIS, value: -1.0}),
+            new ProfileInput({source: FlxKey.RIGHT, type: AXIS, value: 1.0})
         ],
         MOVE_Y => [
             ProfileInput.getFromProfileAction(LEFT_STICK_Y),
-            new ProfileInput({source: FlxKey.DOWN_ARROW, type: AXIS, value: -1.0}),
-            new ProfileInput({source: FlxKey.UP_ARROW, type: AXIS, value: 1.0}),
+            new ProfileInput({source: FlxKey.DOWN, type: AXIS, value: -1.0}),
+            new ProfileInput({source: FlxKey.UP, type: AXIS, value: 1.0})
         ],
-        MODIFIER_X => [ // used for aerials with the c-stick on controller. doesnt apply to keyboard though
+        MODIFIER_X => [
+            // used for aerials with the c-stick on controller. doesnt apply to keyboard though
             ProfileInput.getFromProfileAction(RIGHT_STICK_X)
         ],
-        MODIFIER_Y => [
-            ProfileInput.getFromProfileAction(RIGHT_STICK_Y)
-        ],
+        MODIFIER_Y => [ProfileInput.getFromProfileAction(RIGHT_STICK_Y)],
         MENU_CONFIRM => [
             ProfileInput.getFromProfileAction(FlxKey.Z),
             ProfileInput.getFromProfileAction(FACE_A)
@@ -226,7 +238,7 @@ class Profile {
         WALK => [ProfileInput.getFromProfileAction(FlxKey.A)]
     ];
 
-    public var bindings:Map<Action, Array<ProfileAction>> = Profile.defaultBindings;
+    public var bindings:Map<Action, Array<ProfileInput>> = Profile.defaultBindings;
 
     public function new() {}
 
@@ -252,27 +264,27 @@ class Profile {
     }
 
     @:access(flixel.input.FlxKeyManager)
-    public function checkActionArray(list:Array<ProfileAction>):INPUT_STATE {
+    public function checkActionArray(list:Array<ProfileInput>):INPUT_STATE {
         if (this.getOwningPlayerFromInputManager() == null)
             return NOT_PRESSED;
 
         var pressed:Array<INPUT_STATE>;
 
-        if (Std.isOfType(this.input, KeyboardHandler))
+        if (Std.isOfType(this.input, KeyboardHandler)) {
             pressed = list.map(action -> {
                 if (Std.isOfType(action, GenericButton))
                     return NOT_PRESSED;
 
                 return InputHelper.getFromFlxInput(FlxG.keys.getKey(cast action));
             });
-        else if (Std.isOfType(this.input, GenericController))
+        } else if (Std.isOfType(this.input, GenericController)) {
             pressed = list.map(action -> {
                 if (Std.isOfType(action, Int))
                     return NOT_PRESSED;
 
                 return (cast this.input).getButtonState(cast action);
             });
-        else
+        } else
             return NOT_PRESSED;
         return InputHelper.or(...pressed);
     }
@@ -283,17 +295,27 @@ class Profile {
         // }
     }
 
-    public funtion getActionValue(action:Action, ?gamepad:GenericController):Float {
-        if (action == NULL) return 0.0;
+    public function getActionValue(action:Action, ?gamepad:GenericController):Float {
+        if (action == NULL)
+            return 0.0;
         var actionValues = this.bindings[action].map(act -> act.getInputValue(gamepad));
-        var output = sum(actionValues);
-        if (output > 1.0) return 1.0;
-        if (output < -1.0) return -1.0;
+        var output = 0.0;
+
+        actionValues.filter(v -> {
+            output += v;
+            false;
+        });
+
+        if (output > 1.0)
+            return 1.0;
+        if (output < -1.0)
+            return -1.0;
         return output;
     }
 
     public function getActionState(action:Action, ?gamepad:GenericController):INPUT_STATE {
-        if (action == NULL) return NOT_PRESSED;
+        if (action == NULL)
+            return NOT_PRESSED;
         var actionStates = this.bindings[action].map(act -> act.getInputState(gamepad));
         return InputHelper.or(...actionStates);
     }

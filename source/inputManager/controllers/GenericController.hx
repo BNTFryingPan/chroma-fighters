@@ -2,6 +2,8 @@ package inputManager.controllers;
 
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepadButton;
+import flixel.input.gamepad.FlxGamepadInputID;
 import inputManager.GenericInput.INPUT_STATE;
 import inputManager.GenericInput.InputHelper;
 
@@ -179,8 +181,16 @@ class GenericController extends GenericInput {
     private function handleNewInput() {}
 
     @:access(flixel.input.gamepad.FlxGamepad)
-    public function getFromFlixelGamepadButton(button:FlxGamepadButton):INPUT_STATE {
-        return InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(button)))
+    public function getFromFlixelGamepadButton(button:FlxGamepadInputID):INPUT_STATE {
+        return InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(button)));
+    }
+
+    public function getAxisValue(axis:GenericAxis):Float {
+        return switch (axis) {
+            case LEFT_STICK_X:
+                this._flixelGamepad.analog.value.LEFT_STICK_X;
+            default: 0.0;
+        }
     }
 
     public function getButtonState(button:GenericButton):INPUT_STATE {
@@ -234,73 +244,60 @@ class GenericController extends GenericInput {
     }
 
     override public function getConfirm():INPUT_STATE {
-        return this.profile.getActionState(MENU_CONFIRM);
-        return getButtonState(FACE_A);
+        return this.profile.getActionState(MENU_CONFIRM, this);
     }
 
     override public function getCancel():INPUT_STATE {
-        return this.profile.getActionState(MENU_CANCEL);
-        return getButtonState(FACE_B);
+        return this.profile.getActionState(MENU_CANCEL, this);
     }
 
     override public function getMenuAction():INPUT_STATE {
-        return this.profile.getActionState(MENU_ACTION);
-        return getButtonState(FACE_X);
+        return this.profile.getActionState(MENU_ACTION, this);
     }
 
     override public function getMenuLeft():INPUT_STATE {
-        return this.profile.getActionState(MENU_LEFT);
-        return InputHelper.or(getButtonState(LEFT_TRIGGER), getButtonState(LEFT_BUMPER));
+        return this.profile.getActionState(MENU_LEFT, this);
     }
 
     override public function getMenuRight():INPUT_STATE {
-        return this.profile.getActionState(MENU_RIGHT);
-        return InputHelper.or(getButtonState(RIGHT_TRIGGER), getButtonState(RIGHT_BUMPER));
+        return this.profile.getActionState(MENU_RIGHT, this);
     }
 
     override public function getAttack():INPUT_STATE {
-        return this.profile.getActionState(ATTACK);
-        return getButtonState(FACE_A);
+        return this.profile.getActionState(ATTACK, this);
     }
 
     override public function getJump():INPUT_STATE {
-        return this.profile.getActionState(JUMP);
-        return InputHelper.or(getButtonState(FACE_X), getButtonState(FACE_Y));
+        return this.profile.getActionState(JUMP, this);
     }
 
     override public function getSpecial():INPUT_STATE {
-        return this.profile.getActionState(SPECIAL);
-        return getButtonState(FACE_B);
+        return this.profile.getActionState(SPECIAL, this);
     }
 
     override public function getStrong():INPUT_STATE {
-        return this.profile.getActionState(STRONG);
-        return getButtonState(NULL);
+        return this.profile.getActionState(STRONG, this);
     }
 
     override public function getShield():INPUT_STATE {
-        return this.profile.getActionState(SHIELD);
-        return getButtonState(LEFT_TRIGGER);
+        return this.profile.getActionState(SHIELD, this);
     }
 
     override public function getWalk():INPUT_STATE {
-        return this.profile.getActionState(WALK);
-        return NOT_PRESSED; // unused on controller
+        return this.profile.getActionState(WALK, this);
+        // return NOT_PRESSED; // unused on controller
     }
 
     override public function getTaunt():INPUT_STATE {
-        return this.profile.getActionState(TAUNT);
-        return InputHelper.or(getButtonState(DPAD_UP), getButtonState(DPAD_DOWN), getButtonState(DPAD_LEFT), getButtonState(DPAD_RIGHT));
+        return this.profile.getActionState(TAUNT, this);
     }
 
     override public function getQuit():INPUT_STATE {
-        return this.profile.getActionState(NULL);
-        return getButtonState(MINUS);
+        return this.profile.getActionState(NULL, this);
     }
 
     override public function getPause():INPUT_STATE {
-        return this.profile.getActionState(NULL);
-        return getButtonState(PLUS);
+        return this.profile.getActionState(NULL, this);
     }
 
     override public function getUp():Float {
