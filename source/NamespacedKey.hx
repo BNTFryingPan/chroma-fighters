@@ -43,14 +43,13 @@ class NamespacedKey {
         var splitKey = str.split(":");
         if (splitKey.length == 1)
             return new NamespacedKey(NamespacedKey.DEFAULT_NAMESPACE, str);
-        else {
-            var _namespace = splitKey[0];
-            var _key = splitKey[1];
-            if (splitKey.length > 2) {
-                splitKey.shift();
-                _key = splitKey.join(":");
-            }
-            return new NamespacedKey(_namespace, _key);
+        
+        var _namespace = splitKey[0];
+        var _key = splitKey[1];
+        if (splitKey.length > 2) {
+            splitKey.shift();
+            _key = splitKey.join(":");
         }
+        return new NamespacedKey(_namespace, _key);
     }
 }

@@ -44,7 +44,7 @@ enum InputDevice {
 }
 
 class InputManager {
-    private static var players:Map<PlayerSlotIdentifier, GenericInput> = [
+    /*private static var players:Map<PlayerSlotIdentifier, GenericInput> = [
         P1 => new GenericInput(P1),
         P2 => new GenericInput(P2),
         P3 => new GenericInput(P3),
@@ -53,47 +53,16 @@ class InputManager {
         P6 => new GenericInput(P6),
         P7 => new GenericInput(P7),
         P8 => new GenericInput(P8),
-    ];
+    ];*/
 
     public static function getPlayerArray():Array<GenericInput> {
-        var array = [];
-        for (player in InputManager.players) {
-            array.push(player);
-        }
-        return array;
+        return PlayerSlot.getPlayerInputArray();
     }
 
     public static var enabled = false;
 
     public static function getPlayer(slot:PlayerSlotIdentifier) {
-        return InputManager.players[slot];
-    }
-
-    public static function getPlayerSlotByProfileName(name:String):Null<PlayerSlotIdentifier> {
-        if (players[P1].profile.name == name)
-            return P1;
-        if (players[P2].profile.name == name)
-            return P2;
-        if (players[P3].profile.name == name)
-            return P3;
-        if (players[P4].profile.name == name)
-            return P4;
-        if (players[P5].profile.name == name)
-            return P5;
-        if (players[P6].profile.name == name)
-            return P6;
-        if (players[P7].profile.name == name)
-            return P7;
-        if (players[P8].profile.name == name)
-            return P8;
-        return null;
-    }
-
-    public static function getPlayerByProfileName(name:String):Null<GenericInput> {
-        var slot = getPlayerSlotByProfileName(name);
-        if (slot == null)
-            return null;
-        return players[slot];
+        return PlayerSlot.getPlayer(slot).input;
     }
 
     public static function setInputType(slot:PlayerSlotIdentifier, type:InputType, ?profile:String) {
@@ -115,26 +84,6 @@ class InputManager {
         }
     }
 
-    public static function getFirstOpenPlayerSlot():Null<PlayerSlotIdentifier> {
-        if (!players[P1].inputEnabled)
-            return P1;
-        if (!players[P2].inputEnabled)
-            return P2;
-        if (!players[P3].inputEnabled)
-            return P3;
-        if (!players[P4].inputEnabled)
-            return P4;
-        if (!players[P5].inputEnabled)
-            return P5;
-        if (!players[P6].inputEnabled)
-            return P6;
-        if (!players[P7].inputEnabled)
-            return P7;
-        if (!players[P8].inputEnabled)
-            return P8;
-        return null;
-    }
-
     public static function getUsedGamepads():Array<FlxGamepad> {
         return InputManager.getPlayerArray().filter(input -> {
             return Std.isOfType(input, GenericController);
@@ -154,34 +103,19 @@ class InputManager {
                 if (matchingInputs.length > 0) {
                     return matchingInputs[0].slot;
                 }
-            } else
-                return null;
-        } else {
-            var gamepad:FlxGamepad = cast input;
-            for (slot => input in InputManager.players) {
-                if (Std.isOfType(input, GenericController)) {
-                    var c:GenericController = cast input;
-                    if (c._flixelGamepad == gamepad) {
-                        return cast slot;
-                    }
+            }
+            return null;
+        }
+        var gamepad:FlxGamepad = cast input;
+        for (slot => input in InputManager.players) {
+            if (Std.isOfType(input, GenericController)) {
+                var c:GenericController = cast input;
+                if (c._flixelGamepad == gamepad) {
+                    return cast slot;
                 }
             }
         }
 
-        return null;
-    }
-
-    public static function tryToAddPlayerFromInputDevice(inputDevice:FlxGamepad):Null<GenericInput> {
-        if (InputManager.getUsedGamepads().contains(inputDevice))
-            return null;
-
-        var slot = InputManager.getFirstOpenPlayerSlot();
-
-        if (slot != null) {
-            InputManager.setInputType(slot, ControllerInput);
-            InputManager.setInputDevice(slot, inputDevice);
-            return InputManager.getPlayer(slot);
-        }
         return null;
     }
 

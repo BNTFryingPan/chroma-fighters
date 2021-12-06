@@ -52,9 +52,8 @@ class BaseState extends FlxState {
             return gp.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER]);
         } else if (gp.pressed.LEFT_TRIGGER && gp.pressed.RIGHT_TRIGGER) {
             return gp.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER]);
-        } else {
-            return false;
         }
+        return false;
     }
 
     override public function update(elapsed:Float) {
@@ -67,19 +66,18 @@ class BaseState extends FlxState {
         if (!InputManager.enabled)
             return;
 
-        var emptySlot = InputManager.getFirstOpenPlayerSlot();
+        var emptySlot = PlayerSlot.getFirstOpenPlayerSlot();
 
         if (emptySlot != null) {
             if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S])) {
-                if (InputManager.getPlayerSlotByInput(KeyboardInput) == null) {
-                    InputManager.setInputType(emptySlot, KeyboardInput);
+                if (PlayerSlot.getPlayerSlotByInput(KeyboardInput) == null) {
+                    PlayerSlot.setInputType(emptySlot, KeyboardInput);
                 } else {
-                    var keyboardSlot = InputManager.getPlayerSlotByInput(KeyboardInput);
-                    var keyboardInput = InputManager.getPlayer(keyboardSlot);
-                    if (Std.isOfType(keyboardInput, MouseHandler)) {
-                        InputManager.setInputType(keyboardSlot, KeyboardInput);
+                    var keyboardPlayer = PlayerSlor.getPlayerByInput(KeyboardInput);
+                    if (Std.isOfType(keyboardPlayer, MouseHandler)) {
+                        keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
                     } else {
-                        InputManager.setInputType(keyboardSlot, KeyboardAndMouseInput);
+                        keyboardPlayer.setNewInput(KeyboardAndMouseInput, Keyboard, keyboardPlayer.input.profile.name);
                     }
                 }
                 return;
