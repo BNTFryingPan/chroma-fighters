@@ -1,5 +1,7 @@
 package states.sub;
 
 class LocalMenu extends BaseState {
-    override public function create() {}
+    override public function create() {
+        super.create();
+    }
 }

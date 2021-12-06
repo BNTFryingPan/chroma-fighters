@@ -68,6 +68,7 @@ class ProfileInput {
     public var value:Null<Float> = 1;
 
     public function new(options:ProfileInputOptions) {
+        trace("new profile input");
         this.rawOptions = options;
         this.type = options.type;
         this.source = options.source;
@@ -148,6 +149,7 @@ class ProfileInput {
 class Profile {
     public static function getProfile(name:String, useDefaultControls:Bool = false):Profile {
         // TODO : load and create the players profile
+        Main.log("getting profile");
         var profile = new Profile();
         if (useDefaultControls) {
             profile.fileName = "@default";
@@ -240,7 +242,9 @@ class Profile {
 
     public var bindings:Map<Action, Array<ProfileInput>> = Profile.defaultBindings;
 
-    public function new() {}
+    public function new() {
+        trace("new profile");
+    }
 
     public function loadBindings() {
         if (this.fileName == "@default") {

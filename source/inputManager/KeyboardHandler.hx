@@ -4,6 +4,7 @@ import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
 import inputManager.GenericInput.INPUT_STATE;
+import inputManager.GenericInput.StickValue;
 
 /**
     input handler for keyboard
@@ -111,7 +112,7 @@ class KeyboardHandler extends GenericInput {
         return FlxG.keys.pressed.RIGHT ? 1 : 0;
     }
 
-    override public function getStick():StickVector {
+    override public function getStick():StickValue {
         // TODO : make this check the control scheme first!
         var x:Float = 0;
         var y:Float = 0;
@@ -121,18 +122,18 @@ class KeyboardHandler extends GenericInput {
         x -= this.getLeft();
         x += this.getRight();
 
-        return new StickVector(x, y);
+        return {x: x, y: y};
     }
 
-    override public function getCursorStick():StickVector {
-        return this.getStick().normalize();
+    override public function getCursorStick():StickValue {
+        return this.getStick(); // todo: normalize
     }
 
-    override public function getDirection():StickVector {
-        return new StickVector(0, 0);
+    override public function getDirection():StickValue {
+        return {x: 0, y: 0};
     }
 
-    override public function getRawDirection():StickVector {
-        return new StickVector(0, 0);
+    override public function getRawDirection():StickValue {
+        return {x: 0, y: 0};
     }
 }

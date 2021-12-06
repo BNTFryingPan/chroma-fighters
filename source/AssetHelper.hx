@@ -11,6 +11,9 @@ class AssetHelper {
     public static final saveDirectory:String = "./save/";
     static inline final saveNamespace:String = "chromasave";
 
+    public static var scriptCache:Map<NamespacedKey, Expr> = new Map<NamespacedKey, Expr>();
+    public static var imageCache:Map<NamespacedKey, BitmapData> = new Map<NamespacedKey, BitmapData>();
+
     private function new() {}
 
     /*private static function getNullBitmap():BitmapData {
@@ -21,12 +24,19 @@ class AssetHelper {
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
+        Main.log(AssetHelper.imageCache.toString());
+        if (AssetHelper.imageCache.exists(key)) {
+            Main.log("returning from cache");
+            return AssetHelper.imageCache.get(key);
+        }
         Main.log("getImageAsset");
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
         Main.log('got directory: ' + assetDir);
         // Main.log(assetDir);
         if (assetDir != null) {
-            return BitmapData.fromFile(assetDir);
+            var loaded:BitmapData = BitmapData.fromFile(assetDir);
+            AssetHelper.imageCache.set(key, loaded);
+            return loaded;
         }
         return null;
     }
@@ -46,8 +56,6 @@ class AssetHelper {
         }
         return AssetHelper.getNullText();
     }
-
-    public static var scriptCache:Map<NamespacedKey, Expr> = new Map<NamespacedKey, Expr>();
 
     public static function getScriptAsset(key:NamespacedKey):Expr {
         if (AssetHelper.scriptCache.exists(key)) {

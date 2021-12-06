@@ -6,6 +6,7 @@ import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import inputManager.GenericInput.INPUT_STATE;
 import inputManager.GenericInput.InputHelper;
+import inputManager.GenericInput.StickValue;
 
 enum GenericAxis { // easier access to various forms of analog inputs
     LEFT_STICK_X; // -1.0 to 1.0
@@ -316,7 +317,7 @@ class GenericController extends GenericInput {
         return Math.max(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK) * 2, 0);
     }
 
-    override public function getStick():StickVector {
+    override public function getStick():StickValue {
         // TODO : make this check the control scheme first!
         var x:Float = 0;
         var y:Float = 0;
@@ -326,10 +327,10 @@ class GenericController extends GenericInput {
         y += this.getDown();
         y -= this.getUp();
 
-        return new StickVector(x, y);
+        return {x: x, y: y};
     }
 
-    override public function getCursorStick():StickVector {
+    override public function getCursorStick():StickValue {
         var stick = this.getStick();
 
         stick.x -= InputHelper.asInt(getButtonState(DPAD_LEFT));
@@ -337,17 +338,20 @@ class GenericController extends GenericInput {
         stick.y -= InputHelper.asInt(getButtonState(DPAD_UP));
         stick.y += InputHelper.asInt(getButtonState(DPAD_DOWN));
 
-        if (stick.length > 1)
-            stick.normalize();
+        if (Math.sqrt((stick.x * stick.x) + (stick.y * stick.y)) > 1) {
+            var len = Math.sqrt((stick.x * stick.x) + (stick.y * stick.y));
+            stick.x /= len;
+            stick.y /= len;
+        }
 
         return stick;
     }
 
-    override public function getDirection():StickVector {
-        return new StickVector(0, 0);
+    override public function getDirection():StickValue {
+        return {x: 0, y: 0};
     }
 
-    override public function getRawDirection():StickVector {
-        return new StickVector(0, 0);
+    override public function getRawDirection():StickValue {
+        return {x: 0, y: 0};
     }
 }

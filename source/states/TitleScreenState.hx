@@ -136,7 +136,7 @@ class TitleScreenState extends BaseState {
             this.main_exitButton.y = 250;
             this.pressStartText.y = 500;
             this.movedOn();
-        } else if (TitleScreenState.pastStartScreen && !this.hasPressedButtons) {
+        } else if (TitleScreenState.pastStartScreen) {
             if (InputManager.getPlayerArray().filter(player -> InputHelper.isPressed(player.getCancel())).length > 0) {
                 this.pressStartText.y = 400;
                 this.main_localButton.y = -50;

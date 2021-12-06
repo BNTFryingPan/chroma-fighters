@@ -21,6 +21,11 @@ enum INPUT_STATE {
     NOT_PRESSED;
 }
 
+typedef StickValue = {
+    public var x:Float;
+    public var y:Float;
+}
+
 class InputHelper {
     static public function isPressed(state:INPUT_STATE) {
         if (state == JUST_PRESSED) {
@@ -227,7 +232,7 @@ class GenericInput extends FlxBasic {
         this.spriteOffset = GenericInput.getOffset(angle);
     }
 
-    public function getCursorStick():StickVector {
+    public function getCursorStick():StickValue {
         return this.getStick();
     }
 
@@ -370,15 +375,27 @@ class GenericInput extends FlxBasic {
         return 0;
     }
 
-    public function getStick():StickVector {
-        return new StickVector(0, 0);
+    /*
+        public function getStick():StickVector {
+            return new StickVector(0, 0);
+        }
+
+        public function getDirection():StickVector {
+            return new StickVector(0, 0);
+        }
+
+        public function getRawDirection():StickVector {
+            return new StickVector(0, 0);
+    }*/
+    public function getStick():StickValue {
+        return {x: 0, y: 0};
     }
 
-    public function getDirection():StickVector {
-        return new StickVector(0, 0);
+    public function getDirection():StickValue {
+        return {x: 0, y: 0};
     }
 
-    public function getRawDirection():StickVector {
-        return new StickVector(0, 0);
+    public function getRawDirection():StickValue {
+        return {x: 0, y: 0};
     }
 }

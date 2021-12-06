@@ -26,5 +26,6 @@ class PlayerSlot extends FlxBasic {
 
     public function new() {
         super();
+        trace("new player slot");
     }
 }

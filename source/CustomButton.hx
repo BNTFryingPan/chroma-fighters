@@ -42,6 +42,7 @@ class CustomButton extends FlxButton {
 
     public function new(x:Float = 0, y:Float = 0, ?text:String, ?onClick:PlayerSlotIdentifier->Void) {
         super(x, y, text);
+        trace("new button");
         this.cursorOnUp = onClick;
     }
 
