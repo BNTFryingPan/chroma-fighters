@@ -47,6 +47,15 @@ class BaseState extends FlxState {
         InputManager.draw();
     }
 
+    private static function isPressingConnectCombo(gp:FlxGamepad):Bool {
+        if (gp.pressed.LEFT_SHOULDER && gp.pressed.RIGHT_SHOULDER) {
+            return gp.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER]);
+        } else if (gp.pressed.LEFT_TRIGGER && gp.pressed.RIGHT_TRIGGER) {
+            return gp.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER]);
+        }
+        return false;
+    }
+
     override public function update(elapsed:Float) {
         super.update(elapsed);
         InputManager.update(elapsed);
@@ -57,24 +66,26 @@ class BaseState extends FlxState {
         if (!InputManager.enabled)
             return;
 
-        var emptySlot = InputManager.getFirstOpenPlayerSlot();
+        var emptySlot = PlayerSlot.getFirstOpenPlayerSlot();
 
         if (emptySlot != null) {
-            if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S]))
-                if (InputManager.getPlayerSlotByInput(KeyboardInput) == null)
-                    InputManager.setInputType(emptySlot, KeyboardInput);
-                else {
-                    var keyboardSlot = InputManager.getPlayerSlotByInput(KeyboardInput);
-                    var keyboardInput = InputManager.getPlayer(keyboardSlot);
-                    if (Std.isOfType(keyboardInput, MouseHandler))
-                        InputManager.setInputType(keyboardSlot, KeyboardInput);
-                    else
-                        InputManager.setInputType(keyboardSlot, KeyboardAndMouseInput);
+            if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S])) {
+                if (PlayerSlot.getPlayerSlotByInput(KeyboardInput) == null) {
+                    PlayerSlot.setInputType(emptySlot, KeyboardInput);
+                } else {
+                    var keyboardPlayer = PlayerSlor.getPlayerByInput(KeyboardInput);
+                    if (Std.isOfType(keyboardPlayer, MouseHandler)) {
+                        keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
+                    } else {
+                        keyboardPlayer.setNewInput(KeyboardAndMouseInput, Keyboard, keyboardPlayer.input.profile.name);
+                    }
                 }
+                return;
+            }
             FlxG.gamepads.getActiveGamepads().filter(p -> {
-                if (!p.anyJustPressed([A]))
-                    return false;
-                InputManager.tryToAddPlayerFromInputDevice(p);
+                if (BaseState.isPressingConnectCombo(p)) {
+                    InputManager.tryToAddPlayerFromInputDevice(p);
+                }
                 return true;
             });
         }

@@ -77,7 +77,7 @@ class ProfileInput {
             if (Std.isOfType(this.source, GenericAxis)) {
                 this.minThreshold = options.minThreshold;
                 this.maxThreshold = options.maxThreshold;
-            } else {}
+            }
         }
     }
 
@@ -94,15 +94,12 @@ class ProfileInput {
     public function getDigitalState(?gamepad:GenericController):Bool {
         if (Std.isOfType(this.source, Int)) {
             return InputHelper.isPressed(InputHelper.getFromFlxKey(cast this.source));
-        } else {
-            if (gamepad == null) {
-                return false;
-            } else if (Std.isOfType(this.source, GenericButton)) {
-                return InputHelper.isPressed(gamepad.getButtonState(cast this.source));
-            } else {
-                return (this.getAxisValue() > this.digitalThreshold ? true : false);
-            }
+        } else if (gamepad == null) {
+            return false;
+        } else if (Std.isOfType(this.source, GenericButton)) {
+            return InputHelper.isPressed(gamepad.getButtonState(cast this.source));
         }
+        return (this.getAxisValue() > this.digitalThreshold ? true : false);
     }
 
     public function getInputState(?gamepad:GenericController):INPUT_STATE {

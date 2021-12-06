@@ -143,6 +143,8 @@ class TitleScreenState extends BaseState {
                 this.main_onlineButton.y = -100;
                 this.main_settingsButton.y = -150;
                 this.main_exitButton.y = -200;
+                this.pastStartScreen = false;
+                this.hasPressedButtons = false;
             }
         }
     }
