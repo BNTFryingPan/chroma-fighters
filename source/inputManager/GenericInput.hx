@@ -8,6 +8,9 @@ import flixel.input.FlxInput;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import openfl.display.BitmapData;
+import openfl.geom.ColorTransform;
+import openfl.geom.Rectangle;
 
 typedef Position = {
     var x:Int;
@@ -185,10 +188,11 @@ class GenericInput extends FlxBasic {
         super();
 
         Main.log('creating ${this.inputType} input for slot ' + slot);
+        this.slot = slot;
 
         this.coinSprite = new FlxSprite();
         Main.log('loading graphic');
-        this.coinSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")));
+        this.coinSprite.loadGraphic(this.applyColorSlotFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"))));
         Main.log('loaded graphic');
         this.cursorSprite = new FlxSprite();
 
@@ -200,7 +204,7 @@ class GenericInput extends FlxBasic {
         this.cursor = {x: 0, y: 0};
         // this.inputEnabled = true;
 
-        this.slot = slot;
+        
 
         if (profile == null) {
             this.profile = Profile.getProfile("", true);
@@ -211,20 +215,27 @@ class GenericInput extends FlxBasic {
 
     public function setCursorAngle(angle:CursorRotation) {
         if (angle == LEFT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left"))));
         } else if (angle == RIGHT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right"))));
         } else if (angle == UP_LEFT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left"))));
         } else if (angle == UP_RIGHT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right"))));
         } else if (angle == DOWN_LEFT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left"))));
         } else if (angle == DOWN_RIGHT) {
-            this.cursorSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right")));
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right"))));
         }
 
         this.spriteOffset = GenericInput.getOffset(angle);
+    }
+
+    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
+        var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
+        var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
+        bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
+        return bitmap;
     }
 
     public function getCursorStick():StickVector {
@@ -283,8 +294,9 @@ class GenericInput extends FlxBasic {
             return;
         super.draw();
         this.cursorSprite.draw();
+        this.coinSprite.draw();
 
-        this.debugSprite.draw();
+        //this.debugSprite.draw();
     }
 
     /**
