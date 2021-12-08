@@ -2,9 +2,10 @@ package inputManager;
 
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
-import inputManager.GenericInput.INPUT_STATE;
-import inputManager.GenericInput.InputHelper;
-import inputManager.GenericInput.Position;
+import inputManager.GenericInput;
+import inputManager.InputHelper;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 class MouseHandler extends KeyboardHandler {
     override public function get_inputType() {

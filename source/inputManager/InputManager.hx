@@ -4,44 +4,9 @@ import PlayerSlot.PlayerSlotIdentifier;
 import cpuController.CpuController;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.typeLimit.OneOfTwo;
-import inputManager.GenericInput.Position;
 import inputManager.controllers.GenericController;
-
-enum Action {
-    NULL;
-    MENU_CONFIRM;
-    MENU_CANCEL;
-    MENU_ACTION;
-    MENU_LEFT;
-    MENU_RIGHT;
-    JUMP;
-    SHORT_JUMP;
-    ATTACK;
-    SPECIAL;
-    STRONG;
-    TAUNT;
-    SHIELD; // might only do parries, not sure yet
-    WALK;
-    DIRECTION_X;
-    DIRECTION_Y;
-    MOVE_X;
-    MOVE_Y;
-
-    MODIFIER_X;
-    MODIFIER_Y;
-}
-
-enum InputType {
-    CPUInput; // used internally to indicate a cpu player
-    KeyboardInput;
-    KeyboardAndMouseInput;
-    ControllerInput;
-    NoInput;
-}
-
-enum InputDevice {
-    Keyboard;
-}
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 class InputManager {
     /*private static var players:Map<PlayerSlotIdentifier, GenericInput> = [

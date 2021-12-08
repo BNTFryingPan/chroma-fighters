@@ -14,6 +14,8 @@ import inputManager.InputManager.InputType;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
 import inputManager.controllers.GenericController;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
     var P1;

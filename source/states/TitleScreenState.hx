@@ -4,9 +4,12 @@ import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
-import inputManager.GenericInput.InputHelper;
+import inputManager.GenericInput;
+import inputManager.InputHelper;
 import inputManager.InputManager;
 import lime.system.System;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 enum MenuScreen {
     TitleScreen;

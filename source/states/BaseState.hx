@@ -7,6 +7,8 @@ import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
 import inputManager.InputManager;
 import inputManager.MouseHandler;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 /**
     a base for other states in the game
