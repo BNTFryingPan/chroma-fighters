@@ -45,16 +45,15 @@ enum InputDevice {
 
 class InputManager {
     /*private static var players:Map<PlayerSlotIdentifier, GenericInput> = [
-        P1 => new GenericInput(P1),
-        P2 => new GenericInput(P2),
-        P3 => new GenericInput(P3),
-        P4 => new GenericInput(P4),
-        P5 => new GenericInput(P5),
-        P6 => new GenericInput(P6),
-        P7 => new GenericInput(P7),
-        P8 => new GenericInput(P8),
-    ];*/
-
+            P1 => new GenericInput(P1),
+            P2 => new GenericInput(P2),
+            P3 => new GenericInput(P3),
+            P4 => new GenericInput(P4),
+            P5 => new GenericInput(P5),
+            P6 => new GenericInput(P6),
+            P7 => new GenericInput(P7),
+            P8 => new GenericInput(P8),
+        ]; */
     public static function getPlayerArray():Array<GenericInput> {
         return PlayerSlot.getPlayerInputArray();
     }
@@ -65,7 +64,8 @@ class InputManager {
         return PlayerSlot.getPlayer(slot).input;
     }
 
-    public static function setInputType(slot:PlayerSlotIdentifier, type:InputType, ?profile:String) {
+    /*public static function setInputType(slot:PlayerSlotIdentifier, type:InputType, ?profile:String) {
+        PlayerSlot.getPlayer(slot).setNewInput(type, null, profile);
         if (type == KeyboardInput) {
             players[slot].destroy();
             players[slot] = new KeyboardHandler(slot, profile);
@@ -82,8 +82,7 @@ class InputManager {
             players[slot].destroy();
             players[slot] = new CpuController(slot);
         }
-    }
-
+    }*/
     public static function getUsedGamepads():Array<FlxGamepad> {
         return InputManager.getPlayerArray().filter(input -> {
             return Std.isOfType(input, GenericController);
@@ -97,7 +96,7 @@ class InputManager {
         if (Std.isOfType(input, InputType)) {
             var type:InputType = cast input;
             if (type == KeyboardInput || type == KeyboardAndMouseInput) {
-                var matchingInputs = InputManager.getPlayerArray().filter(thisInput -> {
+                var matchingInputs = PlayerSlot.getPlayerArray().filter(thisInput -> {
                     return Std.isOfType(thisInput, KeyboardHandler);
                 });
                 if (matchingInputs.length > 0) {
@@ -107,7 +106,7 @@ class InputManager {
             return null;
         }
         var gamepad:FlxGamepad = cast input;
-        for (slot => input in InputManager.players) {
+        for (slot => input in PlayerSlot.players) {
             if (Std.isOfType(input, GenericController)) {
                 var c:GenericController = cast input;
                 if (c._flixelGamepad == gamepad) {
@@ -123,7 +122,7 @@ class InputManager {
         if (inputDevice == Keyboard) // TODO : probably handle this better
             return;
 
-        if (!Std.isOfType(players[slot], GenericController))
+        if (!Std.isOfType(PlayerSlot.getPlayer(slot).input, GenericController))
             return;
 
         var input:FlxGamepad = cast inputDevice;

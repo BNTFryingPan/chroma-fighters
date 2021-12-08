@@ -68,7 +68,6 @@ class ProfileInput {
     public var value:Null<Float> = 1;
 
     public function new(options:ProfileInputOptions) {
-        trace("new profile input");
         this.rawOptions = options;
         this.type = options.type;
         this.source = options.source;
@@ -239,9 +238,7 @@ class Profile {
 
     public var bindings:Map<Action, Array<ProfileInput>> = Profile.defaultBindings;
 
-    public function new() {
-        trace("new profile");
-    }
+    public function new() {}
 
     public function loadBindings() {
         if (this.fileName == "@default") {
@@ -250,40 +247,35 @@ class Profile {
         }
     }
 
-    private var input:Null<GenericInput>;
+    private var player(get, never):Null<PlayerSlot>;
 
-    private function getOwningPlayerFromInputManager():Null<GenericInput> {
-        if (this.input != null)
-            return this.input;
-
-        var owner = InputManager.getPlayerByProfileName(this.name);
-        if (owner == null)
-            return null;
-
-        this.input = owner;
-        return this.input;
+    private function get_player():Null<PlayerSlot> {
+        var owner = PlayerSlot.getPlayerByProfileName(this.name);
+        if (owner != null)
+            return owner;
+        return null;
     }
 
     @:access(flixel.input.FlxKeyManager)
     public function checkActionArray(list:Array<ProfileInput>):INPUT_STATE {
-        if (this.getOwningPlayerFromInputManager() == null)
+        if (this.player == null)
             return NOT_PRESSED;
 
         var pressed:Array<INPUT_STATE>;
 
-        if (Std.isOfType(this.input, KeyboardHandler)) {
+        if (Std.isOfType(this.player.input, KeyboardHandler)) {
             pressed = list.map(action -> {
                 if (Std.isOfType(action, GenericButton))
                     return NOT_PRESSED;
 
                 return InputHelper.getFromFlxInput(FlxG.keys.getKey(cast action));
             });
-        } else if (Std.isOfType(this.input, GenericController)) {
+        } else if (Std.isOfType(this.player.input, GenericController)) {
             pressed = list.map(action -> {
                 if (Std.isOfType(action, Int))
                     return NOT_PRESSED;
 
-                return (cast this.input).getButtonState(cast action);
+                return (cast this.player.input).getButtonState(cast action);
             });
         } else
             return NOT_PRESSED;

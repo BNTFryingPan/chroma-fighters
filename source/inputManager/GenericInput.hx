@@ -168,7 +168,7 @@ class GenericInput extends FlxBasic {
         return "Generic";
     }
 
-    public final slot:PlayerSlotIdentifier;
+    public var slot:PlayerSlotIdentifier;
     public var profile:Profile;
 
     public static function getOffset(angle:CursorRotation):Position {
@@ -197,7 +197,7 @@ class GenericInput extends FlxBasic {
 
         this.coinSprite = new FlxSprite();
         Main.log('loading graphic');
-        this.coinSprite.loadGraphic(this.applyColorSlotFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"))));
+        this.coinSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"))));
         Main.log('loaded graphic');
         this.cursorSprite = new FlxSprite();
 
@@ -239,6 +239,8 @@ class GenericInput extends FlxBasic {
     }
 
     public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
+        Main.log("default colors:");
+        Main.log(PlayerSlot.defaultPlayerColors);
         var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
         var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
         bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);

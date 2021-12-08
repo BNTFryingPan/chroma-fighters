@@ -30,7 +30,6 @@ class MonospaceText extends FlxBitmapText {
 
     public function new(x:Float, y:Float, width:Int = 0, text:Null<String> /*, size:Int = 8*/) {
         super(MonospaceText.monospaceFont);
-        trace("new mono text");
         this.text = "TEXT";
         this.x = x;
         this.y = y;

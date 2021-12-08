@@ -28,7 +28,6 @@ class DebugDisplay extends FlxBasic {
 
     public function new() {
         super();
-        trace("new debug display");
 
         this.active = true;
         this.visible = true;

@@ -119,14 +119,13 @@ class TitleScreenState extends BaseState {
                     || (gamepad.pressed.RIGHT_TRIGGER_BUTTON && gamepad.pressed.LEFT_TRIGGER_BUTTON));
             if (startingGamepads.length > 0) {
                 if (!TitleScreenState.hasEverPassedStartScreenThisSession) {
-                    InputManager.setInputType(P1, ControllerInput);
-                    InputManager.setInputDevice(P1, startingGamepads[0]);
+                    PlayerSlot.getPlayer(P1).setNewInput(ControllerInput, startingGamepads[0]);
                 }
 
                 this.moveOn();
             } else if (FlxG.keys.pressed.A && FlxG.keys.pressed.S) {
                 if (!TitleScreenState.hasEverPassedStartScreenThisSession)
-                    InputManager.setInputType(P1, KeyboardInput);
+                    PlayerSlot.getPlayer(P1).setNewInput(KeyboardInput, Keyboard);
                 this.moveOn();
             }
         } else if (!TitleScreenState.pastStartScreen && this.hasPressedButtons) {
@@ -143,7 +142,7 @@ class TitleScreenState extends BaseState {
                 this.main_onlineButton.y = -100;
                 this.main_settingsButton.y = -150;
                 this.main_exitButton.y = -200;
-                this.pastStartScreen = false;
+                TitleScreenState.pastStartScreen = false;
                 this.hasPressedButtons = false;
             }
         }

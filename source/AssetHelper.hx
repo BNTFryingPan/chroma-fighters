@@ -11,8 +11,8 @@ class AssetHelper {
     public static final saveDirectory:String = "./save/";
     static inline final saveNamespace:String = "chromasave";
 
-    public static var scriptCache:Map<NamespacedKey, Expr> = new Map<NamespacedKey, Expr>();
-    public static var imageCache:Map<NamespacedKey, BitmapData> = new Map<NamespacedKey, BitmapData>();
+    public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
+    public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
 
     private function new() {}
 
@@ -25,9 +25,9 @@ class AssetHelper {
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
         Main.log(AssetHelper.imageCache.toString());
-        if (AssetHelper.imageCache.exists(key)) {
+        if (AssetHelper.imageCache.exists(key.toString())) {
             Main.log("returning from cache");
-            return AssetHelper.imageCache.get(key);
+            return AssetHelper.imageCache.get(key.toString());
         }
         Main.log("getImageAsset");
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
@@ -35,7 +35,7 @@ class AssetHelper {
         // Main.log(assetDir);
         if (assetDir != null) {
             var loaded:BitmapData = BitmapData.fromFile(assetDir);
-            AssetHelper.imageCache.set(key, loaded);
+            AssetHelper.imageCache.set(key.toString(), loaded);
             return loaded;
         }
         return null;
@@ -58,13 +58,13 @@ class AssetHelper {
     }
 
     public static function getScriptAsset(key:NamespacedKey):Expr {
-        if (AssetHelper.scriptCache.exists(key)) {
-            return AssetHelper.scriptCache.get(key);
+        if (AssetHelper.scriptCache.exists(key.toString())) {
+            return AssetHelper.scriptCache.get(key.toString());
         }
         var assetDir = AssetHelper.getAssetDirectory(key, ".hsc");
         if (assetDir != null) {
             var parsed = new Parser().parseString(sys.io.File.getContent(assetDir));
-            AssetHelper.scriptCache.set(key, parsed);
+            AssetHelper.scriptCache.set(key.toString(), parsed);
             return parsed;
         }
         return null;

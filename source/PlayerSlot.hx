@@ -1,6 +1,19 @@
 package;
 
+import cpuController.CpuController;
 import flixel.FlxBasic;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.typeLimit.OneOfTwo;
+import inputManager.GenericInput;
+import inputManager.InputManager.InputDevice;
+import inputManager.InputManager.InputType;
+import inputManager.KeyboardHandler;
+import inputManager.MouseHandler;
+import inputManager.controllers.GenericController;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
     var P1;
@@ -37,13 +50,14 @@ class PlayerBox extends FlxBasic {
     public var xPos = 10;
 
     public function new() {
+        super();
         this.background = new FlxSprite();
         this.background.makeGraphic(10, 10, FlxColor.MAGENTA);
     }
 
     public override function update(elapsed:Float) {
-        super.update();
-        this.background.update();
+        super.update(elapsed);
+        this.background.update(elapsed);
     }
 
     public override function draw() {
@@ -58,17 +72,6 @@ class PlayerBox extends FlxBasic {
 
 class PlayerSlot extends FlxBasic {
     public static final artificalPlayerLimit = true; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
-
-    public static var players:Map<PlayerSlotIdentifier, Null<PlayerSlot>> = [
-        P1 => new PlayerSlot(P1),
-        P2 => new PlayerSlot(P2),
-        P3 => new PlayerSlot(P3),
-        P4 => new PlayerSlot(P4),
-        P5 => new PlayerSlot(P5),
-        P6 => new PlayerSlot(P6),
-        P7 => new PlayerSlot(P7),
-        P8 => new PlayerSlot(P8),
-    ];
     public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
         P1 => {red: 1.0, green: 0.2, blue: 0.2}, // red
         P2 => {red: 0.2, green: 0.2, blue: 1.0}, // blue
@@ -80,6 +83,17 @@ class PlayerSlot extends FlxBasic {
         P8 => {red: 0.5, green: 0.5, blue: 0.5}, // gray
     ];
     public static final cpuPlayerColor:PlayerColor = {red: 0.4, green: 0.4, blue: 0.4};
+
+    public static var players:Map<PlayerSlotIdentifier, Null<PlayerSlot>> = [
+        P1 => new PlayerSlot(P1),
+        P2 => new PlayerSlot(P2),
+        P3 => new PlayerSlot(P3),
+        P4 => new PlayerSlot(P4),
+        P5 => new PlayerSlot(P5),
+        P6 => new PlayerSlot(P6),
+        P7 => new PlayerSlot(P7),
+        P8 => new PlayerSlot(P8),
+    ];
 
     public static function getPlayer(slot:PlayerSlotIdentifier) {
         return PlayerSlot.players[slot];
@@ -174,13 +188,20 @@ class PlayerSlot extends FlxBasic {
         return PlayerSlot.getPlayer(getFirstOpenPlayerSlot());
     }
 
+    public static function getPlayerByProfileName(profile:String):Null<PlayerSlot> {
+        var matched = PlayerSlot.getPlayerArray().filter(player -> player.input.profile.name == profile);
+        if (matched.length > 0)
+            return matched[0];
+        return null;
+    }
+
     public static function tryToAddPlayerFromInputDevice(inputDevice:FlxGamepad):Null<PlayerSlot> {
-        if (PlayerSlot.getPlayerByInput() != null)
+        if (PlayerSlot.getPlayerByInput(inputDevice) != null)
             return null;
 
         var player = PlayerSlot.getFirstEmptyPlayer();
 
-        if (slot == null)
+        if (player == null)
             return null;
 
         player.setNewInput(ControllerInput, inputDevice);
@@ -188,13 +209,25 @@ class PlayerSlot extends FlxBasic {
     }
 
     public static function updateAll(elapsed:Float) {
-        PlayerSlot.getPlayerArray().filter(player -> {
-            player.update(elapsed);
-            return false;
-        });
+        PlayerSlot.getPlayer(P1).update(elapsed);
+        PlayerSlot.getPlayer(P2).update(elapsed);
+        PlayerSlot.getPlayer(P3).update(elapsed);
+        PlayerSlot.getPlayer(P4).update(elapsed);
+        PlayerSlot.getPlayer(P5).update(elapsed);
+        PlayerSlot.getPlayer(P6).update(elapsed);
+        PlayerSlot.getPlayer(P7).update(elapsed);
+        PlayerSlot.getPlayer(P8).update(elapsed);
     }
 
     public static function drawAll() {
+        /*PlayerSlot.getPlayer(P8).draw();
+            PlayerSlot.getPlayer(P7).draw();
+            PlayerSlot.getPlayer(P6).draw();
+            PlayerSlot.getPlayer(P5).draw();
+            PlayerSlot.getPlayer(P4).draw();
+            PlayerSlot.getPlayer(P3).draw();
+            PlayerSlot.getPlayer(P2).draw();
+            PlayerSlot.getPlayer(P1).draw(); */
         PlayerSlot.getPlayerArray().filter(player -> {
             player.draw();
             return false;
@@ -207,35 +240,34 @@ class PlayerSlot extends FlxBasic {
     public var input:GenericInput;
 
     public function setNewInput(type:InputType, ?inputDevice:OneOfTwo<FlxGamepad, InputDevice>, ?profile:String) {
+        if (this.input != null)
+            this.input.destroy();
+
         if (type == KeyboardInput || inputDevice == Keyboard) {
             this.setType(PLAYER);
-            this.input.destroy();
             this.input = new KeyboardHandler(slot, profile);
         } else if (type == KeyboardAndMouseInput) {
             this.setType(PLAYER);
-            this.input.destroy();
             this.input = new MouseHandler(slot, profile);
         } else if (type == ControllerInput) {
             this.setType(PLAYER);
-            this.input.destroy();
             this.input = new GenericController(slot, profile);
-            this.input._flixelGamepad = cast inputDevice;
-        } else if (type == NoInput) {
-            this.setType(NONE);
-            this.input.destroy();
-            this.input = new GenericInput(slot, profile);
+            var inp:GenericController = cast this.input;
+            inp._flixelGamepad = cast inputDevice;
         } else if (type == CPUInput) {
             this.setType(CPU);
-            this.input.destroy();
             this.input = new CpuController(slot, profile);
+        } else {
+            this.setType(NONE);
+            this.input = new GenericInput(slot, profile);
         }
     }
 
     private function new(slot:PlayerSlotIdentifier) {
         super();
-        trace("new player slot");
         this.slot = slot;
         this.type = NONE;
+        this.input = new GenericInput(slot);
     }
 
     public function setType(type:PlayerType) {
@@ -243,7 +275,7 @@ class PlayerSlot extends FlxBasic {
     }
 
     public function moveToSlot(toSlot:PlayerSlotIdentifier) {
-        if (PlayerSlot.artificalPlayerLimit && toSlot > 4)
+        if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)
             return;
         PlayerSlot.players[toSlot].slot = this.slot;
         this.slot = toSlot;
@@ -252,11 +284,11 @@ class PlayerSlot extends FlxBasic {
         PlayerSlot.players[toSlot] = this;
     }
 
-    public function update(elasped:Float) {
+    override public function update(elapsed:Float) {
         this.input.update(elapsed);
     }
 
-    public function draw() {
+    override public function draw() {
         this.input.draw();
     }
 }

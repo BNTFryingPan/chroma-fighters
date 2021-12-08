@@ -4,6 +4,7 @@ import CustomButton;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.input.gamepad.FlxGamepad;
 import inputManager.InputManager;
 import inputManager.MouseHandler;
 
@@ -27,7 +28,7 @@ class BaseState extends FlxState {
             if (InputManager.getUsedGamepads().contains(gamepad)) {
                 var slot = InputManager.getPlayerSlotByInput(gamepad);
                 if (slot != null) {
-                    InputManager.setInputType(slot, NoInput);
+                    PlayerSlot.getPlayer(slot).setNewInput(NoInput);
                 }
             }
         });
@@ -44,7 +45,7 @@ class BaseState extends FlxState {
 
     override public function draw() {
         super.draw();
-        InputManager.draw();
+        PlayerSlot.drawAll();
     }
 
     private static function isPressingConnectCombo(gp:FlxGamepad):Bool {
@@ -58,7 +59,7 @@ class BaseState extends FlxState {
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
-        InputManager.update(elapsed);
+        PlayerSlot.updateAll(elapsed);
 
         var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
         Main.debugDisplay.rightAppend += '${pads}';
@@ -71,9 +72,9 @@ class BaseState extends FlxState {
         if (emptySlot != null) {
             if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S])) {
                 if (PlayerSlot.getPlayerSlotByInput(KeyboardInput) == null) {
-                    PlayerSlot.setInputType(emptySlot, KeyboardInput);
+                    PlayerSlot.getPlayer(emptySlot).setNewInput(KeyboardInput, Keyboard);
                 } else {
-                    var keyboardPlayer = PlayerSlor.getPlayerByInput(KeyboardInput);
+                    var keyboardPlayer = PlayerSlot.getPlayerByInput(KeyboardInput);
                     if (Std.isOfType(keyboardPlayer, MouseHandler)) {
                         keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
                     } else {
@@ -84,7 +85,7 @@ class BaseState extends FlxState {
             }
             FlxG.gamepads.getActiveGamepads().filter(p -> {
                 if (BaseState.isPressingConnectCombo(p)) {
-                    InputManager.tryToAddPlayerFromInputDevice(p);
+                    PlayerSlot.tryToAddPlayerFromInputDevice(p);
                 }
                 return true;
             });

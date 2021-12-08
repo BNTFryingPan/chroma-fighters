@@ -30,7 +30,6 @@ abstract class AbstractNamespacedKey {
 
     @:op(A == B)
     public static function equals(A:AbstractNamespacedKey, B:AbstractNamespacedKey) {
-        trace("equality check");
         return (A.namespace == B.namespace) && (A.key == B.key);
     }
 }
@@ -39,7 +38,6 @@ class NamespacedKey extends AbstractNamespacedKey {
     public static final DEFAULT_NAMESPACE = "chromafighers";
 
     public function new(namespace:String, key:String) {
-        trace("new key");
         if (namespace == null)
             namespace = NamespacedKey.DEFAULT_NAMESPACE;
         this.namespace = namespace;
