@@ -42,6 +42,8 @@ class GenericController extends GenericInput {
 
     @:access(flixel.input.gamepad.FlxGamepad)
     public function getFromFlixelGamepadButton(button:FlxGamepadInputID):INPUT_STATE {
+        if (!this._flixelGamepad.connected)
+            return NOT_PRESSED;
         return InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(button)));
     }
 
@@ -54,14 +56,14 @@ class GenericController extends GenericInput {
     }
 
     public function getButtonState(button:GenericButton):INPUT_STATE {
-        if (this._flixelGamepad.connected != true) {
-            return NOT_PRESSED;
-        }
         return switch (button) {
             case NULL:
                 NOT_PRESSED;
             case TRUE:
-                PRESSED;
+                if (!this._flixelGamepad.connected)
+                    NOT_PRESSED;
+                else
+                    PRESSED;
             case FACE_A:
                 this.getFromFlixelGamepadButton(A);
             case FACE_B:

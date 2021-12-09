@@ -75,6 +75,8 @@ class TitleScreenState extends BaseState {
         this.main_settingsButton.screenCenter(X);
 
         this.main_exitButton = new CustomButton(0, -200, "Quit", function(player:PlayerSlotIdentifier) {
+            // clean up any save data first.
+            // might want to call a global exit function that does that
             System.exit(0);
         });
         this.main_exitButton.screenCenter(X);
