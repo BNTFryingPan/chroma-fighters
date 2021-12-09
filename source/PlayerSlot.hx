@@ -239,6 +239,21 @@ class PlayerSlot extends FlxBasic {
     public var slot:PlayerSlotIdentifier;
     public var input:GenericInput;
 
+    private function setControllerObjectFromInputDevice(?inputDevice:FlxGamepad, ?profile:String) {
+        if (inputDevice == null)
+            return;
+
+        this.input = new (switch (inputDevice.model) {
+            case SWITCH_PRO:
+                SwitchProController;
+            default:
+                GenericController
+        })(this.slot, profile)
+
+        var inp:GenericController = cast this.input;
+        inp._flixelGamepad = cast inputDevice;
+    }
+
     public function setNewInput(type:InputType, ?inputDevice:OneOfTwo<FlxGamepad, InputDevice>, ?profile:String) {
         if (this.input != null)
             this.input.destroy();
@@ -251,9 +266,7 @@ class PlayerSlot extends FlxBasic {
             this.input = new MouseHandler(slot, profile);
         } else if (type == ControllerInput) {
             this.setType(PLAYER);
-            this.input = new GenericController(slot, profile);
-            var inp:GenericController = cast this.input;
-            inp._flixelGamepad = cast inputDevice;
+            this.setControllerObjectFromInputDevice(cast inputDevice, profile);
         } else if (type == CPUInput) {
             this.setType(CPU);
             this.input = new CpuController(slot, profile);
