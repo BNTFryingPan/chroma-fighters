@@ -6,12 +6,12 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import inputManager.InputEnums;
+import inputManager.InputHelper;
+import inputManager.InputTypes;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
-import inputManager.InputHelper;
-import inputManager.InputEnums;
-import inputManager.InputTypes;
 
 /**
     A basic input handler, used as a base for all other input types.
@@ -117,12 +117,10 @@ class GenericInput extends FlxBasic {
         return this.getStick();
     }
 
-    public static final colorTransformRect = new Rectangle(0 ,0, bitmap.width, bitmap.height)
-
     public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
         var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
         var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
-        bitmap.colorTransform(GenericInput.colorTransformRect, transform);
+        bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
         return bitmap;
     }
 
@@ -164,13 +162,10 @@ class GenericInput extends FlxBasic {
                         button.outHandler(this.slot);
                 }
             }
-        }
-
-        // if (this.isvisible)
-        if (this.inputEnabled)
-            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${this.cursor.x}, ${this.cursor.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
-        else
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
+        } else {
             Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}} ----DISABLED----';
+        }
     }
 
     override function draw() {
@@ -180,7 +175,7 @@ class GenericInput extends FlxBasic {
         this.cursorSprite.draw();
         this.coinSprite.draw();
 
-        // this.debugSprite.draw();
+        this.debugSprite.draw();
     }
 
     /**

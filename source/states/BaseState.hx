@@ -5,10 +5,10 @@ import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
-import inputManager.InputManager;
-import inputManager.MouseHandler;
 import inputManager.InputEnums;
+import inputManager.InputManager;
 import inputManager.InputTypes;
+import inputManager.MouseHandler;
 
 /**
     a base for other states in the game
@@ -77,7 +77,7 @@ class BaseState extends FlxState {
                     PlayerSlot.getPlayer(emptySlot).setNewInput(KeyboardInput, Keyboard);
                 } else {
                     var keyboardPlayer = PlayerSlot.getPlayerByInput(KeyboardInput);
-                    if (Std.isOfType(keyboardPlayer, MouseHandler)) {
+                    if (Std.isOfType(keyboardPlayer.input, MouseHandler)) {
                         keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
                     } else {
                         keyboardPlayer.setNewInput(KeyboardAndMouseInput, Keyboard, keyboardPlayer.input.profile.name);

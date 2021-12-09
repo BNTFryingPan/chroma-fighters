@@ -5,11 +5,11 @@ import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import inputManager.GenericInput;
+import inputManager.InputEnums;
 import inputManager.InputHelper;
 import inputManager.InputManager;
-import lime.system.System;
-import inputManager.InputEnums;
 import inputManager.InputTypes;
+import lime.system.System;
 
 enum MenuScreen {
     TitleScreen;

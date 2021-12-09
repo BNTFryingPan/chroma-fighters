@@ -3,8 +3,8 @@ package inputManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
-import inputManager.GenericInput.INPUT_STATE;
-import inputManager.GenericInput.StickValue;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 
 /**
     input handler for keyboard

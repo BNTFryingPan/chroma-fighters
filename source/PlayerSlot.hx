@@ -9,13 +9,11 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfTwo;
 import inputManager.GenericInput;
-import inputManager.InputManager.InputDevice;
-import inputManager.InputManager.InputType;
+import inputManager.InputEnums;
+import inputManager.InputTypes;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
 import inputManager.controllers.GenericController;
-import inputManager.InputEnums;
-import inputManager.InputTypes;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
     var P1;
@@ -222,18 +220,18 @@ class PlayerSlot extends FlxBasic {
     }
 
     public static function drawAll() {
-        /*PlayerSlot.getPlayer(P8).draw();
-            PlayerSlot.getPlayer(P7).draw();
-            PlayerSlot.getPlayer(P6).draw();
-            PlayerSlot.getPlayer(P5).draw();
-            PlayerSlot.getPlayer(P4).draw();
-            PlayerSlot.getPlayer(P3).draw();
-            PlayerSlot.getPlayer(P2).draw();
-            PlayerSlot.getPlayer(P1).draw(); */
-        PlayerSlot.getPlayerArray().filter(player -> {
+        PlayerSlot.getPlayer(P8).draw();
+        PlayerSlot.getPlayer(P7).draw();
+        PlayerSlot.getPlayer(P6).draw();
+        PlayerSlot.getPlayer(P5).draw();
+        PlayerSlot.getPlayer(P4).draw();
+        PlayerSlot.getPlayer(P3).draw();
+        PlayerSlot.getPlayer(P2).draw();
+        PlayerSlot.getPlayer(P1).draw();
+        /*PlayerSlot.getPlayerArray().filter(player -> {
             player.draw();
             return false;
-        });
+        });*/
     }
 
     public var type:PlayerType = NONE;
@@ -245,7 +243,7 @@ class PlayerSlot extends FlxBasic {
         if (this.input != null)
             this.input.destroy();
 
-        if (type == KeyboardInput || inputDevice == Keyboard) {
+        if (type == KeyboardInput || (inputDevice == Keyboard && type != KeyboardAndMouseInput)) {
             this.setType(PLAYER);
             this.input = new KeyboardHandler(slot, profile);
         } else if (type == KeyboardAndMouseInput) {

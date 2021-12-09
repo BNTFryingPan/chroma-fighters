@@ -3,12 +3,8 @@ package inputManager;
 import flixel.FlxG;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
-import flixel.util.typeLimit.OneOfFour;
-import flixel.util.typeLimit.OneOfThree;
-import flixel.util.typeLimit.OneOfTwo;
-import inputManager.GenericInput;
+import inputManager.InputEnums;
 import inputManager.InputHelper;
-import inputManager.InputManager.Action;
 import inputManager.controllers.GenericController;
 import lime.system.System;
 
