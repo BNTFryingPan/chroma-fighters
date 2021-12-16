@@ -9,24 +9,9 @@
     "options": { }, // not on stages
     "primaryOption": "", // not on stages, can be empty
     "secondaryOption": "", // not on stages, can be empty
-    "altRenderer": "key of script below",  // fighters only, can be empty
-    "scripts": {
-        // Json object of script paths by author defined key. Keys must be unique within the mod. Predefined scripts listed below
-        // not sure what the script file extension will be yet. Cfs=chroma fighters script
-        "load": "", //called when the mod loads, or is reloaded. Used to define most of your functions in the provided global mod object
-        "init": "", //called when the fighter is created, either by playtesting or when a match starts (can be determined from a var)
-        "update": "update.cfs", //called every tick,
-        "draw": "", //called during fighter draw phase (use to draw custom fighter elements)
-        "draw_ui": "", //called after drawing (use for custom ui elements)
-        //Both of the above draw funcs are run in the following order: player slot 8 -> player slot 7 -> ... -> stage -> gpm
-        //This gives gameplay mods higher priority drawing than stages, which have more priority than players. The lower the player slot number the higher priority it has over the other players (eg 3 will draw above 4, 1 above all others, etc.)
-        //Anything in ui_draw will be drawn after anything in draw
-        "damage": "", //called whenever the fighter gets hit and takes damage or gets launched. Gets passed some variables about attack
-        //Damage: (stage/gpm ver) like ^ but has additional var to get hit player
-        "death": "", //called when the fighter dies, either by losing all hp in stamina, insta-killed by a move, or killed in blastzone
-        //Death: (stage/gpm ver) called when any fighter dies like ^, additionally has var that references the player that died
-        "kill": "", // called when this fighter ko's another
-        "match_end": "" // called when a match ends. Gets passed some vars about placements
+    "script": "script.cfs",  // main script file
+    "include": { // extra script files to load and use functions from
+        
     },
     "isInBaseGame": true
 }

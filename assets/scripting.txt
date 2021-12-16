@@ -1,0 +1,40 @@
+chroma-fighters mod scripting documentation
+
+this documentation will probably be really bad lmao
+
+check the test fighter info.jsonc for a guide on how that file works for fighters
+
+script files use the .cfs file extension, but are just plain text files you can create with notepad or any other text editor
+the game uses hscript (https://github.com/HaxeFoundation/hscript) to run the script files, but you dont need to care about that if you just want to make something for chroma-fighters
+
+when one of your scripts is called, all of the code inside the file is run from top to bottom.
+
+i need to add more to this lol
+
+
+
+built-in vars documentation:
+
+available for all mods:
+matchStarted:Bool - if the match has started, and the countdown is completed
+
+available for fighter mods:
+percent:Float - fighter %
+airstate:? - idk how this will work yet. the air state of the fighter
+
+
+built-in functions documentation:
+
+available for all mods:
+createSquareTriggerZone(x:Float, y:Float, width:Float, height:Float, id:String)
+createSquareDamageBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, knockback:Float, damage:Float)
+createSquareWindBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, speed:Float)
+createCircleTriggerZone(x:Float, y:Float, radius:Float, id:String)
+createCircleDamageBox(x:Float, y:Float, radius:Float, id:String, angle:Float, knockback:Float, damage:Float)
+createCircleWindBox(x:Float, y:Float, radius:Float, id:String, angle:Float, speed:Float)
+damagePlayer(slot:Int, attacker:Int)
+getClosestPlayer(x:Float, y:Float, ?range:Float)
+
+
+
+available for fighter mods:

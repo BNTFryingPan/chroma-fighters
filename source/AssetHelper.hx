@@ -14,6 +14,8 @@ class AssetHelper {
     public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
     public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
 
+    private static var parser:Parser = new Parser();
+
     private function new() {}
 
     /*private static function getNullBitmap():BitmapData {
@@ -57,13 +59,13 @@ class AssetHelper {
         return AssetHelper.getNullText();
     }
 
-    public static function getScriptAsset(key:NamespacedKey):Expr {
-        if (AssetHelper.scriptCache.exists(key.toString())) {
+    public static function getScriptAsset(key:NamespacedKey, ?reload:Bool=false):Expr {
+        if ((!reload) && AssetHelper.scriptCache.exists(key.toString())) {
             return AssetHelper.scriptCache.get(key.toString());
         }
-        var assetDir = AssetHelper.getAssetDirectory(key, ".hsc");
+        var assetDir = AssetHelper.getAssetDirectory(key, ".cfs");
         if (assetDir != null) {
-            var parsed = new Parser().parseString(sys.io.File.getContent(assetDir));
+            var parsed = AssetHelper.parser.parseString(sys.io.File.getContent(assetDir));
             AssetHelper.scriptCache.set(key.toString(), parsed);
             return parsed;
         }
@@ -88,11 +90,11 @@ class AssetHelper {
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
         #if (debug && !mobile)
-        Main.log('debug paths');
+        //Main.log('debug paths');
         var rootPath = "./../../../assets/";
         var namespacedPath = "debug_mods/";
         #else
-        Main.log('normal paths');
+        //Main.log('normal paths');
         var rootPath = "./assets/";
         var namespacedPath = "mods/";
         #end
