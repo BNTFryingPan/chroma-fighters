@@ -1,5 +1,13 @@
 package match;
 
+typedef FighterModOption = {
+    public var type:String;
+    public var defaultValue:Dynamic;
+    public var maxValue:Float;
+    public var minValue:Float;
+    public var step:Float;
+}
+
 typedef FighterModJson = {
     public var author:String;
     public var type:String;
@@ -8,7 +16,7 @@ typedef FighterModJson = {
     public var name:String;
     public var id:String;
     public var tags:Array<String>;
-    public var options:Map<String, Dynamic>;
+    public var options:Map<String, FighterModOption>;
     public var primaryOption:String;
     public var secondaryOption:String;
     public var script:String;
@@ -47,33 +55,48 @@ class Fighter extends FlxBasic {
     public var modData:FighterModJson;
     public var percent:Float;
     public var airState:FighterAirState = GROUNDED;
-    public var scriptVariables:Map<String, Dynamic>;
 
-    private var mainScript:Expr;
-    private var extraScripts:Array<Expr>;
+    private var mainScript:ModScript;
+    private var extraScripts:Map<String, ModScript>;
+    private var slot:PlayerSlotIdentifier;
 
     public function new(data:FighterModJson, slot:PlayerSlotIdentifier, x:Float, y:Float) {
         super();
         this.modData = data;
+        this.slot = slot;
+        this.x = x;
+        this.y = y;
     }
 
     public function loadScripts() {
         this.mainScript = AssetHelper.getScriptAsset(this.modData.script);
     }
 
-    public function tick(elasped:Float, input:GenericInput) {
+    public function callScriptFunction(name:String, ...args:Dynamic):Dynamic {
+        if ()
+    }
+
+    public function update(elasped:Float) {
         super.update(elapsed);
 
-        this.callScript("update", ["input" => input])
+        this.callScriptFunction("update", elapsed)
     }
 
     public function render(input:GenericInput) {
         super.draw();
 
-        this.callScript("draw", ["input" => input])
+        this.callScriptFunction("draw")
     }
 
-    public function render_ui(input:GenericInput) {
-        this.callScript("draw_ui", ["input" => input])
+    public function render_ui() {
+        this.callScriptFunction("draw_ui")
+    }
+
+    public function getPercent():Float {
+        return this.percent;
+    }
+
+    public function getSlot():Int {
+        return cast this.slot;
     }
 }

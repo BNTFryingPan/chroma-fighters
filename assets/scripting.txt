@@ -11,6 +11,18 @@ when one of your scripts is called, all of the code inside the file is run from 
 
 i need to add more to this lol
 
+events:
+events are functions that you define in your script that will get called by the game when certain things happen
+eventName(eventArgument:ArgumentType)
+
+available for all mods:
+update(elapsed:Float)
+onModLoad()
+onModUnload()
+onModInit()
+onMatchStart()
+onMatchEnd()
+onTriggerZoneActivate(id:String)
 
 
 built-in vars documentation:
@@ -24,17 +36,73 @@ airstate:? - idk how this will work yet. the air state of the fighter
 
 
 built-in functions documentation:
+functionName(argumentName:ArgumentType, ?optionalArgument:ArgumentType=defaultValue)
 
 available for all mods:
+log(text:String)
+logDynamic(...args:Dynamic) // you can log almost any type with this, but how useful that is may vary
 createSquareTriggerZone(x:Float, y:Float, width:Float, height:Float, id:String)
 createSquareDamageBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, knockback:Float, damage:Float)
 createSquareWindBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, speed:Float)
 createCircleTriggerZone(x:Float, y:Float, radius:Float, id:String)
 createCircleDamageBox(x:Float, y:Float, radius:Float, id:String, angle:Float, knockback:Float, damage:Float)
 createCircleWindBox(x:Float, y:Float, radius:Float, id:String, angle:Float, speed:Float)
-damagePlayer(slot:Int, attacker:Int)
-getClosestPlayer(x:Float, y:Float, ?range:Float)
+getClosestFighter(x:Float, y:Float, ?range:Float=-1.0):Null<Fighter>
+hasMatchStarted():Bool
+hasMatchEnded():Bool
+getFighter(slot:Int):Null<Fighter>
+getModOptions():Map<String -> Dynamic>
+getModOption(key:String):Dynamic
 
 
 
-available for fighter mods:
+available for fighter mods, or on the `Fighter` class if $:
+$getPercent():Float
+$getSlot():Int
+$getFighterName():String
+$getPlayerName():String
+$damage(amount:Float, ?attacker:Int)
+stale(id:String)
+getStaledDamage(id:String, amount:Float)
+$launch(?angle:Float=50, ?knockback:Float=1.0, ?flip:Bool=true) // angle is -360 to 360, 0 is straight up, flip will automatically multiply by -1 if fighter is facing right
+$getHeldItem():Null<HoldableItem>
+
+fighter input functions (fighter.input.<function>):
+these return the input state of the button they refer to
+JUST_PRESSED = the button was pressed this frame
+PRESSED = the button is currently being pressed
+JUST_RELEASED = the button was released this frame
+NOT_PRESSED = the button is not being pressed
+
+getCursorPosition():Position - the x,y position of the cursor on menus
+getConfirm(): the button used to confirm in menus, usually con-A or kb-Z
+getCancel(): the button used to cancel or go back in menus, usually con-B or kb-X;
+getMenuAction(): action button in menus, usually con-X and con-Y or kb-C;
+getMenuLeft(): left modifier in menus, usually for selecting alts, usually con-LB/L or kb-A;
+getMenuRight(): right modifier in menus, usually for selecting alts, usually con-RB/R or kb-S;
+
+getAttack(): button used to attack
+getJump():
+getSpecial():
+getStrong():
+getShield():
+getDodge():
+getWalk():
+
+input helper (InputHelper.<function>):
+these functions accept 1 or more input states and can return a new input state or boolean that may be easier to work with
+the 'argument' shown is actually just the number of input states they accept
+isPressed(1):Bool
+isNotPressed(1):Bool
+justChanged(1):Bool
+notChanged(1):Bool
+or(any):INPUT_STATE
+asInt(1):Int
+
+currently only for internal use, but may work in scripts anyways, not sure. probably not, but might add support for something like these in the future
+getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool)
+getFromFlxInput(input:FlxInput<Int>)
+getFromFlxKey(key:FlxKey)
+
+misc things you should probably know:
+you cannot create classes or types in scripts due to a limitation with hscript.

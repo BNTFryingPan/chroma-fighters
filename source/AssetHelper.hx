@@ -2,9 +2,37 @@ package;
 
 import hscript.Expr;
 import hscript.Parser;
+import hscript.Interp;
 import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
+
+class ModScript {
+    public var interp:Interp;
+    public var script:Expr;
+
+    public function new(asset:NamespacedKey) {
+        this.script = AssetHelper.getScriptAsset(asset);
+    }
+
+    public function reload() {
+        this.interp.variables.clear();
+        this.script = AssetHelper.getScriptAsset(asset, true);
+        this.interp.execute(this.script);
+    }
+
+    public function shareFunctionMap(functionMap:Map<String, Function<Dynamic>>) {
+        for (key, func in functionMap) {
+            this.interp.variables.set(key, func);
+        }
+    }
+
+    public function getVariable(name:String):Dynamic {
+        return this.interp.variables.exists(name) ? this.interp.variables.get(name) ? null;
+    }
+
+    public function callFunction()
+}
 
 class AssetHelper {
     public static final instance = new AssetHelper();
