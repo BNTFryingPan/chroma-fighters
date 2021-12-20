@@ -1,8 +1,10 @@
 package;
 
+import flixel.util.typeLimit.OneOfTwo;
+import haxe.extern.Rest;
 import hscript.Expr;
-import hscript.Parser;
 import hscript.Interp;
+import hscript.Parser;
 import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
@@ -11,27 +13,36 @@ class ModScript {
     public var interp:Interp;
     public var script:Expr;
 
+    private var originalKey:NamespacedKey;
+
     public function new(asset:NamespacedKey) {
-        this.script = AssetHelper.getScriptAsset(asset);
+        this.originalKey = asset;
+        this.reload();
     }
 
     public function reload() {
         this.interp.variables.clear();
-        this.script = AssetHelper.getScriptAsset(asset, true);
+        this.script = AssetHelper.getScriptAsset(this.originalKey, true);
         this.interp.execute(this.script);
     }
 
-    public function shareFunctionMap(functionMap:Map<String, Function<Dynamic>>) {
-        for (key, func in functionMap) {
+    public function shareFunctionMap(functionMap:Map<String, Null<Dynamic>->Null<Dynamic>>) {
+        for (key => func in functionMap.keyValueIterator()) {
             this.interp.variables.set(key, func);
         }
     }
 
     public function getVariable(name:String):Dynamic {
-        return this.interp.variables.exists(name) ? this.interp.variables.get(name) ? null;
+        return this.interp.variables.exists(name) ? this.interp.variables.get(name) : null;
     }
 
-    public function callFunction()
+    public function callFunction(name:String, args:Array<Dynamic>):Dynamic {
+        if (!this.interp.variables.exists(name))
+            return null;
+
+        var func:Array<Dynamic>->Dynamic = cast this.interp.variables.get(name);
+        return func(args);
+    }
 }
 
 class AssetHelper {
@@ -87,7 +98,7 @@ class AssetHelper {
         return AssetHelper.getNullText();
     }
 
-    public static function getScriptAsset(key:NamespacedKey, ?reload:Bool=false):Expr {
+    public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Expr {
         if ((!reload) && AssetHelper.scriptCache.exists(key.toString())) {
             return AssetHelper.scriptCache.get(key.toString());
         }
@@ -118,11 +129,11 @@ class AssetHelper {
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
         #if (debug && !mobile)
-        //Main.log('debug paths');
+        // Main.log('debug paths');
         var rootPath = "./../../../assets/";
         var namespacedPath = "debug_mods/";
         #else
-        //Main.log('normal paths');
+        // Main.log('normal paths');
         var rootPath = "./assets/";
         var namespacedPath = "mods/";
         #end

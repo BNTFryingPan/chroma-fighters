@@ -1,5 +1,9 @@
 package match;
 
+import AssetHelper;
+import PlayerSlot;
+import flixel.FlxBasic;
+
 typedef FighterModOption = {
     public var type:String;
     public var defaultValue:Dynamic;
@@ -34,9 +38,9 @@ typedef FighterScriptError = {
     public var desc:String;
 }
 
-//enum abstract FighterScriptsErrors(FighterScriptError) to FighterScriptError {
+// enum abstract FighterScriptsErrors(FighterScriptError) to FighterScriptError {
 //    var SCRIPT_NOT_FOUND = {name: "Script Not Found", desc: "A script with the specified key could not be found. Check the fighter's `info.json`!"}
-//}
+// }
 
 enum FighterAirState {
     GROUNDED; // is literally on the ground
@@ -56,6 +60,9 @@ class Fighter extends FlxBasic {
     public var percent:Float;
     public var airState:FighterAirState = GROUNDED;
 
+    public var x:Float;
+    public var y:Float;
+
     private var mainScript:ModScript;
     private var extraScripts:Map<String, ModScript>;
     private var slot:PlayerSlotIdentifier;
@@ -69,30 +76,32 @@ class Fighter extends FlxBasic {
     }
 
     public function loadScripts() {
-        this.mainScript = AssetHelper.getScriptAsset(this.modData.script);
+        this.mainScript = new ModScript(new NamespacedKey(this.modData.name, this.modData.script));
+        this.mainScript.shareFunctionMap(["getPercent" => this.getPercent, "getSlot" => this.getSlot])
     }
 
-    public function callScriptFunction(name:String, ...args:Dynamic):Dynamic {
-        if ()
+    public function callScriptFunction(name:String, ...args:Dynamic):Void {
+        this.mainScript.callFunction(name, args.toArray());
     }
 
-    public function update(elasped:Float) {
+    override public function update(elapsed:Float) {
         super.update(elapsed);
 
-        this.callScriptFunction("update", elapsed)
+        this.callScriptFunction("update", elapsed);
     }
 
-    public function render(input:GenericInput) {
+    override public function draw() {
         super.draw();
 
-        this.callScriptFunction("draw")
+        this.callScriptFunction("draw");
     }
 
     public function render_ui() {
-        this.callScriptFunction("draw_ui")
+        this.callScriptFunction("draw_ui");
     }
 
-    public function getPercent():Float {
+    public function getPercent(a:String):Float {
+        Main.log(a);
         return this.percent;
     }
 
