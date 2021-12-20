@@ -2,6 +2,7 @@
     "author": "team-prism",
     "type": "fighter", // fighter, stage, gameplay
     "version": "0.0.1", // *must* be semver
+    "modFormat": "0", // the format version of this mod. used for compatability detection or workarounds if there are breaking changes to the way mods work
     "description": "mod description",
     "name": "mod name",
     "id": "unique mod id",//either automatically generated,or created like java namespaces or whatever(com.domain.author.name)
