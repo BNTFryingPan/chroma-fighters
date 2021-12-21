@@ -2,18 +2,23 @@
 // ? indicates that of the standard animations, that one is "optional"
 // anything after a // is a comment on that animations name or use
 // technially double this list and add _right to this one, and _left to the new one, and the second is all optional
+// this file doesnt actually need to have // for comments i just felt like it lol
 // animations:
+
 idle
 crouch
 walk
 ?crawl // might not add crawling
 dash
 dash_reverse // when you start going the other way while in a dash
+?dash_dance // when you dash reverse over and over fast enough, it can play this animation until you stop dashing
 dash_attack
+
 jump
 ?airjump // double jump, if excluded will use normal jump animation
 fall // regular falling animation
 freefall // used after up-b usually, basically when you arent allowed to do something. might rename to pratfall like in rivals
+
 roll_right
 ?roll_left
 dodge_spot // idk what to call this, but ive heard it called a spot dodge in smash (rivals has parrys instead)
@@ -22,7 +27,9 @@ dodge_spot // idk what to call this, but ive heard it called a spot dodge in sma
 ?dodge_air_left
 ?dodge_air_up
 ?dodge_air_down
+
 shield_parry // perfect shield in smash
+
 special // neutral special on the ground
 ?special_air
 side_special
@@ -31,39 +38,44 @@ up_special
 ?up_special_air
 down_special
 ?down_special_air
+
 side_strong
 up_strong
 down_strong
+
 jab_1
 ?jab_2
 ?jab_3
 ?rapid_jab
+
 taunt
+
 air_attack_neutral
 air_attack_forward
 air_attack_backward
 air_attack_upward
 air_attack_downward
+
 tilt_forward
 tilt_upward
 tilt_downward
+
 hit
 launched
 stun
+
 shield_activate 
 shield_idle
 shield_deactivate
 shield_break
-?shield_damaged_activate // 3-4 shields left
-?shield_damaged_idle
-?shield_damaged_deactivate
-?shield_damaged_break
-?shield_very_damaged_activate // 1 shield left
-?shield_very_damaged_idle
-?shield_very_damaged_deactivate
-?shield_very_damaged_break
+?shield_damaged_x_activate // replace x with number of broken shields
+?shield_damaged_x_idle
+?shield_damaged_x_deactivate
+?shield_damaged_x_break
+shield_activate_fail // when you try to shield but you you have no shields left
 shield_broken_stun // used after shields 1-4 are broken
 ?shield_broken_long_stun // used after the last shield is broken
+
 land
 hard_land
 get_up // after landing hard and not teching, neutral get up

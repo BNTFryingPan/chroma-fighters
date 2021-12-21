@@ -66,6 +66,20 @@ class Fighter extends FlxBasic {
     private var mainScript:ModScript;
     private var extraScripts:Map<String, ModScript>;
     private var slot:PlayerSlotIdentifier;
+    private var recentMoves:Array<String> = ["", "", "", "", "", "", "", "", "", ""];
+    
+    public static var recentStaleModifier:Map<Int, Float> = [
+        0 => 0.1,
+        1 => 0.2,
+        2 => 0.3,
+        3 => 0.4,
+        4 => 0.45,
+        5 => 0.5,
+        6 => 0.55,
+        7 => 0.6,
+        8 => 0.65,
+        9 => 0.7
+    ]
 
     public function new(data:FighterModJson, slot:PlayerSlotIdentifier, x:Float, y:Float) {
         super();
@@ -108,4 +122,15 @@ class Fighter extends FlxBasic {
     public function getSlot():Int {
         return cast this.slot;
     }
+
+    public function stale(id:String) {
+        this.recentMoves.pop();
+        this.recentMoves.unshift(id);
+    }
+
+    public function getHeldItem():Null<HoldableItem> {
+        return null;
+    }
+
+    public function launch(angle:Float=50, knockback:Float=1.0)
 }
