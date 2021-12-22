@@ -78,7 +78,7 @@ getModOption(key:String):Dynamic
 
 
 
-available for fighter mods, or on the `Fighter` class if $:
+available for fighter mods, or on the `Fighter` class when refrenced by another mod if $:
 $getPercent():Float
 $getSlot():Int
 $getFighterName():String

@@ -47,50 +47,11 @@ class BaseState extends FlxState {
 
     override public function draw() {
         super.draw();
-        PlayerSlot.drawAll();
-    }
-
-    private static function isPressingConnectCombo(gp:FlxGamepad):Bool {
-        if (gp.pressed.LEFT_SHOULDER && gp.pressed.RIGHT_SHOULDER) {
-            return gp.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER]);
-        } else if (gp.pressed.LEFT_TRIGGER && gp.pressed.RIGHT_TRIGGER) {
-            return gp.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER]);
-        }
-        return false;
+        GameManager.draw();
     }
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
-        PlayerSlot.updateAll(elapsed);
-
-        var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
-        Main.debugDisplay.rightAppend += '${pads}';
-
-        if (!InputManager.enabled)
-            return;
-
-        var emptySlot = PlayerSlot.getFirstOpenPlayerSlot();
-
-        if (emptySlot != null) {
-            if (FlxG.keys.pressed.A && FlxG.keys.pressed.S && FlxG.keys.anyJustPressed([A, S])) {
-                if (PlayerSlot.getPlayerSlotByInput(KeyboardInput) == null) {
-                    PlayerSlot.getPlayer(emptySlot).setNewInput(KeyboardInput, Keyboard);
-                } else {
-                    var keyboardPlayer = PlayerSlot.getPlayerByInput(KeyboardInput);
-                    if (Std.isOfType(keyboardPlayer.input, MouseHandler)) {
-                        keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
-                    } else {
-                        keyboardPlayer.setNewInput(KeyboardAndMouseInput, Keyboard, keyboardPlayer.input.profile.name);
-                    }
-                }
-                return;
-            }
-            FlxG.gamepads.getActiveGamepads().filter(p -> {
-                if (BaseState.isPressingConnectCombo(p)) {
-                    PlayerSlot.tryToAddPlayerFromInputDevice(p);
-                }
-                return true;
-            });
-        }
+        GameManager.update(elapsed);
     }
 }
