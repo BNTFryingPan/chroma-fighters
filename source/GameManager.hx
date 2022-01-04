@@ -1,11 +1,17 @@
 package;
 
+import flixel.FlxG;
+import inputManager.InputEnums;
+import inputManager.InputHelper;
+import inputManager.InputManager;
+import inputManager.MouseHandler;
+
 class GameManager {
     public static function update(elapsed:Float) {
         PlayerSlot.updateAll(elapsed);
 
-        //var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
-        //Main.debugDisplay.rightAppend += '${pads}';
+        // var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
+        // Main.debugDisplay.rightAppend += '${pads}';
 
         if (!InputManager.enabled)
             return;

@@ -65,14 +65,14 @@ class AssetHelper {
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        Main.log(AssetHelper.imageCache.toString());
+        // Main.log(AssetHelper.imageCache.toString());
         if (AssetHelper.imageCache.exists(key.toString())) {
-            Main.log("returning from cache");
+            // Main.log("returning from cache");
             return AssetHelper.imageCache.get(key.toString());
         }
-        Main.log("getImageAsset");
+        // Main.log("getImageAsset");
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-        Main.log('got directory: ' + assetDir);
+        // Main.log('got directory: ' + assetDir);
         // Main.log(assetDir);
         if (assetDir != null) {
             var loaded:BitmapData = BitmapData.fromFile(assetDir);
@@ -130,11 +130,11 @@ class AssetHelper {
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
         #if (debug && !mobile)
         // Main.log('debug paths');
-        var rootPath = "./../../../assets/";
-        var namespacedPath = "debug_mods/";
+        var rootPath = "./../../../mods/";
+        var namespacedPath = "mods/";
         #else
         // Main.log('normal paths');
-        var rootPath = "./assets/";
+        var rootPath = "./mods/";
         var namespacedPath = "mods/";
         #end
 
@@ -156,7 +156,8 @@ class AssetHelper {
             namespacedPath += key.namespace + "/";
         }
 
-        // Main.log(rootPath + namespacedPath + fileName);
+        // Main.log(FileSystem.absolutePath(rootPath + namespacedPath + fileName));
+
         #if (!mobile)
         if (FileSystem.exists(rootPath + namespacedPath + fileName)) {
             // Main.log("exists");

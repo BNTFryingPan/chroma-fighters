@@ -1,0 +1,7 @@
+function draw() {
+    trace("draw");
+}
+
+function getFighterName() {
+    return "Example Fighter";
+}

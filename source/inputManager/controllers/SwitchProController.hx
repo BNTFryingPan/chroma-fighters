@@ -1,5 +1,8 @@
 package inputManager.controllers;
 
+import PlayerSlot;
+import inputManager.InputEnums;
+
 class SwitchProController extends GenericController {
     override public function get_inputType() {
         return "Controller (Switch Pro Controller)";

@@ -2,10 +2,10 @@ package inputManager;
 
 import flixel.input.keyboard.FlxKey;
 import inputManager.GenericInput;
-import inputManager.InputHelper;
-import inputManager.controllers.GenericController;
 import inputManager.InputEnums;
+import inputManager.InputHelper;
 import inputManager.InputTypes;
+import inputManager.controllers.GenericController;
 
 class ProfileInput {
     public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
@@ -30,7 +30,8 @@ class ProfileInput {
         });
     }
 
-    private var source:ProfileInputSource;
+    public var source:ProfileInputSource;
+
     private var rawOptions:ProfileInputOptions;
 
     public final type:ProfileInputType;

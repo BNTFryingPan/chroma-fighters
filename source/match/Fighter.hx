@@ -67,19 +67,10 @@ class Fighter extends FlxBasic {
     private var extraScripts:Map<String, ModScript>;
     private var slot:PlayerSlotIdentifier;
     private var recentMoves:Array<String> = ["", "", "", "", "", "", "", "", "", ""];
-    
+
     public static var recentStaleModifier:Map<Int, Float> = [
-        0 => 0.1,
-        1 => 0.2,
-        2 => 0.3,
-        3 => 0.4,
-        4 => 0.45,
-        5 => 0.5,
-        6 => 0.55,
-        7 => 0.6,
-        8 => 0.65,
-        9 => 0.7
-    ]
+        0 => 0.1, 1 => 0.2, 2 => 0.3, 3 => 0.4, 4 => 0.45, 5 => 0.5, 6 => 0.55, 7 => 0.6, 8 => 0.65, 9 => 0.7
+    ];
 
     public function new(data:FighterModJson, slot:PlayerSlotIdentifier, x:Float, y:Float) {
         super();
@@ -91,7 +82,7 @@ class Fighter extends FlxBasic {
 
     public function loadScripts() {
         this.mainScript = new ModScript(new NamespacedKey(this.modData.name, this.modData.script));
-        this.mainScript.shareFunctionMap(["getPercent" => this.getPercent, "getSlot" => this.getSlot])
+        this.mainScript.shareFunctionMap(["getPercent" => this.getPercent, "getSlot" => this.getSlot]);
     }
 
     public function callScriptFunction(name:String, ...args:Dynamic):Void {
@@ -132,5 +123,5 @@ class Fighter extends FlxBasic {
         return null;
     }
 
-    public function launch(angle:Float=50, knockback:Float=1.0)
+    public function launch(angle:Float = 50, knockback:Float = 1.0) {}
 }

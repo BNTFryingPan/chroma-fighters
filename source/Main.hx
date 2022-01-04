@@ -19,7 +19,7 @@ class Main extends Sprite {
         catch (err) {
             null;
         }
-        trace(data);
+        // trace(data);
     }
 
     public function new() {

@@ -6,13 +6,19 @@
 // animations:
 
 idle
-crouch
+?idle_active_x // replace x with any number 0-9, and it will be randomly used while idle for long enough, not required
+?idle_ledge // tetering animation when standing still right on the ledge
 walk
-?crawl // might not add crawling
 dash
 dash_reverse // when you start going the other way while in a dash
 ?dash_dance // when you dash reverse over and over fast enough, it can play this animation until you stop dashing
 dash_attack
+
+crouch_start
+crouch_idle
+crouch_end
+?crouch_walk // might not add crawling
+?crouch_jump // used when jumping when crouching. often is a little higher i think maybe (idk)
 
 jump
 ?airjump // double jump, if excluded will use normal jump animation

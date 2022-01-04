@@ -63,13 +63,13 @@ class GenericInput extends FlxBasic {
     public function new(slot:PlayerSlotIdentifier, ?profile:String) {
         super();
 
-        Main.log('creating ${this.inputType} input for slot ' + slot);
+        // Main.log('creating ${this.inputType} input for slot ' + slot);
         this.slot = slot;
 
         this.coinSprite = new FlxSprite();
-        Main.log('loading graphic');
+        // Main.log('loading graphic');
         this.coinSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerCoinKey)));
-        Main.log('loaded graphic');
+        // Main.log('loaded graphic');
         this.cursorSprite = new FlxSprite();
 
         this.debugSprite = new FlxSprite();

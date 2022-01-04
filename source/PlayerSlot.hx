@@ -14,6 +14,7 @@ import inputManager.InputTypes;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
 import inputManager.controllers.GenericController;
+import inputManager.controllers.SwitchProController;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
     var P1;
@@ -243,12 +244,12 @@ class PlayerSlot extends FlxBasic {
         if (inputDevice == null)
             return;
 
-        this.input = new (switch (inputDevice.model) {
+        this.input = switch (inputDevice.model) {
             case SWITCH_PRO:
-                SwitchProController;
+                new SwitchProController(this.slot, profile);
             default:
-                GenericController
-        })(this.slot, profile)
+                new GenericController(this.slot, profile);
+        };
 
         var inp:GenericController = cast this.input;
         inp._flixelGamepad = cast inputDevice;

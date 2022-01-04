@@ -11,7 +11,7 @@ import lime.system.System;
 class Profile {
     public static function getProfile(name:String, useDefaultControls:Bool = false):Profile {
         // TODO : load and create the players profile
-        Main.log("getting profile");
+        // Main.log("getting profile");
         var profile = new Profile();
         if (useDefaultControls) {
             profile.fileName = "@default";
@@ -130,18 +130,18 @@ class Profile {
         var pressed:Array<INPUT_STATE>;
 
         if (Std.isOfType(this.player.input, KeyboardHandler)) {
-            pressed = list.map(action -> {
-                if (Std.isOfType(action, GenericButton))
+            pressed = list.map((action:ProfileInput) -> {
+                if (Std.isOfType(action.source, GenericButton))
                     return NOT_PRESSED;
 
-                return InputHelper.getFromFlxInput(FlxG.keys.getKey(cast action));
+                return InputHelper.getFromFlxInput(FlxG.keys.getKey(cast action.source));
             });
         } else if (Std.isOfType(this.player.input, GenericController)) {
             pressed = list.map(action -> {
-                if (Std.isOfType(action, Int))
+                if (Std.isOfType(action.source, Int))
                     return NOT_PRESSED;
 
-                return (cast this.player.input).getButtonState(cast action);
+                return (cast this.player.input).getButtonState(cast action.source);
             });
         } else
             return NOT_PRESSED;

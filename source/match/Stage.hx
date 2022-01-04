@@ -1,5 +1,7 @@
 package match;
 
+import flixel.FlxBasic;
+
 typedef StageModOption = {
     public var type:String;
     public var defaultValue:Dynamic;
@@ -22,6 +24,4 @@ typedef StageModJson = {
     public var isInBaseGame:Bool;
 }
 
-class Stage extends FlxBasic {
-
-}
+class Stage extends FlxBasic {}

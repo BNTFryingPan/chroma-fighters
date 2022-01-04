@@ -2,23 +2,18 @@ package inputManager;
 
 import flixel.FlxG;
 import flixel.input.FlxInput;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
 import inputManager.InputEnums;
 import inputManager.InputTypes;
 
 class InputHelper {
     static public function isPressingConnectCombo(gamepad:FlxGamepad):Bool {
-        if (
-            gamepad.pressed.LEFT_SHOULDER &&
-            gamepad.pressed.RIGHT_SHOULDER &&
-            gamepad.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER])
-        ) {
+        if (gamepad.pressed.LEFT_SHOULDER && gamepad.pressed.RIGHT_SHOULDER && gamepad.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER])) {
             return true;
-        } else if (
-            gamepad.pressed.LEFT_TRIGGER &&
-            gamepad.pressed.RIGHT_TRIGGER &&
-            gamepad.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER])
-        ) {
+        } else if (gamepad.pressed.LEFT_TRIGGER
+            && gamepad.pressed.RIGHT_TRIGGER
+            && gamepad.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER])) {
             return true;
         }
         return false;
