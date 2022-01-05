@@ -8,6 +8,8 @@ import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
 #if hl
 import hl.Gc;
+#elseif cpp
+import cpp.vm.Gc;
 #end
 
 class DebugDisplay extends FlxBasic {
@@ -54,10 +56,10 @@ class DebugDisplay extends FlxBasic {
             currentMemory: Math.round(memStatsRaw.currentMemory / 1024 / 1024 * 100) / 10,
             allocationCount: Math.round(memStatsRaw.allocationCount / 1024 / 1024 * 100) / 10,
         };
-        #else
+        #elseif cpp
         var memStats = {
-            totalAllocated: 0,
-            currentMemory: 0,
+            totalAllocated: (Gc.memInfo(Gc.MEM_INFO_RESERVED) / 1024) / 1000,
+            currentMemory: (Gc.memInfo(Gc.MEM_INFO_CURRENT) / 1024) / 1000,
             allocationCount: 0,
         }
         #end
@@ -83,12 +85,13 @@ class DebugDisplay extends FlxBasic {
             // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
             this.rightText.text += 'Mem: ${memStats.currentMemory} / ${maxMemory}MB\n';
             this.rightText.text += 'Alloc: ${memStats.allocationCount} / ${memStats.totalAllocated}\n';
-            this.rightText.text += 'System: ${LimeSys.platformName} (${FlCap.cpuArchitecture})\n\n';
+            this.rightText.text += 'System: ${FlCap.manufacturer} ${FlCap.os} (${FlCap.cpuArchitecture})\n';
+            this.rightText.text += 'SysRaw: ${FlCap.version}';
             // this.rightText.text += 'Elapsed: ${}';
             // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
             // this.rightText.text += 'CPU: \n';
 
-            this.rightText.text += this.rightAppend;
+            this.rightText.text += '\n${this.rightAppend}';
 
             this.rightPrepend = "";
             this.rightAppend = "";
