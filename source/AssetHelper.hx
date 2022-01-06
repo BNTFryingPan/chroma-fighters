@@ -65,15 +65,10 @@ class AssetHelper {
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        // Main.log(AssetHelper.imageCache.toString());
-        if (AssetHelper.imageCache.exists(key.toString())) {
-            // Main.log("returning from cache");
+        /*if (AssetHelper.imageCache.exists(key.toString())) {
             return AssetHelper.imageCache.get(key.toString());
-        }
-        // Main.log("getImageAsset");
+        }*/
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-        // Main.log('got directory: ' + assetDir);
-        // Main.log(assetDir);
         if (assetDir != null) {
             var loaded:BitmapData = BitmapData.fromFile(assetDir);
             AssetHelper.imageCache.set(key.toString(), loaded);

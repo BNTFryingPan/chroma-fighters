@@ -67,10 +67,9 @@ class GenericInput extends FlxBasic {
         this.slot = slot;
 
         this.coinSprite = new FlxSprite();
-        // Main.log('loading graphic');
-        this.coinSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerCoinKey)));
-        // Main.log('loaded graphic');
+        // this.coinSprite.loadGraphic()
         this.cursorSprite = new FlxSprite();
+        this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerRightKey)), false, 32, 32);
 
         this.debugSprite = new FlxSprite();
         this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
@@ -118,6 +117,7 @@ class GenericInput extends FlxBasic {
     }
 
     public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
+        return bitmap;
         var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
         var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
         bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
@@ -173,7 +173,7 @@ class GenericInput extends FlxBasic {
             return;
         super.draw();
         this.cursorSprite.draw();
-        this.coinSprite.draw();
+        // this.coinSprite.draw();
 
         this.debugSprite.draw();
     }
