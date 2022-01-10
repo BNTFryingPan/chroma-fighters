@@ -40,6 +40,20 @@ class Main extends Sprite {
 
         addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
 
+        FlxG.gamepads.deviceConnected.add(gamepad -> {
+            Main.log('${gamepad.name}.${gamepad.id} connected');
+        });
+
+        FlxG.gamepads.deviceDisconnected.add(gamepad -> {
+            Main.log('${gamepad.name}.${gamepad.id} disconnected');
+            if (InputManager.getUsedGamepads().contains(gamepad)) {
+                var slot = InputManager.getPlayerSlotByInput(gamepad);
+                if (slot != null) {
+                    PlayerSlot.getPlayer(slot).setNewInput(NoInput);
+                }
+            }
+        });
+
         Main.debugDisplay = new DebugDisplay();
 
         Application.current.window.title = 'chroma-fighters';

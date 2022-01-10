@@ -21,20 +21,6 @@ class BaseState extends FlxState {
 
         FlxG.autoPause = false;
 
-        FlxG.gamepads.deviceConnected.add(gamepad -> {
-            Main.log('${gamepad.name}.${gamepad.id} connected');
-        });
-
-        FlxG.gamepads.deviceDisconnected.add(gamepad -> {
-            Main.log('${gamepad.name}.${gamepad.id} disconnected');
-            if (InputManager.getUsedGamepads().contains(gamepad)) {
-                var slot = InputManager.getPlayerSlotByInput(gamepad);
-                if (slot != null) {
-                    PlayerSlot.getPlayer(slot).setNewInput(NoInput);
-                }
-            }
-        });
-
         // add(new MonospaceText(100, 200, 0, "HI"));
 
         /*if (FlxG.gamepads.lastActive != null) { // if there is a controller connected, make the last active (arbitrary?) controller the P1 input
