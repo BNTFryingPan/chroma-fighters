@@ -18,15 +18,7 @@ import openfl.geom.Rectangle;
 
     this handler always returns false for any input checks, and reports the cursor position as (0, 0)
 **/
-class GenericInput extends FlxBasic {
-    public var cursorSprite:FlxSprite;
-    public var coinSprite:FlxSprite;
-    public var debugSprite:FlxSprite;
-    public var cursor:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
-    public var cursorAngle:CursorRotation = RIGHT;
-    public var spriteOffset:Position = {x: 0, y: 0};
-    public var isvisible:Bool = true;
-
+class GenericInput {
     public var inputEnabled(get, default):Bool = false;
 
     public var inputType(get, never):String;
@@ -42,42 +34,9 @@ class GenericInput extends FlxBasic {
     public var slot:PlayerSlotIdentifier;
     public var profile:Profile;
 
-    public static function getOffset(angle:CursorRotation):Position {
-        if (angle == LEFT) {
-            return {x: 30, y: 15};
-        } else if (angle == RIGHT) {
-            return {x: 30, y: 15};
-        } else if (angle == UP_LEFT) {
-            return {x: 30, y: 15};
-        } else if (angle == UP_RIGHT) {
-            return {x: 27, y: 0};
-        } else if (angle == DOWN_LEFT) {
-            return {x: 30, y: 15};
-        } else if (angle == DOWN_RIGHT) {
-            return {x: 30, y: 15};
-        }
-
-        return {x: 30, y: 15};
-    }
-
-    public function new(slot:PlayerSlotIdentifier, ?profile:String) {
-        super();
-
-        // Main.log('creating ${this.inputType} input for slot ' + slot);
+    public function new(slot:PlayerSlotIdentifier, ?profile:String = null) {
+        Main.log('creating ${this.inputType} input for slot ' + slot);
         this.slot = slot;
-
-        this.coinSprite = new FlxSprite();
-        // this.coinSprite.loadGraphic()
-        this.cursorSprite = new FlxSprite();
-        this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerRightKey)), false, 32, 32);
-
-        this.debugSprite = new FlxSprite();
-        this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
-
-        this.setCursorAngle(RIGHT);
-
-        this.cursor = {x: 0, y: 0};
-        // this.inputEnabled = true;
 
         if (profile == null) {
             this.profile = Profile.getProfile("", true);
@@ -86,103 +45,15 @@ class GenericInput extends FlxBasic {
         }
     }
 
-    public static var PointerCoinKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/coin");
-    public static var PointerLeftKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left");
-    public static var PointerRightKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right");
-    public static var PointerUpLeftKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left");
-    public static var PointerUpRightKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right");
-    public static var PointerDownLeftKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left");
-    public static var PointerDownRightKey:NamespacedKey = NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right");
-
-    public function setCursorAngle(angle:CursorRotation) {
-        if (angle == LEFT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerLeftKey)));
-        } else if (angle == RIGHT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerRightKey)));
-        } else if (angle == UP_LEFT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerUpLeftKey)));
-        } else if (angle == UP_RIGHT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerUpRightKey)));
-        } else if (angle == DOWN_LEFT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerDownLeftKey)));
-        } else if (angle == DOWN_RIGHT) {
-            this.cursorSprite.loadGraphic(this.applySlotColorFilter(AssetHelper.getImageAsset(GenericInput.PointerDownRightKey)));
-        }
-
-        this.spriteOffset = GenericInput.getOffset(angle);
+    /**
+        can be used to override the cursor position. mainly so mouse input works, but could theoretically be used for wii remote pointer or touchscreen inputs too
+    **/
+    public function getCursorPosition():Null<Position> {
+        return null;
     }
 
     public function getCursorStick():StickValue {
         return this.getStick();
-    }
-
-    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
-        return bitmap;
-        var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
-        var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
-        bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
-        return bitmap;
-    }
-
-    function updateCursorPos(elapsed:Float) {
-        var stick = getCursorStick();
-
-        this.cursor.x += Math.round(stick.x * 500 * elapsed);
-        this.cursor.y += Math.round(stick.y * 500 * elapsed);
-
-        this.cursor.x = Std.int(Math.min(this.cursor.x, FlxG.width));
-        this.cursor.x = Std.int(Math.max(this.cursor.x, 0));
-        this.cursor.y = Std.int(Math.min(this.cursor.y, FlxG.height));
-        this.cursor.y = Std.int(Math.max(this.cursor.y, 0));
-    }
-
-    override function update(elapsed:Float) {
-        this.updateCursorPos(elapsed);
-        var cursorPos = this.getCursorPosition();
-
-        this.cursorSprite.x = cursorPos.x - this.spriteOffset.x;
-        this.cursorSprite.y = cursorPos.y - this.spriteOffset.y;
-
-        this.debugSprite.x = cursorPos.x;
-        this.debugSprite.y = cursorPos.y;
-
-        super.update(elapsed);
-
-        if (this.inputEnabled) {
-            for (mem in FlxG.state.members) {
-                if (Std.isOfType(mem, CustomButton)) {
-                    var button:CustomButton = cast mem;
-                    if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
-                        button.overHandler(this.slot);
-                        if (InputHelper.isPressed(this.getConfirm()))
-                            button.downHandler(this.slot);
-                        else
-                            button.upHandler(this.slot);
-                    } else
-                        button.outHandler(this.slot);
-                }
-            }
-            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}}\nCursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.getCursorStick()}\nStick: ${this.getStick()}\nButtons: con ${this.getConfirm()} can ${this.getCancel()} act ${this.getMenuAction()} left ${this.getMenuLeft()} right ${this.getMenuRight()}\n';
-        } else {
-            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.inputType}} ----DISABLED----';
-        }
-    }
-
-    override function draw() {
-        if (!this.inputEnabled)
-            return;
-        super.draw();
-        this.cursorSprite.draw();
-        // this.coinSprite.draw();
-
-        this.debugSprite.draw();
-    }
-
-    /**
-        returns the screen position where the cursor should be drawn and the "click point"
-    **/
-    public function getCursorPosition():Position {
-        return this.cursor;
     }
 
     public function getConfirm():INPUT_STATE {

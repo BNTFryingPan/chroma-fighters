@@ -28,6 +28,8 @@ class DebugDisplay extends FlxBasic {
 
     public static final fontSize:Int = 8;
 
+    private static final os:String = '${FlCap.os}';
+
     public function new() {
         super();
 
@@ -61,7 +63,13 @@ class DebugDisplay extends FlxBasic {
             totalAllocated: (Gc.memInfo(Gc.MEM_INFO_RESERVED) / 1024) / 1000,
             currentMemory: (Gc.memInfo(Gc.MEM_INFO_CURRENT) / 1024) / 1000,
             allocationCount: 0,
-        }
+        };
+        #else
+        var memStats = {
+            totalAllocated: 0,
+            currentMemory: 0,
+            allocationCount: 0,
+        };
         #end
 
         if (memStats.currentMemory > maxMemory)
@@ -85,7 +93,7 @@ class DebugDisplay extends FlxBasic {
             // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
             this.rightText.text += 'Mem: ${memStats.currentMemory} / ${maxMemory}MB\n';
             this.rightText.text += 'Alloc: ${memStats.allocationCount} / ${memStats.totalAllocated}\n';
-            this.rightText.text += 'System: ${FlCap.manufacturer} ${FlCap.os} (${FlCap.cpuArchitecture})\n';
+            this.rightText.text += 'System: ${FlCap.manufacturer} ${DebugDisplay.os} (${FlCap.cpuArchitecture})\n';
             this.rightText.text += 'SysRaw: ${FlCap.version}';
             // this.rightText.text += 'Elapsed: ${}';
             // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';

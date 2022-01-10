@@ -6,8 +6,10 @@ import hscript.Expr;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.display.BitmapData;
+#if sys
 import sys.FileSystem;
 import sys.io.File;
+#end
 
 class ModScript {
     public var interp:Interp;
@@ -51,49 +53,67 @@ class AssetHelper {
     static inline final saveNamespace:String = "chromasave";
 
     public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
-    public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
 
+    public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
     private static var parser:Parser = new Parser();
 
     private function new() {}
 
-    /*private static function getNullBitmap():BitmapData {
-        return 
-    }*/
+    private static function getNullBitmap():BitmapData {
+        return new BitmapData(1, 1, true, 0xFF00FFFF);
+    }
+
     private static function getNullText():String {
         return "NOT_FOUND";
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        /*if (AssetHelper.imageCache.exists(key.toString())) {
+        #if sys
+        Main.log('loading ${key.toString()}');
+        if (AssetHelper.imageCache.exists(key.toString())) {
+            // Main.log('cache');
             return AssetHelper.imageCache.get(key.toString());
-        }*/
+        }
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
         if (assetDir != null) {
+            // Main.log('found');
             var loaded:BitmapData = BitmapData.fromFile(assetDir);
             AssetHelper.imageCache.set(key.toString(), loaded);
             return loaded;
         }
-        return null;
+        // Main.log('not found');
+        return getNullBitmap();
+        #else
+        return getNullBitmap();
+        #end
     }
 
     public static function getTextAsset(key:NamespacedKey):Array<String> {
+        #if sys
         var assetDir = AssetHelper.getAssetDirectory(key, ".txt");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir).split("\n");
         }
         return [AssetHelper.getNullText()];
+        #else
+        return [AssetHelper.getNullText()];
+        #end
     }
 
     public static function getRawTextAsset(key:NamespacedKey):String {
+        #if sys
         var assetDir = AssetHelper.getAssetDirectory(key, ".txt");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
         }
         return AssetHelper.getNullText();
+        #else
+        return AssetHelper.getNullText();
+        #end
     }
 
     public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Expr {
+        #if sys
         if ((!reload) && AssetHelper.scriptCache.exists(key.toString())) {
             return AssetHelper.scriptCache.get(key.toString());
         }
@@ -104,25 +124,37 @@ class AssetHelper {
             return parsed;
         }
         return null;
+        #else
+        return null;
+        #end
     }
 
     public static function getJsonAsset(key:NamespacedKey):Dynamic {
+        #if sys
         var assetDir = AssetHelper.getAssetDirectory(key, ".json");
         if (assetDir != null) {
             return haxe.Json.parse(sys.io.File.getContent(assetDir));
         }
         return {};
+        #else
+        return {};
+        #end
     }
 
     public static function getRawJsonAsset(key:NamespacedKey):String {
+        #if sys
         var assetDir = AssetHelper.getAssetDirectory(key, ".json");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
         }
         return "{}";
+        #else
+        return "{}";
+        #end
     }
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
+        #if sys
         #if (debug && !mobile)
         // Main.log('debug paths');
         var rootPath = "./../../../mods/";
@@ -161,6 +193,9 @@ class AssetHelper {
             return null;
         #else
         // if (sys.io.)
+        return null;
+        #end
+        #else
         return null;
         #end
     }

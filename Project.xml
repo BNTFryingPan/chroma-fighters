@@ -61,6 +61,13 @@
 
 	<!-- i do this because i think -debug causes some other things to change maybe (more logging on android) -->
 	<haxedef name="debug" if="d4" />
+	
+	<section if="cpp debug">
+		<haxedef name="debug" value="true" />
+		<haxedef name="HXCPP_STACK_LINE" />
+		<haxedef name="HXCPP_STACK_TRACE" />
+		<haxedef name="HXCPP_CHECK_POINTER" />
+	</section>
 
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->

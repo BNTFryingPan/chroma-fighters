@@ -34,8 +34,8 @@ class CustomButton extends FlxButton {
     ];
 
     private function getIsClickedBy(slot:PlayerSlotIdentifier):Bool {
-        if (this.currentHoveredCursors.get(slot) == true) {
-            return this.currentClickedCursors.get(slot) == true;
+        if (this.currentHoveredCursors.get(slot)) {
+            return this.currentClickedCursors.get(slot);
         }
         return false;
     }

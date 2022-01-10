@@ -1,7 +1,7 @@
 package inputManager;
 
 enum Action {
-    NULL;
+    NULL; // never true
     MENU_CONFIRM;
     MENU_CANCEL;
     MENU_ACTION;

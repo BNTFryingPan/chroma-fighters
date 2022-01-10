@@ -4,9 +4,9 @@ import PlayerSlot.PlayerSlotIdentifier;
 import cpuController.CpuController;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.typeLimit.OneOfTwo;
-import inputManager.controllers.GenericController;
 import inputManager.InputEnums;
 import inputManager.InputTypes;
+import inputManager.controllers.GenericController;
 
 class InputManager {
     /*private static var players:Map<PlayerSlotIdentifier, GenericInput> = [
@@ -96,34 +96,60 @@ class InputManager {
     }
 
     public static function getCursors():Array<Position> {
-        return InputManager.getPlayerArray().map(function(p) {
+        return PlayerSlot.getPlayerArray().map(function(p) {
             return p.getCursorPosition();
         });
     }
 
-    public static function update(elasped:Float) {
-        if (!InputManager.enabled)
-            return;
-        InputManager.getPlayer(P1).update(elasped);
-        InputManager.getPlayer(P2).update(elasped);
-        InputManager.getPlayer(P3).update(elasped);
-        InputManager.getPlayer(P4).update(elasped);
-        InputManager.getPlayer(P5).update(elasped);
-        InputManager.getPlayer(P6).update(elasped);
-        InputManager.getPlayer(P7).update(elasped);
-        InputManager.getPlayer(P8).update(elasped);
-    }
+    public static function anyPlayerPressingAction(act:Action):Bool {
+        for (p in getPlayerArray()) {
+            switch (act) {
+                case NULL:
+                    return false;
+                case MENU_CONFIRM:
+                    if (InputHelper.isPressed(p.getConfirm()))
+                        return true;
+                case MENU_CANCEL:
+                    if (InputHelper.isPressed(p.getCancel()))
+                        return true;
+                case MENU_ACTION:
+                    if (InputHelper.isPressed(p.getMenuAction()))
+                        return true;
+                case MENU_LEFT:
+                    if (InputHelper.isPressed(p.getMenuLeft()))
+                        return true;
+                case MENU_RIGHT:
+                    if (InputHelper.isPressed(p.getMenuRight()))
+                        return true;
+                case JUMP:
+                    if (InputHelper.isPressed(p.getJump()))
+                        return true;
+                case SHORT_JUMP:
+                    if (InputHelper.isPressed(p.getJump()))
+                        return true;
+                case ATTACK:
+                    if (InputHelper.isPressed(p.getAttack()))
+                        return true;
+                case SPECIAL:
+                    if (InputHelper.isPressed(p.getSpecial()))
+                        return true;
+                case STRONG:
+                    if (InputHelper.isPressed(p.getStrong()))
+                        return true;
+                case TAUNT:
+                    if (InputHelper.isPressed(p.getTaunt()))
+                        return true;
+                case SHIELD:
+                    if (InputHelper.isPressed(p.getShield()))
+                        return true;
+                case WALK:
+                    if (InputHelper.isPressed(p.getWalk()))
+                        return true;
+                default:
+                    break;
+            }
+        }
 
-    public static function draw() {
-        if (!InputManager.enabled)
-            return;
-        InputManager.getPlayer(P8).draw();
-        InputManager.getPlayer(P7).draw();
-        InputManager.getPlayer(P6).draw();
-        InputManager.getPlayer(P5).draw();
-        InputManager.getPlayer(P4).draw();
-        InputManager.getPlayer(P3).draw();
-        InputManager.getPlayer(P2).draw();
-        InputManager.getPlayer(P1).draw();
+        return false;
     }
 }

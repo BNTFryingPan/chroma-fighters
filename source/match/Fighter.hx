@@ -106,11 +106,10 @@ class Fighter extends FlxBasic {
     }
 
     public function getPercent(a:String):Float {
-        Main.log(a);
         return this.percent;
     }
 
-    public function getSlot():Int {
+    public function getSlot(a:String):Int {
         return cast this.slot;
     }
 

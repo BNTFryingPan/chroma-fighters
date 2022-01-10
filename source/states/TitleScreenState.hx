@@ -2,14 +2,17 @@ package states;
 
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import inputManager.GenericInput;
 import inputManager.InputEnums;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputTypes;
 import lime.system.System;
+import states.sub.LocalMenu;
 
 enum MenuScreen {
     TitleScreen;
@@ -50,8 +53,11 @@ class TitleScreenState extends BaseState {
 
     public static var pastStartScreen:Bool = false;
     private static var hasEverPassedStartScreenThisSession:Bool = false;
+    private static var shouldShowTitleScreenAnyways:Bool = false;
 
     private var hasPressedButtons:Bool = false;
+
+    private var isFading:Bool = false;
 
     override public function create() {
         super.create();
@@ -60,21 +66,32 @@ class TitleScreenState extends BaseState {
         this.pressStartText.screenCenter(X);
 
         this.main_localButton = new CustomButton(0, -50, "Local", function(player:PlayerSlotIdentifier) {
-            Main.log(player + ": local button");
+            if (this.isFading)
+                return;
+            this.isFading = true;
+            FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
+                FlxG.switchState(new LocalMenu());
+            });
         });
         this.main_localButton.screenCenter(X);
 
         this.main_onlineButton = new CustomButton(0, -100, "Online (coming soon?)", function(player:PlayerSlotIdentifier) {
+            if (this.isFading)
+                return;
             Main.log(player + ": online button");
         });
         this.main_onlineButton.screenCenter(X);
 
         this.main_settingsButton = new CustomButton(0, -150, "Settings", function(player:PlayerSlotIdentifier) {
+            if (this.isFading)
+                return;
             Main.log(player + ": settings button");
         });
         this.main_settingsButton.screenCenter(X);
 
         this.main_exitButton = new CustomButton(0, -200, "Quit", function(player:PlayerSlotIdentifier) {
+            if (this.isFading)
+                return;
             // clean up any save data first.
             // might want to call a global exit function that does that
             System.exit(0);
@@ -87,12 +104,16 @@ class TitleScreenState extends BaseState {
         add(this.main_settingsButton);
         add(this.main_exitButton);
 
-        if (TitleScreenState.hasEverPassedStartScreenThisSession) {
+        if (TitleScreenState.hasEverPassedStartScreenThisSession && !TitleScreenState.shouldShowTitleScreenAnyways) {
             this.main_localButton.y = 100;
             this.main_onlineButton.y = 150;
             this.main_settingsButton.y = 200;
             this.main_exitButton.y = 250;
             this.pressStartText.y = 500;
+        }
+
+        if (TitleScreenState.shouldShowTitleScreenAnyways) {
+            TitleScreenState.shouldShowTitleScreenAnyways = false;
         }
     }
 
@@ -116,40 +137,40 @@ class TitleScreenState extends BaseState {
     }
 
     override public function update(elapsed:Float) {
-        super.update(elapsed);
+        if (!this.isFading) {
+            if (!TitleScreenState.pastStartScreen && !this.hasPressedButtons) {
+                var startingGamepads = FlxG.gamepads.getActiveGamepads()
+                    .filter(gamepad -> (gamepad.pressed.LEFT_SHOULDER && gamepad.pressed.RIGHT_SHOULDER)
+                        || (gamepad.pressed.RIGHT_TRIGGER_BUTTON && gamepad.pressed.LEFT_TRIGGER_BUTTON));
+                if (startingGamepads.length > 0) {
+                    if (!TitleScreenState.hasEverPassedStartScreenThisSession) {
+                        PlayerSlot.getPlayer(P1).setNewInput(ControllerInput, startingGamepads[0]);
+                    }
 
-        if (!TitleScreenState.pastStartScreen && !this.hasPressedButtons) {
-            var startingGamepads = FlxG.gamepads.getActiveGamepads()
-                .filter(gamepad -> (gamepad.pressed.LEFT_SHOULDER && gamepad.pressed.RIGHT_SHOULDER)
-                    || (gamepad.pressed.RIGHT_TRIGGER_BUTTON && gamepad.pressed.LEFT_TRIGGER_BUTTON));
-            if (startingGamepads.length > 0) {
-                if (!TitleScreenState.hasEverPassedStartScreenThisSession) {
-                    PlayerSlot.getPlayer(P1).setNewInput(ControllerInput, startingGamepads[0]);
+                    this.moveOn();
+                } else if (FlxG.keys.pressed.A && FlxG.keys.pressed.S) {
+                    if (!TitleScreenState.hasEverPassedStartScreenThisSession) {
+                        PlayerSlot.getPlayer(P1).setNewInput(KeyboardInput, Keyboard);
+                        PlayerSlot.getPlayer(P2).setNewInput(KeyboardAndMouseInput, Keyboard);
+                    } else
+                        Main.skipKeyboardModeToggleCheckNextUpdate = true;
+                    this.moveOn();
                 }
-
-                this.moveOn();
-            } else if (FlxG.keys.pressed.A && FlxG.keys.pressed.S) {
-                if (!TitleScreenState.hasEverPassedStartScreenThisSession)
-                    PlayerSlot.getPlayer(P1).setNewInput(KeyboardInput, Keyboard);
-                this.moveOn();
-            }
-        } else if (!TitleScreenState.pastStartScreen && this.hasPressedButtons) {
-            this.main_localButton.y = 100;
-            this.main_onlineButton.y = 150;
-            this.main_settingsButton.y = 200;
-            this.main_exitButton.y = 250;
-            this.pressStartText.y = 500;
-            this.movedOn();
-        } else if (TitleScreenState.pastStartScreen) {
-            if (InputManager.getPlayerArray().filter(player -> InputHelper.isPressed(player.getCancel())).length > 0) {
-                this.pressStartText.y = 400;
-                this.main_localButton.y = -50;
-                this.main_onlineButton.y = -100;
-                this.main_settingsButton.y = -150;
-                this.main_exitButton.y = -200;
-                TitleScreenState.pastStartScreen = false;
-                this.hasPressedButtons = false;
+            } else if (!TitleScreenState.pastStartScreen && this.hasPressedButtons) {
+                this.main_localButton.y = 100;
+                this.main_onlineButton.y = 150;
+                this.main_settingsButton.y = 200;
+                this.main_exitButton.y = 250;
+                this.pressStartText.y = 500;
+                this.movedOn();
+            } else if (TitleScreenState.pastStartScreen) {
+                if (InputManager.anyPlayerPressingAction(MENU_CANCEL)) {
+                    TitleScreenState.shouldShowTitleScreenAnyways = true;
+                    FlxG.resetState();
+                }
             }
         }
+
+        super.update(elapsed);
     }
 }

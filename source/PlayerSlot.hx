@@ -2,19 +2,27 @@ package;
 
 import cpuController.CpuController;
 import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfTwo;
 import inputManager.GenericInput;
 import inputManager.InputEnums;
+import inputManager.InputHelper;
+import inputManager.InputManager;
 import inputManager.InputTypes;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
 import inputManager.controllers.GenericController;
 import inputManager.controllers.SwitchProController;
+import openfl.display.BitmapData;
+import openfl.geom.ColorTransform;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
     var P1;
@@ -39,42 +47,85 @@ enum PlayerType {
     PLAYER;
 }
 
-class PlayerBox extends FlxBasic {
+class PlayerBox {
     public var inputTypeText:FlxText;
     public var labelText:FlxText;
     public var background:FlxSprite;
-    public var SwapButton:CustomButton;
+    public var swapButton:CustomButton;
     public var disconnectButton:CustomButton;
 
-    public var slot = 1;
+    public var slot:PlayerSlotIdentifier;
     public var max = 2;
     public var xPos = 10;
 
-    public function new() {
-        super();
+    public function new(slot:PlayerSlotIdentifier) {
         this.background = new FlxSprite();
-        this.background.makeGraphic(10, 10, FlxColor.MAGENTA);
+        this.labelText = new FlxText(0, 0, 0, "0/0");
+        this.inputTypeText = new FlxText();
+        this.swapButton = new CustomButton(0, 0, "swap", (targetslot) -> {
+            PlayerSlot.getPlayer(targetslot).moveToSlot(this.slot);
+        });
+        this.disconnectButton = new CustomButton(0, 0, "disconnect", (targetslot) -> {
+            PlayerSlot.getPlayer(this.slot).setNewInput(NoInput);
+        });
+        this.background.makeGraphic(64, 64, FlxColor.MAGENTA);
+        this.background.y = FlxG.height - 80;
+
+        this.slot = slot;
     }
 
-    public override function update(elapsed:Float) {
-        super.update(elapsed);
+    public function update(elapsed:Float) {
         this.background.update(elapsed);
+        this.labelText.update(elapsed);
+        this.inputTypeText.update(elapsed);
+        this.swapButton.update(elapsed);
+        this.disconnectButton.update(elapsed);
     }
 
-    public override function draw() {
-        super.draw();
+    public function draw() {
         this.background.draw();
+        this.labelText.draw();
+        this.inputTypeText.draw();
+        this.swapButton.draw();
+        this.disconnectButton.draw();
     }
 
-    public function drawCSS(slot:Int, max:Int) {
-        var xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * slot);
+    public function drawCSS(max:Int) {
+        // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
+        this.xPos = ((cast this.slot) * 100) + 20;
+        this.background.x = xPos;
+        this.labelText.text = '${slot}/${max}';
+        this.labelText.x = xPos;
+        this.labelText.y = this.background.y + 2;
+        this.swapButton.x = xPos;
+        this.swapButton.y = this.background.y + 20;
+        this.disconnectButton.x = xPos;
+        this.disconnectButton.y = this.background.y + 40;
     }
 }
 
-class PlayerSlot extends FlxBasic {
-    public static final artificalPlayerLimit = true; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
+class PlayerSlot {
+    public static var PointerCoinBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"));
+    public static var PointerP1Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p1"));
+    public static var PointerP2Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p2"));
+    public static var PointerP3Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p3"));
+    public static var PointerP4Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p4"));
+    public static var PointerP5Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p5"));
+    public static var PointerP6Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p6"));
+    public static var PointerP7Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p7"));
+    public static var PointerP8Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p8"));
+    public static var PointerCPUBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/cpu"));
+    public static var PointerLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left"));
+    public static var PointerRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right"));
+    public static var PointerUpLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left"));
+    public static var PointerUpRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right"));
+    public static var PointerDownLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left"));
+    public static var PointerDownRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right"));
+
+    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
     public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
         P1 => {red: 1.0, green: 0.2, blue: 0.2}, // red
+        // P1 => {red: 1.0, green: 0.9, blue: 0.3},
         P2 => {red: 0.2, green: 0.2, blue: 1.0}, // blue
         P3 => {red: 0.2, green: 1.0, blue: 0.2}, // green
         P4 => {red: 1.0, green: 1.0, blue: 0.2}, // yellow
@@ -209,6 +260,17 @@ class PlayerSlot extends FlxBasic {
         return player;
     }
 
+    public static function initAll() {
+        PlayerSlot.getPlayer(P1).init();
+        PlayerSlot.getPlayer(P2).init();
+        PlayerSlot.getPlayer(P3).init();
+        PlayerSlot.getPlayer(P4).init();
+        PlayerSlot.getPlayer(P5).init();
+        PlayerSlot.getPlayer(P6).init();
+        PlayerSlot.getPlayer(P7).init();
+        PlayerSlot.getPlayer(P8).init();
+    }
+
     public static function updateAll(elapsed:Float) {
         PlayerSlot.getPlayer(P1).update(elapsed);
         PlayerSlot.getPlayer(P2).update(elapsed);
@@ -221,6 +283,15 @@ class PlayerSlot extends FlxBasic {
     }
 
     public static function drawAll() {
+        PlayerSlot.getPlayer(P8).drawBox();
+        PlayerSlot.getPlayer(P7).drawBox();
+        PlayerSlot.getPlayer(P6).drawBox();
+        PlayerSlot.getPlayer(P5).drawBox();
+        PlayerSlot.getPlayer(P4).drawBox();
+        PlayerSlot.getPlayer(P3).drawBox();
+        PlayerSlot.getPlayer(P2).drawBox();
+        PlayerSlot.getPlayer(P1).drawBox();
+
         PlayerSlot.getPlayer(P8).draw();
         PlayerSlot.getPlayer(P7).draw();
         PlayerSlot.getPlayer(P6).draw();
@@ -229,16 +300,76 @@ class PlayerSlot extends FlxBasic {
         PlayerSlot.getPlayer(P3).draw();
         PlayerSlot.getPlayer(P2).draw();
         PlayerSlot.getPlayer(P1).draw();
+
         /*PlayerSlot.getPlayerArray().filter(player -> {
             player.draw();
             return false;
         });*/
     }
 
+    public static function getOffset(angle:CursorRotation):Position {
+        if (angle == LEFT) {
+            return {x: 0, y: 15};
+        } else if (angle == RIGHT) {
+            return {x: 30, y: 15};
+        } else if (angle == UP_LEFT) {
+            return {x: 3, y: 0};
+        } else if (angle == UP_RIGHT) {
+            return {x: 27, y: 0};
+        } else if (angle == DOWN_LEFT) {
+            return {x: 3, y: 30};
+        } else if (angle == DOWN_RIGHT) {
+            return {x: 27, y: 30};
+        }
+
+        return {x: 30, y: 15};
+    }
+
+    public static function getCoinOffset(angle:CursorRotation):Position {
+        if (angle == LEFT) {
+            return {x: -30, y: 15};
+        } else if (angle == RIGHT) {
+            return {x: 60, y: 15};
+        } else if (angle == UP_LEFT) {
+            return {x: -7, y: -23};
+        } else if (angle == UP_RIGHT) {
+            return {x: 38, y: -23};
+        } else if (angle == DOWN_LEFT) {
+            return {x: -7, y: 50};
+        } else if (angle == DOWN_RIGHT) {
+            return {x: 36, y: 50};
+        }
+
+        return {x: 16, y: 16};
+    }
+
     public var type:PlayerType = NONE;
     public var color:PlayerColor;
-    public var slot:PlayerSlotIdentifier;
+    public var slot(default, set):PlayerSlotIdentifier;
     public var input:GenericInput;
+    public var debugSprite:FlxSprite;
+    public var cursorSprite:FlxSprite;
+    public var cursorPosition:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
+    public var cursorAngle:CursorRotation = RIGHT;
+    public var coinSprite:FlxSprite;
+    public var cursorSpriteOffset:Position = {x: 30, y: 15};
+    public var coinSpriteOffset:Position = {x: 16, y: 16};
+    public var visible(get, default):Bool = false;
+
+    private function set_slot(v:PlayerSlotIdentifier) {
+        if (this.playerBox != null)
+            this.playerBox.slot = v;
+        if (this.input != null)
+            this.input.slot = v;
+
+        return this.slot = v;
+    }
+
+    private function get_visible() {
+        if (!this.input.inputEnabled)
+            return false;
+        return true;
+    }
 
     private function setControllerObjectFromInputDevice(?inputDevice:FlxGamepad, ?profile:String) {
         if (inputDevice == null)
@@ -256,9 +387,9 @@ class PlayerSlot extends FlxBasic {
     }
 
     public function setNewInput(type:InputType, ?inputDevice:OneOfTwo<FlxGamepad, InputDevice>, ?profile:String) {
-        if (this.input != null)
-            this.input.destroy();
-
+        if (this.input.getCursorPosition() != null) {
+            this.cursorPosition = this.input.getCursorPosition();
+        }
         if (type == KeyboardInput || (inputDevice == Keyboard && type != KeyboardAndMouseInput)) {
             this.setType(PLAYER);
             this.input = new KeyboardHandler(slot, profile);
@@ -277,10 +408,158 @@ class PlayerSlot extends FlxBasic {
         }
     }
 
+    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
+        // return bitmap;
+        var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
+        var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
+        bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
+        return bitmap;
+    }
+
+    function updateCursorPos(elapsed:Float) {
+        if (this.input.getCursorPosition() != null)
+            return;
+        var stick = this.input.getCursorStick();
+
+        this.cursorPosition.x += Math.round(stick.x * 500 * elapsed);
+        this.cursorPosition.y += Math.round(stick.y * 500 * elapsed);
+
+        this.cursorPosition.x = Std.int(Math.min(this.cursorPosition.x, FlxG.width));
+        this.cursorPosition.x = Std.int(Math.max(this.cursorPosition.x, 0));
+        this.cursorPosition.y = Std.int(Math.min(this.cursorPosition.y, FlxG.height));
+        this.cursorPosition.y = Std.int(Math.max(this.cursorPosition.y, 0));
+    }
+
+    public static function getCoinBitmap(slot:PlayerSlotIdentifier):BitmapData {
+        var baseCoin = PlayerSlot.PointerCoinBitmap;
+        var icon = switch (slot) {
+            case P1: PointerP1Bitmap;
+            case P2: PointerP2Bitmap;
+            case P3: PointerP3Bitmap;
+            case P4: PointerP4Bitmap;
+            case P5: PointerP5Bitmap;
+            case P6: PointerP6Bitmap;
+            case P7: PointerP7Bitmap;
+            case P8: PointerP8Bitmap;
+        }
+
+        baseCoin.copyPixels(icon, new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
+        return baseCoin;
+    }
+
+    public static function get_PointerCoinBitmap():BitmapData {
+        return PointerCoinBitmap.clone();
+    }
+
+    public static function get_PointerP1Bitmap():BitmapData {
+        return PointerP1Bitmap.clone();
+    }
+
+    public static function get_PointerP2Bitmap():BitmapData {
+        return PointerP2Bitmap.clone();
+    }
+
+    public static function get_PointerP3Bitmap():BitmapData {
+        return PointerP3Bitmap.clone();
+    }
+
+    public static function get_PointerP4Bitmap():BitmapData {
+        return PointerP4Bitmap.clone();
+    }
+
+    public static function get_PointerP5Bitmap():BitmapData {
+        return PointerP5Bitmap.clone();
+    }
+
+    public static function get_PointerP6Bitmap():BitmapData {
+        return PointerP6Bitmap.clone();
+    }
+
+    public static function get_PointerP7Bitmap():BitmapData {
+        return PointerP7Bitmap.clone();
+    }
+
+    public static function get_PointerP8Bitmap():BitmapData {
+        return PointerP8Bitmap.clone();
+    }
+
+    public static function get_PointerCPUBitmap():BitmapData {
+        return PointerCPUBitmap.clone();
+    }
+
+    public static function get_PointerLeftBitmap():BitmapData {
+        return PointerLeftBitmap.clone();
+    }
+
+    public static function get_PointerRightBitmap():BitmapData {
+        return PointerRightBitmap.clone();
+    }
+
+    public static function get_PointerUpLeftBitmap():BitmapData {
+        return PointerUpLeftBitmap.clone();
+    }
+
+    public static function get_PointerUpRightBitmap():BitmapData {
+        return PointerUpRightBitmap.clone();
+    }
+
+    public static function get_PointerDownLeftBitmap():BitmapData {
+        return PointerDownLeftBitmap.clone();
+    }
+
+    public static function get_PointerDownRightBitmap():BitmapData {
+        return PointerDownRightBitmap.clone();
+    }
+
+    public function setCursorAngle(angle:CursorRotation) {
+        if (this.cursorAngle == angle)
+            return;
+        this.cursorAngle = angle;
+        this.cursorSprite.graphic = null;
+        // Main.log('setting cursor angle ${angle} on ${slot}');
+        if (this.cursorAngle == LEFT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerLeftBitmap));
+        } else if (this.cursorAngle == RIGHT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerRightBitmap));
+        } else if (this.cursorAngle == UP_LEFT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerUpLeftBitmap));
+        } else if (this.cursorAngle == UP_RIGHT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerUpRightBitmap));
+        } else if (this.cursorAngle == DOWN_LEFT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerDownLeftBitmap));
+        } else if (this.cursorAngle == DOWN_RIGHT) {
+            this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerDownRightBitmap));
+        }
+        // Main.log('setting offset');
+        this.cursorSpriteOffset = PlayerSlot.getOffset(this.cursorAngle);
+        this.coinSpriteOffset = PlayerSlot.getCoinOffset(this.cursorAngle);
+        // Main.log('set offset to ${this.spriteOffset}');
+    }
+
+    private var ready = false;
+
+    public var playerBox:PlayerBox;
+
+    public function init() {
+        if (this.ready)
+            return;
+
+        this.ready = true;
+
+        this.coinSprite = new FlxSprite();
+        this.cursorSprite = new FlxSprite();
+        this.playerBox = new PlayerBox(this.slot);
+        this.debugSprite = new FlxSprite();
+        this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(this.slot)));
+        this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
+
+        this.setCursorAngle(RIGHT);
+    }
+
     private function new(slot:PlayerSlotIdentifier) {
-        super();
         this.slot = slot;
         this.type = NONE;
+
         this.input = new GenericInput(slot);
     }
 
@@ -291,18 +570,116 @@ class PlayerSlot extends FlxBasic {
     public function moveToSlot(toSlot:PlayerSlotIdentifier) {
         if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)
             return;
-        PlayerSlot.players[toSlot].slot = this.slot;
+
+        if (PlayerSlot.getPlayer(toSlot).type != NONE)
+            return;
+
+        PlayerSlot.players.get(toSlot).slot = this.slot;
         this.slot = toSlot;
 
-        PlayerSlot.players[this.slot] = PlayerSlot.players[toSlot];
-        PlayerSlot.players[toSlot] = this;
+        PlayerSlot.players.set(this.slot, PlayerSlot.players.get(toSlot));
+        PlayerSlot.players.set(toSlot, this);
     }
 
-    override public function update(elapsed:Float) {
-        this.input.update(elapsed);
+    /**
+        returns the screen position where the cursor should be drawn and the "click point"
+    **/
+    public function getCursorPosition():Position {
+        var inputCursor = this.input.getCursorPosition();
+        return inputCursor != null ? inputCursor : this.cursorPosition;
     }
 
-    override public function draw() {
-        this.input.draw();
+    public function update(elapsed:Float) {
+        if (!this.ready)
+            return;
+        this.updateCursorPos(elapsed);
+        var cursorPos = this.getCursorPosition();
+
+        var cursorRotationMargin = 60;
+
+        this.playerBox.update(elapsed);
+
+        var setToLeft = cursorPos.x < cursorRotationMargin;
+        var setToRight = cursorPos.x > (FlxG.width - cursorRotationMargin);
+        var setToUp = cursorPos.y < cursorRotationMargin;
+        var setToDown = cursorPos.y > (FlxG.height - cursorRotationMargin);
+
+        var isAlreadyRight = (cursorAngle == RIGHT || cursorAngle == UP_RIGHT || cursorAngle == DOWN_RIGHT);
+        var isAlreadyLeft = (cursorAngle == LEFT || cursorAngle == UP_LEFT || cursorAngle == DOWN_LEFT);
+
+        if (this.visible) {
+            // Main.debugDisplay.leftAppend += '\n${(cursorAngle == RIGHT || cursorAngle == UP_RIGHT || cursorAngle == DOWN_RIGHT)}';
+
+            if (setToLeft) {
+                if (setToUp)
+                    this.setCursorAngle(UP_LEFT);
+                else if (setToDown)
+                    this.setCursorAngle(DOWN_LEFT);
+                else
+                    this.setCursorAngle(LEFT);
+            } else if (setToRight) {
+                if (setToUp)
+                    this.setCursorAngle(UP_RIGHT);
+                else if (setToDown)
+                    this.setCursorAngle(DOWN_RIGHT);
+                else
+                    this.setCursorAngle(RIGHT);
+            } else {
+                if (setToUp) {
+                    if (isAlreadyRight)
+                        this.setCursorAngle(UP_RIGHT);
+                    else
+                        this.setCursorAngle(UP_LEFT);
+                } else if (setToDown) {
+                    if (isAlreadyRight)
+                        this.setCursorAngle(DOWN_RIGHT);
+                    else
+                        this.setCursorAngle(DOWN_LEFT);
+                }
+            }
+        }
+
+        this.cursorSprite.x = cursorPos.x - this.cursorSpriteOffset.x;
+        this.cursorSprite.y = cursorPos.y - this.cursorSpriteOffset.y;
+
+        this.coinSprite.x = cursorPos.x - this.coinSpriteOffset.x;
+        this.coinSprite.y = cursorPos.y - this.coinSpriteOffset.y;
+
+        this.debugSprite.x = cursorPos.x;
+        this.debugSprite.y = cursorPos.y;
+
+        if (this.input.inputEnabled) {
+            for (mem in GameManager.getAllObjects()) {
+                if (Std.isOfType(mem, CustomButton)) {
+                    var button:CustomButton = cast mem;
+                    if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
+                        button.overHandler(this.slot);
+                        if (InputHelper.isPressed(this.input.getConfirm()))
+                            button.downHandler(this.slot);
+                        else
+                            button.upHandler(this.slot);
+                    } else
+                        button.outHandler(this.slot);
+                }
+            }
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\nCursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
+            Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
+        } else {
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
+        }
+    }
+
+    public function draw() {
+        if (Main.debugDisplay == null || /*!this.visible ||*/ !this.ready)
+            return;
+
+        this.coinSprite.draw();
+        this.cursorSprite.draw();
+        this.debugSprite.draw();
+    }
+
+    public function drawBox() {
+        this.playerBox.drawCSS(8);
+        this.playerBox.draw();
     }
 }

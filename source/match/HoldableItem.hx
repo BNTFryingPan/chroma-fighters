@@ -1,5 +1,7 @@
 package match;
 
+import PlayerSlot;
+
 class HoldableItem {
     public var sprite:HoldableItemSprite;
     public var x:Float;
@@ -7,6 +9,4 @@ class HoldableItem {
     public var holder:Null<PlayerSlotIdentifier>;
 }
 
-class HoldableItemSprite {
-    
-}
+class HoldableItemSprite {}
