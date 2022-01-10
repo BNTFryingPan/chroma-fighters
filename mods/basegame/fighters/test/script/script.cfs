@@ -1,5 +1,7 @@
 function draw() {
     trace("draw");
+
+    drawBitmap(getSprite())
 }
 
 function getFighterName() {

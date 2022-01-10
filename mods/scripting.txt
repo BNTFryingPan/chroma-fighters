@@ -75,7 +75,8 @@ hasMatchEnded():Bool
 getFighter(slot:Int):Null<Fighter>
 getModOptions():Map<String -> Dynamic>
 getModOption(key:String):Dynamic
-
+getSprite(key:NamespacedKey, ?frame:Int=0, ?tag:String):BitmapData
+drawBitmap(bitmap:BitmapData, x:Float, y:Float)
 
 
 available for fighter mods, or on the `Fighter` class when refrenced by another mod if $:
@@ -125,3 +126,41 @@ currently only for internal use, but may work in scripts anyways, not sure. prob
 getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool)
 getFromFlxInput(input:FlxInput<Int>)
 getFromFlxKey(key:FlxKey)
+
+
+classes:
+Fighter // see above
+HoldableItem
+Stage
+NamespacedKey
+
+enums:
+
+CommandInputDirection: // used for command inputs like ryu/ken in smash
+UP
+UPLEFT
+LEFT
+DOWNLEFT
+DOWN
+DOWNRIGHT
+RIGHT
+UPRIGHT
+NEUTRAL
+
+FighterAirState:
+GROUNDED
+FULL_CONTROL
+NO_JUMPS
+PRATFALL
+DODGE_PRATFALL
+SPECIAL_FALL
+
+PlayerSlotIdentifier -> Int: // 
+P1 -> 0
+P2 -> 1
+P3 -> 2
+P4 -> 3
+P5 -> 4
+P6 -> 5
+P7 -> 6
+P8 -> 7
