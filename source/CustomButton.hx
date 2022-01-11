@@ -33,11 +33,44 @@ class CustomButton extends FlxButton {
         P8 => false
     ];
 
-    private function getIsClickedBy(slot:PlayerSlotIdentifier):Bool {
-        if (this.currentHoveredCursors.get(slot)) {
-            return this.currentClickedCursors.get(slot);
-        }
-        return false;
+    private function getRealHovered():Map<PlayerSlotIdentifier, Bool> {
+        return [
+            P1 => this.currentHoveredCursors[P1]
+            && PlayerSlot.getPlayer(P1).visible,
+            P2 => this.currentHoveredCursors[P2]
+            && PlayerSlot.getPlayer(P2).visible,
+            P3 => this.currentHoveredCursors[P3]
+            && PlayerSlot.getPlayer(P3).visible,
+            P4 => this.currentHoveredCursors[P4]
+            && PlayerSlot.getPlayer(P4).visible,
+            P5 => this.currentHoveredCursors[P5]
+            && PlayerSlot.getPlayer(P5).visible,
+            P6 => this.currentHoveredCursors[P6]
+            && PlayerSlot.getPlayer(P6).visible,
+            P7 => this.currentHoveredCursors[P7]
+            && PlayerSlot.getPlayer(P7).visible,
+            P8 => this.currentHoveredCursors[P8]
+            && PlayerSlot.getPlayer(P8).visible];
+    }
+
+    private function getRealClicked():Map<PlayerSlotIdentifier, Bool> {
+        return [
+            P1 => this.currentClickedCursors[P1]
+            && PlayerSlot.getPlayer(P1).visible,
+            P2 => this.currentClickedCursors[P2]
+            && PlayerSlot.getPlayer(P2).visible,
+            P3 => this.currentClickedCursors[P3]
+            && PlayerSlot.getPlayer(P3).visible,
+            P4 => this.currentClickedCursors[P4]
+            && PlayerSlot.getPlayer(P4).visible,
+            P5 => this.currentClickedCursors[P5]
+            && PlayerSlot.getPlayer(P5).visible,
+            P6 => this.currentClickedCursors[P6]
+            && PlayerSlot.getPlayer(P6).visible,
+            P7 => this.currentClickedCursors[P7]
+            && PlayerSlot.getPlayer(P7).visible,
+            P8 => this.currentClickedCursors[P8]
+            && PlayerSlot.getPlayer(P8).visible];
     }
 
     public function new(x:Float = 0, y:Float = 0, ?text:String, ?onClick:PlayerSlotIdentifier->Void) {
@@ -46,7 +79,10 @@ class CustomButton extends FlxButton {
     }
 
     function checkCursorOverlap():Array<PlayerSlotIdentifier> {
-        var overlappingCursors = InputManager.getCursors().map(function(c) {
+        var overlappingCursors = PlayerSlot.getPlayerArray().map(function(p) {
+            if (!p.visible)
+                return false;
+            var c = p.getCursorPosition();
             var point = FlxPoint.get(c.x, c.y);
             var overlaps = overlapsPoint(point);
             point.put();
@@ -83,14 +119,14 @@ class CustomButton extends FlxButton {
     function updateState() {
         var isHovered:Bool = false;
         var isClicked:Bool = false;
-        for (slot => state in this.currentHoveredCursors.keyValueIterator())
+        for (slot => state in this.getRealHovered().keyValueIterator())
             if (state) {
                 isHovered = true;
                 break;
             }
 
         if (isHovered)
-            for (slot => state in this.currentClickedCursors.keyValueIterator())
+            for (slot => state in this.getRealClicked().keyValueIterator())
                 if (state) {
                     isClicked = true;
                     break;
@@ -127,6 +163,7 @@ class CustomButton extends FlxButton {
         if (this.currentHoveredCursors.get(slot) == false)
             return;
         this.currentHoveredCursors.set(slot, false);
+        this.currentClickedCursors.set(slot, false);
         this.updateState();
         if (this.cursorOnOut != null)
             this.cursorOnOut(slot);

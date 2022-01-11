@@ -362,7 +362,15 @@ class PlayerSlot {
         if (this.input != null)
             this.input.slot = v;
 
-        return this.slot = v;
+        this.slot = v;
+
+        if (this.coinSprite != null)
+            this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(v)));
+
+        if (this.cursorSprite != null)
+            this.setCursorAngle(SAME);
+
+        return v;
     }
 
     private function get_visible() {
@@ -512,9 +520,10 @@ class PlayerSlot {
     }
 
     public function setCursorAngle(angle:CursorRotation) {
-        if (this.cursorAngle == angle)
+        if (this.cursorAngle == angle && angle != SAME)
             return;
-        this.cursorAngle = angle;
+        if (angle != SAME)
+            this.cursorAngle = angle;
         this.cursorSprite.graphic = null;
         // Main.log('setting cursor angle ${angle} on ${slot}');
         if (this.cursorAngle == LEFT) {
@@ -571,14 +580,17 @@ class PlayerSlot {
         if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)
             return;
 
-        if (PlayerSlot.getPlayer(toSlot).type != NONE)
-            return;
+        if (toSlot == this.slot)
+            return; // no reason to swap as we are already in that slot
 
-        PlayerSlot.players.get(toSlot).slot = this.slot;
-        this.slot = toSlot;
+        var targetSlot = toSlot;
+        var thisSlot = this.slot;
 
-        PlayerSlot.players.set(this.slot, PlayerSlot.players.get(toSlot));
-        PlayerSlot.players.set(toSlot, this);
+        PlayerSlot.players.get(toSlot).slot = thisSlot;
+        this.slot = targetSlot;
+
+        PlayerSlot.players.set(thisSlot, PlayerSlot.players.get(targetSlot));
+        PlayerSlot.players.set(targetSlot, this);
     }
 
     /**

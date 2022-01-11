@@ -4,6 +4,7 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
 #if hl
@@ -24,6 +25,8 @@ class DebugDisplay extends FlxBasic {
     private var finalLeftText:String = "";
     private var finalRightText:String = "";
 
+    public var notif:FlxText;
+
     public var maxMemory:Float = 0;
 
     public static final fontSize:Int = 8;
@@ -37,20 +40,82 @@ class DebugDisplay extends FlxBasic {
         this.visible = true;
 
         this.leftText = new FlxText(10, 10, 0, "debug-left", DebugDisplay.fontSize);
-        // this.leftText = new MonospaceText(10, 10, 0, "debug-left");
 
         this.rightText = new FlxText(10, 10, FlxG.width - 20, "debug-right", DebugDisplay.fontSize);
-        // this.rightText = new MonospaceText(10, 10, FlxG.width - 20, "debug-right");
         this.rightText.alignment = RIGHT;
+
+        this.notif = new FlxText(10, FlxG.height - 20, 0, "", DebugDisplay.fontSize);
+        this.notif.alignment = RIGHT;
+        this.notif.alpha = 0;
     }
 
     public override function destroy() {
         this.leftText.destroy();
         this.rightText.destroy();
+        this.notif.destroy();
         super.destroy();
     }
 
+    private function round(f:Float):Float {
+        return Math.round(f * 1000) / 1000;
+    }
+
+    public function notify(text:String) {
+        this.notif.text = text;
+        this.notif.alpha = 1;
+
+        function tweenFunction(v:Float) {
+            this.notif.alpha = v;
+        }
+
+        if (this.notifTween != null) {
+            this.notifTween.cancel();
+        }
+        this.notifTween = FlxTween.num(1, 0, 2.0, {startDelay: 0, type: ONESHOT}, tweenFunction.bind());
+    }
+
+    var notifTween:FlxTween;
+    var hasTriggeredDebugAction:Bool = false;
+
     public override function update(elapsed:Float) {
+        if (FlxG.keys.anyPressed([F3])) {
+            if (FlxG.keys.anyJustPressed([Y])) {
+                this.hasTriggeredDebugAction = true;
+                #if hl
+                Gc.dumpMemory('hlmemory.dump');
+                #else
+                this.notify('dump not supported on this target');
+                #end
+            }
+
+            if (FlxG.keys.anyJustPressed([T])) {
+                this.hasTriggeredDebugAction = true;
+                // TODO: reload textures
+                this.notify('reloaded textures (jk not yet)');
+            }
+
+            if (FlxG.keys.anyJustPressed([H])) {
+                this.hasTriggeredDebugAction = true;
+                #if hl
+                Gc.major();
+                this.notify('Ran major garbage collector');
+                #elseif cpp
+                Gc.run(FlxG.keys.anyPressed([SHIFT]));
+                this.notify('Ran cpp major garbage collector');
+                #else
+                this.notify('garbage collector not supported on this target');
+                #end
+            }
+        }
+
+        if (FlxG.keys.anyJustReleased([F3])) {
+            if (!this.hasTriggeredDebugAction) {
+                this.visible = !this.visible;
+            }
+
+            this.hasTriggeredDebugAction = false;
+        }
+
         #if hl
         var memStatsRaw = Gc.stats();
         var memStats = {
@@ -91,8 +156,8 @@ class DebugDisplay extends FlxBasic {
             this.rightText.text += 'Haxe: ${haxe.macro.Compiler.getDefine("haxe")}\n';
             this.rightText.text += 'Flixel: ${FlxG.VERSION.toString()}\n';
             // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
-            this.rightText.text += 'Mem: ${memStats.currentMemory} / ${maxMemory}MB\n';
-            this.rightText.text += 'Alloc: ${memStats.allocationCount} / ${memStats.totalAllocated}\n';
+            this.rightText.text += 'Mem: ${round(memStats.currentMemory)} / ${round(maxMemory)}MB\n';
+            this.rightText.text += 'Alloc: ${round(memStats.allocationCount)} / ${round(memStats.totalAllocated)}\n';
             this.rightText.text += 'System: ${FlCap.manufacturer} ${DebugDisplay.os} (${FlCap.cpuArchitecture})\n';
             this.rightText.text += 'SysRaw: ${FlCap.version}';
             // this.rightText.text += 'Elapsed: ${}';
@@ -100,12 +165,11 @@ class DebugDisplay extends FlxBasic {
             // this.rightText.text += 'CPU: \n';
 
             this.rightText.text += '\n${this.rightAppend}';
-
-            this.rightPrepend = "";
-            this.rightAppend = "";
-            this.leftPrepend = "";
-            this.leftAppend = "";
         }
+        this.rightPrepend = "";
+        this.rightAppend = "";
+        this.leftPrepend = "";
+        this.leftAppend = "";
     }
 
     public override function draw():Void {
@@ -114,12 +178,14 @@ class DebugDisplay extends FlxBasic {
             this.rightText.draw();
             super.draw();
         }
+        this.notif.draw();
     }
 
     @:noCompletion
     override function set_camera(Value:FlxCamera):FlxCamera {
         this.leftText.cameras = [Value];
         this.rightText.cameras = [Value];
+        this.notif.cameras = [Value];
 
         return super.set_camera(Value);
     }
@@ -128,6 +194,7 @@ class DebugDisplay extends FlxBasic {
     override function set_cameras(Value:Array<FlxCamera>):Array<FlxCamera> {
         this.leftText.cameras = Value;
         this.rightText.cameras = Value;
+        this.notif.cameras = Value;
 
         return super.set_cameras(Value);
     }
