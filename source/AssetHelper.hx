@@ -68,7 +68,7 @@ class AssetHelper {
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
-        #if sys
+        #if (sys && !mobile)
         Main.log('loading ${key.toString()}');
         if (AssetHelper.imageCache.exists(key.toString())) {
             // Main.log('cache');
@@ -89,7 +89,7 @@ class AssetHelper {
     }
 
     public static function getTextAsset(key:NamespacedKey):Array<String> {
-        #if sys
+        #if (sys && !mobile)
         var assetDir = AssetHelper.getAssetDirectory(key, ".txt");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir).split("\n");
@@ -101,7 +101,7 @@ class AssetHelper {
     }
 
     public static function getRawTextAsset(key:NamespacedKey):String {
-        #if sys
+        #if (sys && !mobile)
         var assetDir = AssetHelper.getAssetDirectory(key, ".txt");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
@@ -113,7 +113,7 @@ class AssetHelper {
     }
 
     public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Expr {
-        #if sys
+        #if (sys && !mobile)
         if ((!reload) && AssetHelper.scriptCache.exists(key.toString())) {
             return AssetHelper.scriptCache.get(key.toString());
         }
@@ -130,7 +130,7 @@ class AssetHelper {
     }
 
     public static function getJsonAsset(key:NamespacedKey):Dynamic {
-        #if sys
+        #if (sys && !mobile)
         var assetDir = AssetHelper.getAssetDirectory(key, ".json");
         if (assetDir != null) {
             return haxe.Json.parse(sys.io.File.getContent(assetDir));
@@ -142,7 +142,7 @@ class AssetHelper {
     }
 
     public static function getRawJsonAsset(key:NamespacedKey):String {
-        #if sys
+        #if (sys && !mobile)
         var assetDir = AssetHelper.getAssetDirectory(key, ".json");
         if (assetDir != null) {
             return sys.io.File.getContent(assetDir);
@@ -154,7 +154,7 @@ class AssetHelper {
     }
 
     public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
-        #if sys
+        #if (sys && !mobile)
         #if (debug && !mobile)
         // Main.log('debug paths');
         var rootPath = "./../../../mods/";

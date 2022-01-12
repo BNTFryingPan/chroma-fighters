@@ -16,7 +16,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="850" height="480" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="850" height="480" fps="90" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="false" />
@@ -25,7 +25,7 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" />
+	<window if="mobile" orientation="landscape" fullscreen="true" width="850" height="480"/>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 

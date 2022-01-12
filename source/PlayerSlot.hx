@@ -524,6 +524,7 @@ class PlayerSlot {
             return;
         if (angle != SAME)
             this.cursorAngle = angle;
+        this.cursorSprite.graphic.destroy();
         this.cursorSprite.graphic = null;
         // Main.log('setting cursor angle ${angle} on ${slot}');
         if (this.cursorAngle == LEFT) {
