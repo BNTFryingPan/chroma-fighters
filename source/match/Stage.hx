@@ -24,4 +24,4 @@ typedef StageModJson = {
     public var isInBaseGame:Bool;
 }
 
-class Stage extends FlxBasic {}
+class Stage {}

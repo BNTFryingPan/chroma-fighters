@@ -51,7 +51,7 @@ enum FighterAirState {
     SPECIAL_FALL; // like pratfall, but can still do some special moves if the fighter allows it
 }
 
-class Fighter extends FlxBasic {
+class Fighter {
     public static function getScriptPathForBasegameFighter():String {
         return "";
     }
@@ -73,7 +73,6 @@ class Fighter extends FlxBasic {
     ];
 
     public function new(data:FighterModJson, slot:PlayerSlotIdentifier, x:Float, y:Float) {
-        super();
         this.modData = data;
         this.slot = slot;
         this.x = x;
@@ -89,15 +88,11 @@ class Fighter extends FlxBasic {
         this.mainScript.callFunction(name, args.toArray());
     }
 
-    override public function update(elapsed:Float) {
-        super.update(elapsed);
-
+    public function update(elapsed:Float) {
         this.callScriptFunction("update", elapsed);
     }
 
-    override public function draw() {
-        super.draw();
-
+    public function draw() {
         this.callScriptFunction("draw");
     }
 
