@@ -27,6 +27,8 @@ class Main extends Sprite {
         trace(data);
     }
 
+    // public static function  // some mod logging function idrk anymore
+
     public function new() {
         super();
         FlxG.autoPause = false;

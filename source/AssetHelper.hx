@@ -55,6 +55,7 @@ class AssetHelper {
     public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
 
     public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
+    public static var aseCache:Map<String, Bytes> = new Map<String, Bytes>();
     private static var parser:Parser = new Parser();
 
     private function new() {}
@@ -65,6 +66,28 @@ class AssetHelper {
 
     private static function getNullText():String {
         return "NOT_FOUND";
+    }
+
+    private static function getNullBytes():Bytes {
+        return null;
+    }
+
+    public static function getAsepriteFile(key:NamespacedKey):Bytes {
+        #if (sys && !mobile)
+        if (aseCache.exists(key.toString())) {
+            return aseCache.get(key.toString());
+        }
+
+        var assetDir = AssetHelper.getAssetDirectory(key, ".aseprite");
+        if (assetDir != null) {
+            var loaded = sys.io.File.getBytes(assetDir);
+            aseCache.set(key.toString(), loaded);
+            return loaded;
+        }
+        return getNullBytes();
+        #else
+        return getNullBytes();
+        #end
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
