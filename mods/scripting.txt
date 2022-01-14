@@ -29,7 +29,14 @@ to get the fighter to show up in the custom fightr selection, change the value o
 once you do that, press F3 + R on the main menu to reload mods, and then go to the custom character selection and you should see it listed.
 now its time to make it your own fighter. open the `info.jsonc` file again, and change the author, name, id, description, and tags properties to whatever you want.
 if you reload the mods again (F3 + R on the main menu), you should see the changes you made in the character selector.
-i wont go into creating art for the character here now as 
+i wont go into creating art for the character here now as this guide is focused on the scripting of the mod
+
+moves:
+
+the game technically has no idea what moves your fighter has, it only does whatever you tell it to do given what information the game gives your fighter
+in order to stale moves or do other things that require knowing what a move is you have to tell the game to stale a move by its id. the id is just an arbitrary string that doesnt really matter what it is as long as its always used to refer to the same move.
+if you want multiple moves to stale as one, use the staleing functions with the same id for each move, but for other things you should use unique ids.
+you may choose to include a function that allows other fighters to perform one of your fighters (like kirby copy), they can. this should allow passing an id and a position and direction to perform the attack from.
 
 API Documentation:
 
@@ -45,6 +52,9 @@ onModInit()
 onMatchStart()
 onMatchEnd()
 onTriggerZoneActivate(id:String)
+
+availale for fighter mods:
+onCommandInput(id:String)
 
 
 built-in vars documentation:
@@ -80,6 +90,7 @@ drawBitmap(bitmap:BitmapData, x:Float, y:Float)
 
 
 available for fighter mods, or on the `Fighter` class when refrenced by another mod if $:
+registerCommandInput(inputs:Array<CommandInputDirection>, id:String) // must be called during load, if called at any other time, nothing will happen. id is the id of the event that will be sent to your onCommandInput handler
 $getPercent():Float
 $getSlot():Int
 $getFighterName():String
@@ -146,6 +157,15 @@ DOWNRIGHT
 RIGHT
 UPRIGHT
 NEUTRAL
+NOT_UP // NOT directions are used to disallow certain directions. Note that if you just want to disallow pressing the other direction in a sequece, this is done for you
+NOT_UPLEFT
+NOT_LEFT
+NOT_DOWNLEFT
+NOT_DOWN
+NOT_DOWNRIGHT
+NOT_RIGHT
+NOT_UPRIGHT
+NOT_NEUTRAL
 
 FighterAirState:
 GROUNDED

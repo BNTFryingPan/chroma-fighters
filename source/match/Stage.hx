@@ -24,4 +24,23 @@ typedef StageModJson = {
     public var isInBaseGame:Bool;
 }
 
-class Stage {}
+class MainGround {
+    public var sprite:FlxSprite;
+    public var groundHeight:Int;
+}
+
+typedef Blastzone = {
+    public var topBlastzone:Int; // the distance above `MainGround.groundHeight` the top blastzone is
+    public var bottomBlastzone:Int; // the distance below `MainGround.groundHeight` the bottom blastzone is
+    public var sideBlastzone:Int; // the distance between the center of the stage and the side blastzones 
+}
+
+class Stage {
+    public var mainGround:MainGround;
+    public var blastzone:Blastzone
+
+    public function new() {
+        this.blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
+        this.mainGround = new MainGround(100)
+    }
+}

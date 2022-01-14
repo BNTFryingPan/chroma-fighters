@@ -346,6 +346,7 @@ class PlayerSlot {
     public var type:PlayerType = NONE;
     public var color:PlayerColor;
     public var slot(default, set):PlayerSlotIdentifier;
+    public var fighterSelection:FighterSelection;
     public var input:GenericInput;
     public var debugSprite:FlxSprite;
     public var cursorSprite:FlxSprite;
