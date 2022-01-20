@@ -43,4 +43,8 @@ class Stage {
         this.blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
         this.mainGround = new MainGround(100)
     }
+
+    public function load(key:NamespacedKey, opts:Map<String, String>) {
+        
+    }
 }
