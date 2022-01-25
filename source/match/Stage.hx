@@ -35,7 +35,8 @@ typedef Blastzone = {
     public var sideBlastzone:Int; // the distance between the center of the stage and the side blastzones 
 }
 
-class Stage {
+class Stage extends MatchObject {
+    public override var groundType = GroundType.SOLID_GROUND;
     public var mainGround:MainGround;
     public var blastzone:Blastzone
 

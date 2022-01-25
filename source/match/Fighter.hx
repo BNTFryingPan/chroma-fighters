@@ -51,7 +51,7 @@ enum FighterAirState {
     SPECIAL_FALL; // like pratfall, but can still do some special moves if the fighter allows it
 }
 
-class Fighter {
+class Fighter extends MatchObject {
     public static function getScriptPathForBasegameFighter():String {
         return "";
     }
@@ -77,27 +77,30 @@ class Fighter {
         this.slot = slot;
         this.x = x;
         this.y = y;
+
+        this.drag.x = 300;
+        this.acceleration.y = 200;
     }
 
     public function loadScripts() {
-        this.mainScript = new ModScript(new NamespacedKey(this.modData.name, this.modData.script));
-        this.mainScript.shareFunctionMap(["getPercent" => this.getPercent, "getSlot" => this.getSlot]);
+        //this.mainScript = new ModScript(new NamespacedKey(this.modData.name, this.modData.script));
+        //this.mainScript.shareFunctionMap(["getPercent" => this.getPercent, "getSlot" => this.getSlot]);
     }
 
     public function callScriptFunction(name:String, ...args:Dynamic):Void {
-        this.mainScript.callFunction(name, args.toArray());
+        //this.mainScript.callFunction(name, args.toArray());
     }
 
-    public function update(elapsed:Float) {
-        this.callScriptFunction("update", elapsed);
+    public override function update(elapsed:Float) {
+        //this.callScriptFunction("update", elapsed);
     }
 
-    public function draw() {
-        this.callScriptFunction("draw");
+    public override function draw() {
+        //this.callScriptFunction("draw");
     }
 
     public function render_ui() {
-        this.callScriptFunction("draw_ui");
+        //this.callScriptFunction("draw_ui");
     }
 
     public function getPercent(a:String):Float {

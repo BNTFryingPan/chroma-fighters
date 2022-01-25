@@ -1,5 +1,12 @@
 package match;
 
+enum GroundType {
+    SOLID_GROUND;
+    NOT_SOLID_GROUND;
+    PLATFORM;
+    NOT_GROUND; // things that cannot be stood on lmao
+}
+
 class FighterSelection {
     public var slot:PlayerSlotIdentifier;
     public var ready:Bool = false;
