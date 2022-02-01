@@ -5,6 +5,16 @@ import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import inputManager.InputManager;
 
+enum abstract CustomButtonAsset(String) to String {
+    var Main_Local = "images/ui/button/local";
+    var Main_Online = "images/ui/button/online";
+    var Main_Settings = "images/ui/button/settings";
+    var Main_Exit = "images/ui/button/exit";
+    var General_Back = "images/ui/button/back";
+}
+
+typedef CustomButtonContent = OneOfThree<CustomButtonAsset, String, NamespacedKey>;
+
 class CustomButton extends FlxButton {
     public var cursorOnDown:Null<PlayerSlotIdentifier->Void> = null;
     public var cursorOnUp:Null<PlayerSlotIdentifier->Void> = null;
@@ -73,9 +83,14 @@ class CustomButton extends FlxButton {
             && PlayerSlot.getPlayer(P8).visible];
     }
 
-    public function new(x:Float = 0, y:Float = 0, ?text:String, ?onClick:PlayerSlotIdentifier->Void) {
+    public function new(x:Float = 0, y:Float = 0, ?text:String="", ?onClick:PlayerSlotIdentifier->Void, ?sprite:CustomButtonContent) {
         super(x, y, text);
+
         this.cursorOnUp = onClick;
+
+        if (sprite == null) {
+            this.loadDefaultGraphic()
+        }
     }
 
     function checkCursorOverlap():Array<PlayerSlotIdentifier> {

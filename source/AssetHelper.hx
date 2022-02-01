@@ -54,7 +54,7 @@ class AssetHelper {
 
     public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
 
-    public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
+    //public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
     public static var aseCache:Map<String, Bytes> = new Map<String, Bytes>();
     private static var parser:Parser = new Parser();
 
@@ -92,17 +92,14 @@ class AssetHelper {
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
         #if (sys && !mobile)
-        Main.log('loading ${key.toString()}');
-        if (AssetHelper.imageCache.exists(key.toString())) {
-            // Main.log('cache');
-            return AssetHelper.imageCache.get(key.toString());
+        // Main.log('loading ${key.toString()}');
+        if (FlxG.bitmap.checkCache(key.toString())) {
+            return FlxG.bitmap.get(key.toString())
         }
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
         if (assetDir != null) {
             // Main.log('found');
-            var loaded:BitmapData = BitmapData.fromFile(assetDir);
-            AssetHelper.imageCache.set(key.toString(), loaded);
-            return loaded;
+            return FlxG.bitmap.add(BitmapData.fromFile(assetDir), false, key.toString())
         }
         // Main.log('not found');
         return getNullBitmap();
