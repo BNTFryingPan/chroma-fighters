@@ -47,7 +47,16 @@ enum PlayerType {
     PLAYER;
 }
 
+enum PlayerBoxState {
+    HIDDEN;
+    CHARACTER_SEL;
+    STAGE_SEL;
+    MATCH;
+}
+
 class PlayerBox {
+    public static var STATE:PlayerBoxState = PlayerBoxState.HIDDEN;
+
     public var inputTypeText:FlxText;
     public var labelText:FlxText;
     public var background:FlxSprite;
@@ -693,7 +702,7 @@ class PlayerSlot {
     }
 
     public function drawBox() {
-        this.playerBox.drawCSS(8);
+        if (PlayerBox.STATE != PlayerBoxState.HIDDEN) this.playerBox.drawCSS(8);
         this.playerBox.draw();
     }
 }

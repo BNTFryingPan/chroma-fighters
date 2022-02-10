@@ -76,6 +76,10 @@ class GenericInput {
         return NOT_PRESSED;
     }
 
+    public function getMenuButton():INPUT_STATE {
+        return NOT_PRESSED;
+    }
+
     public function getAttack():INPUT_STATE {
         return NOT_PRESSED;
     }

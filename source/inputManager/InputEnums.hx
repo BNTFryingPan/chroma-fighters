@@ -7,6 +7,7 @@ enum Action {
     MENU_ACTION;
     MENU_LEFT;
     MENU_RIGHT;
+    MENU_BUTTON;
     JUMP;
     SHORT_JUMP;
     ATTACK;

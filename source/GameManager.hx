@@ -42,8 +42,10 @@ class GameManager {
                         var keyboardPlayer = PlayerSlot.getPlayerByInput(KeyboardInput);
                         if (Std.isOfType(keyboardPlayer.input, MouseHandler)) {
                             keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
+                            Main.debugDisplay.notify("kb player now using only kb");
                         } else {
                             keyboardPlayer.setNewInput(KeyboardAndMouseInput, Keyboard, keyboardPlayer.input.profile.name);
+                            Main.debugDisplay.notify("kb player now using kb/m");
                         }
                     }
                 }

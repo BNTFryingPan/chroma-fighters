@@ -121,6 +121,9 @@ class InputManager {
                 case MENU_RIGHT:
                     if (InputHelper.isPressed(p.getMenuRight()))
                         return true;
+                case MENU_BUTTON:
+                    if (InputHelper.isPressed(p.getMenuButton()))
+                        return true;
                 case JUMP:
                     if (InputHelper.isPressed(p.getJump()))
                         return true;

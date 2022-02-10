@@ -1,4 +1,4 @@
-package match;
+package match.fighter;
 
 import AssetHelper;
 import PlayerSlot;
@@ -51,35 +51,18 @@ enum FighterAirState {
     SPECIAL_FALL; // like pratfall, but can still do some special moves if the fighter allows it
 }
 
-class Fighter extends MatchObject {
+class ScriptedFighter extends AbstractFighter {
     public static function getScriptPathForBasegameFighter():String {
         return "";
     }
 
     public var modData:FighterModJson;
-    public var percent:Float;
-    public var airState:FighterAirState = GROUNDED;
-
-    public var x:Float;
-    public var y:Float;
-
     private var mainScript:ModScript;
     private var extraScripts:Map<String, ModScript>;
-    private var slot:PlayerSlotIdentifier;
-    private var recentMoves:Array<String> = ["", "", "", "", "", "", "", "", "", ""];
-
-    public static var recentStaleModifier:Map<Int, Float> = [
-        0 => 0.1, 1 => 0.2, 2 => 0.3, 3 => 0.4, 4 => 0.45, 5 => 0.5, 6 => 0.55, 7 => 0.6, 8 => 0.65, 9 => 0.7
-    ];
-
-    public function new(data:FighterModJson, slot:PlayerSlotIdentifier, x:Float, y:Float) {
+    
+    public function new(slot:PlayerSlotIdentifier, x:Float, y:Float, data:FighterModJson) {
+        super(slot, x, y)
         this.modData = data;
-        this.slot = slot;
-        this.x = x;
-        this.y = y;
-
-        this.drag.x = 300;
-        this.acceleration.y = 200;
     }
 
     public function loadScripts() {
@@ -102,23 +85,4 @@ class Fighter extends MatchObject {
     public function render_ui() {
         //this.callScriptFunction("draw_ui");
     }
-
-    public function getPercent(a:String):Float {
-        return this.percent;
-    }
-
-    public function getSlot(a:String):Int {
-        return cast this.slot;
-    }
-
-    public function stale(id:String) {
-        this.recentMoves.pop();
-        this.recentMoves.unshift(id);
-    }
-
-    public function getHeldItem():Null<HoldableItem> {
-        return null;
-    }
-
-    public function launch(angle:Float = 50, knockback:Float = 1.0) {}
 }

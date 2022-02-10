@@ -77,12 +77,27 @@ class DebugDisplay extends FlxBasic {
     var notifTween:FlxTween;
     var hasTriggeredDebugAction:Bool = false;
 
+    var crashHeldDuration:Float = 0.0;
+    var crashHeldMajor:Bool = false;
+
     public override function update(elapsed:Float) {
         if (FlxG.keys.anyPressed([F3])) {
+            if (FlxG.keys.anyJustReleased([C])) {
+                this.crashHeldDuration = 0.0;
+            }
+            if (FlxG.keys.anyPressed([C])) {
+                this.crashHeldDuration += elapsed;
+                this.notify('crash timer: ${this.crashHeldDuration}')
+
+                if (this.crashHeldDuration > 1000) {
+                    throw new DebugException('aaaa')
+                }
+            }
             if (FlxG.keys.anyJustPressed([Y])) {
                 this.hasTriggeredDebugAction = true;
                 #if hl
                 Gc.dumpMemory('hlmemory.dump');
+                this.notify('dumped memory to `hlmemory.dump`')
                 #else
                 this.notify('dump not supported on this target');
                 #end

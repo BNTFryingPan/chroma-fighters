@@ -62,6 +62,8 @@ class TitleScreenState extends BaseState {
     override public function create() {
         super.create();
 
+        PlayerSlot.PlayerBox.STATE = PlayerSlot.PlayerBoxState.HIDDEN;
+
         this.pressStartText = new FlxText(0, 400, 0, "Press A+S or LB+RB");
         this.pressStartText.screenCenter(X);
 

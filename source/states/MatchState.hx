@@ -6,5 +6,7 @@ class MatchState extends BaseState {
 
     override public function create() {
         super.create();
+
+        PlayerSlot.PlayerBox.STATE = PlayerSlot.PlayerBoxState.MATCH;
     }
 }

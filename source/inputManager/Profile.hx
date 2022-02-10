@@ -68,6 +68,11 @@ class Profile {
             ProfileInput.getFromProfileAction(RIGHT_TRIGGER),
             ProfileInput.getFromProfileAction(RIGHT_BUMPER)
         ],
+        MENU_BUTTON => [
+            ProfileInput.getFromProfileAction(FlxKey.ENTER),
+            ProfileInput.getFromProfileAction(PLUS),
+            ProfileInput.getFromProfileAction(MINUS),
+        ],
         JUMP => [
             ProfileInput.getFromProfileAction(FlxKey.X),
             ProfileInput.getFromProfileAction(FACE_X),

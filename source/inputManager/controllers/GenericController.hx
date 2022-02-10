@@ -125,6 +125,10 @@ class GenericController extends GenericInput {
         return this.profile.getActionState(MENU_RIGHT, this);
     }
 
+    override public function getMenuButton():INPUT_STATE {
+        return this.profile.getActionState(MENU_BUTTON, this)
+    }
+
     override public function getAttack():INPUT_STATE {
         return this.profile.getActionState(ATTACK, this);
     }
