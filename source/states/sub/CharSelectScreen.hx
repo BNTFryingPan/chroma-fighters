@@ -58,7 +58,7 @@ class CharSelectScreen extends BaseState {
             return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
                 FlxG.switchState(new TitleScreenState());
             });*/
-            Main.debugDisplay.notify('moving to SSS');
+            Main.debugDisplay.notify('moving to SSS'); // will probably skip sss for now and go to testing stage because
         }
     }
 }
