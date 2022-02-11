@@ -58,18 +58,16 @@ enum PlayerType {
 class PlayerBox {
     public static var STATE(default, set):PlayerBoxState = PlayerBoxState.HIDDEN;
 
-    public static function set_STATE(new:PlayerBoxState) {
-        switch (new) {
+    public static function set_STATE(state:PlayerBoxState) {
+        switch (state) {
             case PlayerBoxState.HIDDEN:
-                break
-            case PlayerBoxState.FIGHTER_SELECTION:
-                for (var player in PlayerSlot.getPlayerArray()) {
+            case PlayerBoxState.FIGHTER_SELECT:
+                for (player in PlayerSlot.getPlayerArray()) {
                     player.playerBox.configureCSS();
                 }
-                break
             default:
-                break
         }
+        return state;
     }
 
     public var inputTypeText:FlxText;
@@ -77,7 +75,6 @@ class PlayerBox {
     public var background:FlxSprite;
     public var swapButton:CustomButton;
     public var disconnectButton:CustomButton;
-
     public var slot:PlayerSlotIdentifier;
     public var max = 2;
     public var xPos = 10;
@@ -118,7 +115,7 @@ class PlayerBox {
         // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
         this.xPos = ((cast this.slot) * 100) + 20;
         this.background.x = xPos;
-        this.labelText.text = '${slot+1}/8';
+        this.labelText.text = '${slot + 1}/8';
         this.labelText.x = xPos;
         this.labelText.y = this.background.y + 2;
         this.swapButton.x = xPos;
