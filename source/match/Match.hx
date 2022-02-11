@@ -1,5 +1,7 @@
 package match;
 
+import PlayerSlot;
+
 enum GroundType {
     SOLID_GROUND;
     NOT_SOLID_GROUND;
@@ -20,7 +22,5 @@ class FighterSelection {
 
 class Match {
     // players is an array of the player slots that will actually be in the match
-    public function new(stage:String, players:Array<PlayerSlotIdentifier>) {
-        
-    }
+    public function new(stage:String, players:Array<PlayerSlotIdentifier>) {}
 }

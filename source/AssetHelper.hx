@@ -1,7 +1,9 @@
 package;
 
+import flixel.FlxG;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.extern.Rest;
+import haxe.io.Bytes;
 import hscript.Expr;
 import hscript.Interp;
 import hscript.Parser;
@@ -54,7 +56,7 @@ class AssetHelper {
 
     public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
 
-    //public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
+    // public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
     public static var aseCache:Map<String, Bytes> = new Map<String, Bytes>();
     private static var parser:Parser = new Parser();
 
@@ -91,15 +93,18 @@ class AssetHelper {
     }
 
     public static function getImageAsset(key:NamespacedKey):BitmapData {
+        // return getNullBitmap();
         #if (sys && !mobile)
         // Main.log('loading ${key.toString()}');
         if (FlxG.bitmap.checkCache(key.toString())) {
-            return FlxG.bitmap.get(key.toString())
+            return FlxG.bitmap.get(key.toString()).bitmap;
         }
         var assetDir = AssetHelper.getAssetDirectory(key, ".png");
         if (assetDir != null) {
             // Main.log('found');
-            return FlxG.bitmap.add(BitmapData.fromFile(assetDir), false, key.toString())
+            var graphic = FlxG.bitmap.add(BitmapData.fromFile(assetDir), false, key.toString());
+            graphic.persist = true;
+            return graphic.bitmap;
         }
         // Main.log('not found');
         return getNullBitmap();

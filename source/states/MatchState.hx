@@ -1,5 +1,8 @@
 package states;
 
+import GameManager;
+import match.Stage;
+
 class MatchState extends BaseState {
     public var paused:Bool = false;
     public var stage:Stage;
@@ -7,6 +10,6 @@ class MatchState extends BaseState {
     override public function create() {
         super.create();
 
-        PlayerSlot.PlayerBox.STATE = PlayerSlot.PlayerBoxState.MATCH;
+        PlayerSlot.PlayerBox.STATE = PlayerBoxState.IN_GAME;
     }
 }

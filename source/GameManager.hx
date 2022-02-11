@@ -12,16 +12,16 @@ enum PlayerBoxState {
     GENERIC_FIGHTER; // above but with fighter selection. used for stage select screen
     FIGHTER_SELECT; // has all the things needed for the character select screen
     IN_GAME; // shows shield, damage, stocks, etc. used in battle/replays
+    HIDDEN;
 }
 
 class GameState { // this might be jank
     public static var isUIOpen = true;
     public static var shouldDrawCursors = false;
     public static var isPlayingOnline = false;
-
-    //public static function getShouldDrawCursors():Bool {
+    // public static function getShouldDrawCursors():Bool {
     //    return isUIOpen && s
-    //}
+    // }
 }
 
 class GameManager {

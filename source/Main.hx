@@ -5,7 +5,6 @@ import flixel.FlxGame;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import lime.app.Application;
-import match.Fighter;
 import match.Match;
 import match.Stage;
 import openfl.display.FPS;
@@ -71,10 +70,9 @@ class Main extends Sprite {
         FlxG.game.debugger.console.registerClass(PlayerSlot);
         FlxG.game.debugger.console.registerClass(InputHelper);
         FlxG.game.debugger.console.registerClass(InputManager);
-        FlxG.game.debugger.console.registerClass(Fighter);
         FlxG.game.debugger.console.registerClass(Stage);
         FlxG.game.debugger.console.registerClass(Match);
-        FlxG.game.debugger.console.registerClass(GameManager);
+        // FlxG.game.debugger.console.registerClass(GameManager);
         #end
         return;
     }

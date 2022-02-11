@@ -1,6 +1,7 @@
 package match;
 
 import flixel.FlxBasic;
+import flixel.FlxSprite;
 
 typedef StageModOption = {
     public var type:String;
@@ -27,25 +28,28 @@ typedef StageModJson = {
 class MainGround {
     public var sprite:FlxSprite;
     public var groundHeight:Int;
+
+    public function new(height) {
+        this.groundHeight = height;
+    }
 }
 
 typedef Blastzone = {
     public var topBlastzone:Int; // the distance above `MainGround.groundHeight` the top blastzone is
     public var bottomBlastzone:Int; // the distance below `MainGround.groundHeight` the bottom blastzone is
-    public var sideBlastzone:Int; // the distance between the center of the stage and the side blastzones 
+    public var sideBlastzone:Int; // the distance between the center of the stage and the side blastzones
 }
 
 class Stage extends MatchObject {
-    public override var groundType = GroundType.SOLID_GROUND;
+    // public var groundType = GroundType.SOLID_GROUND;
     public var mainGround:MainGround;
-    public var blastzone:Blastzone
+    public var blastzone:Blastzone;
 
     public function new() {
+        super();
         this.blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
-        this.mainGround = new MainGround(100)
+        this.mainGround = new MainGround(100);
     }
 
-    public function load(key:NamespacedKey, opts:Map<String, String>) {
-        
-    }
+    public function load(key:NamespacedKey, opts:Map<String, String>) {}
 }

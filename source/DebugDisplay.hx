@@ -1,5 +1,6 @@
 package;
 
+import exception.DebugException;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -87,10 +88,10 @@ class DebugDisplay extends FlxBasic {
             }
             if (FlxG.keys.anyPressed([C])) {
                 this.crashHeldDuration += elapsed;
-                this.notify('crash timer: ${this.crashHeldDuration}')
+                this.notify('crash timer: ${this.crashHeldDuration}');
 
                 if (this.crashHeldDuration > 1000) {
-                    throw new DebugException('aaaa')
+                    throw new DebugException('aaaa');
                 }
             }
             if (FlxG.keys.anyJustPressed([Y])) {

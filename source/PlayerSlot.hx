@@ -1,5 +1,6 @@
 package;
 
+import GameManager;
 import cpuController.CpuController;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -19,6 +20,7 @@ import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
 import inputManager.controllers.GenericController;
 import inputManager.controllers.SwitchProController;
+import match.Match;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
@@ -47,13 +49,12 @@ enum PlayerType {
     PLAYER;
 }
 
-enum PlayerBoxState {
+/*enum PlayerBoxState {
     HIDDEN;
     CHARACTER_SEL;
     STAGE_SEL;
     MATCH;
-}
-
+}*/
 class PlayerBox {
     public static var STATE:PlayerBoxState = PlayerBoxState.HIDDEN;
 
@@ -553,6 +554,8 @@ class PlayerSlot {
         // Main.log('setting offset');
         this.cursorSpriteOffset = PlayerSlot.getOffset(this.cursorAngle);
         this.coinSpriteOffset = PlayerSlot.getCoinOffset(this.cursorAngle);
+
+        this.cursorSprite.graphic.persist = true;
         // Main.log('set offset to ${this.spriteOffset}');
     }
 
@@ -572,6 +575,9 @@ class PlayerSlot {
         this.debugSprite = new FlxSprite();
         this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(this.slot)));
         this.debugSprite.makeGraphic(3, 3, FlxColor.MAGENTA);
+
+        this.coinSprite.graphic.persist = true;
+        this.debugSprite.graphic.persist = true;
 
         this.setCursorAngle(RIGHT);
     }
@@ -702,7 +708,8 @@ class PlayerSlot {
     }
 
     public function drawBox() {
-        if (PlayerBox.STATE != PlayerBoxState.HIDDEN) this.playerBox.drawCSS(8);
+        if (PlayerBox.STATE != PlayerBoxState.HIDDEN)
+            this.playerBox.drawCSS(8);
         this.playerBox.draw();
     }
 }

@@ -1,7 +1,5 @@
 package exception;
 
-import haxe.exception.PosException;
+import haxe.exceptions.PosException;
 
-class DebugException extends PosException {
-    
-}
+class DebugException extends PosException {}

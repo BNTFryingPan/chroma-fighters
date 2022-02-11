@@ -5,6 +5,7 @@ import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.util.FlxColor;
 import inputManager.InputEnums;
 import inputManager.InputManager;
 import inputManager.InputTypes;

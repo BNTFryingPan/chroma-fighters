@@ -1,17 +1,23 @@
 package states.sub;
 
+import PlayerSlot;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+import inputManager.InputEnums;
+import inputManager.InputManager;
+
 class CharSelectScreen extends BaseState {
     public var onlineMenu:Bool = false;
     public var backButton:CustomButton;
 
     public var isFading:Bool = false;
-    
-    public function new(isOnline:Bool=false) {
+
+    public function new(isOnline:Bool = false) {
         super();
         this.onlineMenu = isOnline;
     }
 
-    public function create() {
+    override public function create() {
         super.create();
 
         this.backButton = new CustomButton(0, -50, '<- Back', function(player:PlayerSlotIdentifier) {
@@ -27,17 +33,24 @@ class CharSelectScreen extends BaseState {
     }
 
     private function _isPlayerReady(player:PlayerSlot):Bool {
-        if (player.type == NONE) return true;
-        if (player.type == CPU) return true; // TODO : check if a player is picking the CPUs character
-        if (!player.inputEnabled) return true;
-        if (player.fighterSelection.ready) return true;
+        if (player.type == NONE)
+            return true;
+        if (player.type == CPU)
+            return true; // TODO : check if a player is picking the CPUs character
+        if (!player.input.inputEnabled)
+            return true;
+        if (player.fighterSelection.ready)
+            return true;
         return false;
     }
 
     public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
         var mappedPlayers = PlayerSlot.getPlayerArray().map(this._isPlayerReady);
-        var unreadyPlayers = mappedPlayers.filter(r -> {return r == false;});
-        if (unreadyPlayers.length > 0) return false;
+        var unreadyPlayers = mappedPlayers.filter(r -> {
+            return r == false;
+        });
+        if (unreadyPlayers.length > 0)
+            return false;
         return true;
     }
 
@@ -52,11 +65,12 @@ class CharSelectScreen extends BaseState {
             });
         }
 
-        if (InputManager.anyPlayerPressingAction(MENU_BUTTON) && this.areAllPlayersReady()) {
-            if (this.isFading) return;
+        if (InputManager.anyPlayerPressingAction(Action.MENU_BUTTON) && this.areAllPlayersReady()) {
+            if (this.isFading)
+                return;
             /*this.isFading = true;
-            return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
-                FlxG.switchState(new TitleScreenState());
+                return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
+                    FlxG.switchState(new TitleScreenState());
             });*/
             Main.debugDisplay.notify('moving to SSS'); // will probably skip sss for now and go to testing stage because
         }

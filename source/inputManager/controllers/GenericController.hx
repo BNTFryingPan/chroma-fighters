@@ -5,8 +5,8 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import inputManager.GenericInput;
-import inputManager.InputHelper;
 import inputManager.InputEnums;
+import inputManager.InputHelper;
 import inputManager.InputTypes;
 
 class GenericController extends GenericInput {
@@ -60,10 +60,7 @@ class GenericController extends GenericInput {
             case NULL:
                 NOT_PRESSED;
             case TRUE:
-                if (!this._flixelGamepad.connected)
-                    NOT_PRESSED;
-                else
-                    PRESSED;
+                if (!this._flixelGamepad.connected) NOT_PRESSED; else PRESSED;
             case FACE_A:
                 this.getFromFlixelGamepadButton(A);
             case FACE_B:
@@ -126,7 +123,7 @@ class GenericController extends GenericInput {
     }
 
     override public function getMenuButton():INPUT_STATE {
-        return this.profile.getActionState(MENU_BUTTON, this)
+        return this.profile.getActionState(MENU_BUTTON, this);
     }
 
     override public function getAttack():INPUT_STATE {
