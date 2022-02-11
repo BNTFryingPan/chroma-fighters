@@ -56,7 +56,21 @@ enum PlayerType {
     MATCH;
 }*/
 class PlayerBox {
-    public static var STATE:PlayerBoxState = PlayerBoxState.HIDDEN;
+    public static var STATE(default, set):PlayerBoxState = PlayerBoxState.HIDDEN;
+
+    public static function set_STATE(new:PlayerBoxState) {
+        switch (new) {
+            case PlayerBoxState.HIDDEN:
+                break
+            case PlayerBoxState.FIGHTER_SELECTION:
+                for (var player in PlayerSlot.getPlayerArray()) {
+                    player.playerBox.configureCSS();
+                }
+                break
+            default:
+                break
+        }
+    }
 
     public var inputTypeText:FlxText;
     public var labelText:FlxText;
@@ -100,11 +114,11 @@ class PlayerBox {
         this.disconnectButton.draw();
     }
 
-    public function drawCSS(max:Int) {
+    public function configureCSS() {
         // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
         this.xPos = ((cast this.slot) * 100) + 20;
         this.background.x = xPos;
-        this.labelText.text = '${slot}/${max}';
+        this.labelText.text = '${slot+1}/8';
         this.labelText.x = xPos;
         this.labelText.y = this.background.y + 2;
         this.swapButton.x = xPos;
@@ -709,7 +723,6 @@ class PlayerSlot {
 
     public function drawBox() {
         if (PlayerBox.STATE != PlayerBoxState.HIDDEN)
-            this.playerBox.drawCSS(8);
-        this.playerBox.draw();
+            this.playerBox.draw();
     }
 }

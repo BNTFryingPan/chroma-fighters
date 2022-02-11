@@ -3,7 +3,6 @@ package inputManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxBasic;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import inputManager.InputEnums;

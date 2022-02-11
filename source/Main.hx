@@ -10,6 +10,7 @@ import match.Stage;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import states.TitleScreenState;
+import flixel.graphics.FlxGraphic;
 
 class Main extends Sprite {
     public static var fpsCounter:FPS;
@@ -30,6 +31,7 @@ class Main extends Sprite {
 
     public function new() {
         super();
+        FlxGraphic.defaultPersist = true;
         FlxG.autoPause = false;
 
         // TODO : load fps setting from settings file (i dont think it can be changed without a restart)

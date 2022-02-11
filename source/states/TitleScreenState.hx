@@ -3,7 +3,6 @@ package states;
 import GameManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
