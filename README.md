@@ -1,6 +1,8 @@
 # Chroma Fighters
 ^ working title lol
 
+do not release him...
+
 platform fighter written in haxe using haxeflixel
 
 [scripting](https://github.com/LeotomasMC/chroma-fighters/blob/main/mods/scripting.txt)
