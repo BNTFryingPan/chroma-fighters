@@ -55,7 +55,7 @@ enum PlayerType {
    STAGE_SEL;
    MATCH;
 }*/
-class PlayerBox {
+class PlayerBox extends FlxSpriteGroup {
    public static var STATE(default, set):PlayerBoxState = PlayerBoxState.HIDDEN;
 
    public static function set_STATE(state:PlayerBoxState) {
@@ -77,52 +77,32 @@ class PlayerBox {
    public var swapButton:CustomButton;
    public var disconnectButton:CustomButton;
    public var slot:PlayerSlotIdentifier;
-   public var max = 2;
-   public var xPos = 10;
 
    public function new(slot:PlayerSlotIdentifier) {
-      this.background = new FlxSprite();
-      this.labelText = new FlxText(0, 0, 0, "0/0");
-      this.inputTypeText = new FlxText();
-      this.swapButton = new CustomButton(0, 0, "swap", (targetslot) -> {
+      this.background = add(new FlxSprite());
+      this.labelText = add(new FlxText(0, 0, 0, "0/0"));
+      this.inputTypeText = add(new FlxText());
+      this.swapButton = add(new CustomButton(0, 0, "swap", (targetslot) -> {
          PlayerSlot.getPlayer(targetslot).moveToSlot(this.slot);
-      });
-      this.disconnectButton = new CustomButton(0, 0, "disconnect", (targetslot) -> {
+      }));
+      this.disconnectButton = add(new CustomButton(0, 0, "disconnect", (targetslot) -> {
          PlayerSlot.getPlayer(this.slot).setNewInput(NoInput);
-      });
+      }));
       this.background.makeGraphic(64, 64, FlxColor.MAGENTA);
-      this.background.y = FlxG.height - 80;
+      
+      this.y = FlxG.height - 80
 
       this.slot = slot;
    }
 
-   public function update(elapsed:Float) {
-      this.background.update(elapsed);
-      this.labelText.update(elapsed);
-      this.inputTypeText.update(elapsed);
-      this.swapButton.update(elapsed);
-      this.disconnectButton.update(elapsed);
-   }
-
-   public function draw() {
-      // this.background.draw();
-      this.labelText.draw();
-      this.inputTypeText.draw();
-      this.swapButton.draw();
-      this.disconnectButton.draw();
-   }
-
    public function configureCSS() {
       // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
-      this.xPos = ((cast this.slot) * 100) + 20;
-      this.background.x = xPos;
+      this.x = ((cast this.slot) * 100) + 20;
       this.labelText.text = '${slot + 1}/8';
-      this.labelText.x = xPos;
-      this.labelText.y = this.background.y + 2;
-      this.swapButton.x = xPos;
-      this.swapButton.y = this.background.y + 20;
-      this.disconnectButton.x = xPos;
-      this.disconnectButton.y = this.background.y + 40;
+      this.inputTypeText.text = 'input'
+      this.labelText.y = 2;
+      this.swapButton.y = 20;
+      this.disconnectButton.y = 40;
    }
 }
 

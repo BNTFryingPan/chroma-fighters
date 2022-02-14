@@ -19,6 +19,7 @@ class GameState { // this might be jank
    public static var isUIOpen = true;
    public static var shouldDrawCursors = false;
    public static var isPlayingOnline = false;
+   public static var isInMatch = false;
    // public static function getShouldDrawCursors():Bool {
    //    return isUIOpen && s
    // }
@@ -27,6 +28,8 @@ class GameState { // this might be jank
 class GameManager {
    public static function update(elapsed:Float) {
       PlayerSlot.updateAll(elapsed);
+
+      GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState))
 
       // var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
       // Main.debugDisplay.rightAppend += '${pads}';

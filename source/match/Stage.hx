@@ -25,12 +25,13 @@ typedef StageModJson = {
    public var isInBaseGame:Bool;
 }
 
-class MainGround {
-   public var sprite:FlxSprite;
+class MainGround extends FlxSprite {
    public var groundHeight:Int;
 
    public function new(height) {
+      super(0, height)
       this.groundHeight = height;
+      this.makeGraphic(50, 25, FlxColor.MAGENTA);
    }
 }
 

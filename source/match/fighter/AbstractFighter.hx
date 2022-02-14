@@ -65,6 +65,13 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       this.createFighterMoves();
    }
 
+   override public function update(elapsed:Float) {
+      super(elapsed);
+      this.handleInput(PlayerSlot.getPlayer(this.slot).input);
+   }
+
+   abstract public function handleInput(input:GenericInput):Void;
+
    abstract public function createFighterMoves():Void; // this.moves = new FighterMoves(this);
 
    public function getPercent(a:String):Float {

@@ -10,6 +10,8 @@ import inputManager.InputManager;
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;
    public var backButton:CustomButton;
+   public var readyTestButton:CustomButton;
+   public var continueButton:CustomButton;
 
    public var isFading:Bool = false;
 
@@ -23,7 +25,7 @@ class CharSelectScreen extends BaseState {
 
       PlayerBox.STATE = PlayerBoxState.FIGHTER_SELECT;
 
-      this.backButton = new CustomButton(0, -50, '<- Back', function(player:PlayerSlotIdentifier) {
+      this.backButton = new CustomButton(20, 20, '<- Back', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
          this.isFading = true;
@@ -34,8 +36,28 @@ class CharSelectScreen extends BaseState {
                FlxG.switchState(new LocalMenu());
          });
       });
-      this.backButton.x = 20;
-      this.backButton.y = 20;
+
+      this.readyTestButton = new CustomButton(0, 0, 'debug ready', function(player:PlayerSlotIdentifier) {
+         if (this.isFading)
+            return;
+         
+         var p = PlayerSlot.getPlayer(player);
+         p.fighterSelection.ready = !p.fighterSelection.ready;
+      })
+      this.readyTestButton.screenCenter(XY);
+
+      this.continueButton = new CustomButton(0, 0, "fight", function(player:PlayerSlotIdentifier) {
+         if (this.isFading)
+            return;
+
+         if (!this.areAllPlayersReady())
+            return;
+
+         this.isFading = true;
+         FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
+            this.onlineMenu ? FlxG.switchState(new TitleScreenState()) : FlxG.switchState(new MatchState());
+         })
+      })
 
       add(this.backButton);
    }
@@ -53,12 +75,10 @@ class CharSelectScreen extends BaseState {
    }
 
    public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
-      var mappedPlayers = PlayerSlot.getPlayerArray().map(this._isPlayerReady);
-      var unreadyPlayers = mappedPlayers.filter(r -> {
-         return r == false;
-      });
-      if (unreadyPlayers.length > 0)
-         return false;
+      for (player in PlayerSlot.getPlayerArray()) {
+         if (!this._isPlayerReady(player))
+            return false;
+      }
       return true;
    }
 

@@ -11,5 +11,7 @@ class MatchState extends BaseState {
       super.create();
 
       PlayerSlot.PlayerBox.STATE = PlayerBoxState.IN_GAME;
+
+      this.stage = new Stage();
    }
 }
