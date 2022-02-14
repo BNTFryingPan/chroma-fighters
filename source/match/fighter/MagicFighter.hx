@@ -1,22 +1,23 @@
 package match.fighter;
 
+import flixel.math.FlxPoint;
+import flixel.math.FlxPoint;
+import match.fighter.AbstractFighter;
+
 class MagicFighterMoves extends FighterMoves {
-    private final moves:Map<String, Function> = [
-        'taunt' => this.taunt,
-    ];
+   public function new(fighter:MagicFighter) {
+      super(fighter);
+      this.moves.set('taunt', this.taunt);
+   }
 
-    public function new(fighter:MagicFighter) {
-        super(fighter);
-    }
-
-    public function taunt() {
-        Main.log('magic taunt!');
-        return SUCCESS;
-    }
+   public function taunt() {
+      Main.log('magic taunt!');
+      return SUCCESS;
+   }
 }
 
 class MagicFighter extends AbstractFighter {
-    public override function createFighterMoves() {
-        this.moves = new MagicFighterMoves(this);
-    }
+   public function createFighterMoves() {
+      this.moveset = new MagicFighterMoves(this);
+   }
 }

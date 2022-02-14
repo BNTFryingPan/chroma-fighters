@@ -67,6 +67,7 @@ class PlayerBox {
                 }
             default:
         }
+        PlayerBox.STATE = state;
         return state;
     }
 
@@ -104,7 +105,7 @@ class PlayerBox {
     }
 
     public function draw() {
-        this.background.draw();
+        // this.background.draw();
         this.labelText.draw();
         this.inputTypeText.draw();
         this.swapButton.draw();
