@@ -2,7 +2,9 @@ package match.fighter;
 
 import PlayerSlot;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import haxe.Constraints.Function;
+import inputManager.GenericInput;
 import match.MatchObject;
 
 typedef MoveResultData = {
@@ -47,6 +49,8 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    public var percent:Float;
    public var airState:FighterAirState = GROUNDED;
 
+   public var debugSprite:FlxSprite;
+
    public var moveset:FighterMoves;
 
    public static var recentStaleModifier:Map<Int, Float> = [
@@ -58,15 +62,21 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
 
    public function new(slot:PlayerSlotIdentifier, x:Float, y:Float) {
       super(x, y);
+      this.width = 10;
+      this.height = 10;
       this.slot = slot;
       this.drag.x = 300;
-      this.acceleration.y = 200;
+      // this.acceleration.y = 200;
+
+      this.debugSprite = new FlxSprite(0, 0);
+      this.debugSprite.makeGraphic(10, 10);
 
       this.createFighterMoves();
    }
 
    override public function update(elapsed:Float) {
-      super(elapsed);
+      super.update(elapsed);
+      this.debugSprite.setPosition(this.x, this.y);
       this.handleInput(PlayerSlot.getPlayer(this.slot).input);
    }
 
@@ -92,4 +102,9 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    }
 
    public function launch(angle:Float = 50, knockback:Float = 1.0) {}
+
+   override public function draw() {
+      super.draw();
+      this.debugSprite.draw();
+   }
 }

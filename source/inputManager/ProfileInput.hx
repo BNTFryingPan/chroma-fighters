@@ -1,14 +1,32 @@
 package inputManager;
 
 import flixel.input.keyboard.FlxKey;
+import flixel.util.typeLimit.OneOfFour;
+import flixel.util.typeLimit.OneOfThree;
 import inputManager.GenericInput;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
-import inputManager.InputTypes;
+import inputManager.InputState;
 import inputManager.controllers.GenericController;
+
+typedef ProfileInputSource = OneOfThree<FlxKey, GenericButton, GenericAxis>;
+typedef ProfileActionSource = OneOfFour<FlxKey, GenericButton, GenericAxis, ProfileInput>;
+
+typedef ProfileInputOptions = {
+   public var type:ProfileInputType; // the type of output this input is (axis or button)
+   public var source:ProfileInputSource; // the actual button or axis of the input
+   // if source is axis
+   public var ?deadzone:Float; // if axis value is less than this value, it becomes 0
+   // button options
+   public var ?minThreshold:Float; // if the source type is an axis, the lowest axis value to trigger this button
+   public var ?maxThreshold:Float; // ^ but the max value. could be used for different actions at different values
+   // axis options
+   public var ?digitalThreshold:Float; // the minimum value of the axis to count as a digital input (not sure when itll be used though)
+   public var ?value:Float; // the axis value if the source type is a button
+}
 
 class ProfileInput {
    public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
+      Main.log('creating input with ${$type(action))}');
       if (Std.isOfType(action, ProfileInput))
          return cast action;
 
@@ -76,14 +94,14 @@ class ProfileInput {
       return (this.getAxisValue() > this.digitalThreshold ? true : false);
    }
 
-   public function getInputState(?gamepad:GenericController):INPUT_STATE {
+   public function getInputState(?gamepad:GenericController):InputState {
       if (this.type == AXIS) {
          return NOT_PRESSED; // you cant really "press" an output axis. axis input can be "pressed" though
       }
-      if (Std.isOfType(this.source, Int)) {
+      if (Std.isOfType(this.source, Int) && gamepad == null) { // if gamepad is null, then dont check keyboard input for this action
          return InputHelper.getFromFlxKey(cast this.source);
       }
-      if (Std.isOfType(this.source, GenericButton)) {
+      if (Std.isOfType(this.source, GenericButton) && gamepad != null) {
          return gamepad.getButtonState(cast this.source);
       }
 

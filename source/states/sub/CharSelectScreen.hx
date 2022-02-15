@@ -24,6 +24,7 @@ class CharSelectScreen extends BaseState {
       super.create();
 
       PlayerBox.STATE = PlayerBoxState.FIGHTER_SELECT;
+      GameState.shouldDrawCursors = true;
 
       this.backButton = new CustomButton(20, 20, '<- Back', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
@@ -40,10 +41,10 @@ class CharSelectScreen extends BaseState {
       this.readyTestButton = new CustomButton(0, 0, 'debug ready', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
-         
+
          var p = PlayerSlot.getPlayer(player);
          p.fighterSelection.ready = !p.fighterSelection.ready;
-      })
+      });
       this.readyTestButton.screenCenter(XY);
 
       this.continueButton = new CustomButton(0, 0, "fight", function(player:PlayerSlotIdentifier) {
@@ -56,27 +57,19 @@ class CharSelectScreen extends BaseState {
          this.isFading = true;
          FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
             this.onlineMenu ? FlxG.switchState(new TitleScreenState()) : FlxG.switchState(new MatchState());
-         })
-      })
+         });
+      });
+      this.continueButton.screenCenter(XY);
+      this.continueButton.y += 60;
 
+      add(this.readyTestButton);
+      add(this.continueButton);
       add(this.backButton);
-   }
-
-   private function _isPlayerReady(player:PlayerSlot):Bool {
-      if (player.type == NONE)
-         return true;
-      if (player.type == CPU)
-         return true; // TODO : check if a player is picking the CPUs character
-      if (!player.input.inputEnabled)
-         return true;
-      if (player.fighterSelection.ready)
-         return true;
-      return false;
    }
 
    public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
       for (player in PlayerSlot.getPlayerArray()) {
-         if (!this._isPlayerReady(player))
+         if (!player.isReady())
             return false;
       }
       return true;
@@ -102,5 +95,9 @@ class CharSelectScreen extends BaseState {
          });*/
          Main.debugDisplay.notify('moving to SSS'); // will probably skip sss for now and go to testing stage because
       }
+   }
+
+   override public function stateId():String {
+      return 'CSS';
    }
 }

@@ -4,8 +4,6 @@ import PlayerSlot.PlayerSlotIdentifier;
 import cpuController.CpuController;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.typeLimit.OneOfTwo;
-import inputManager.InputEnums;
-import inputManager.InputTypes;
 import inputManager.controllers.GenericController;
 
 class InputManager {

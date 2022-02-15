@@ -3,9 +3,8 @@ package inputManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import inputManager.GenericInput;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
-import inputManager.InputTypes;
+import inputManager.InputState;
 
 class MouseHandler extends KeyboardHandler {
    override public function get_inputType() {
@@ -20,7 +19,7 @@ class MouseHandler extends KeyboardHandler {
       return {x: FlxG.mouse.screenX, y: FlxG.mouse.screenY}
    }
 
-   override function getConfirm():INPUT_STATE {
+   override function getConfirm():InputState {
       return InputHelper.getFromFlixel(FlxG.mouse.justPressed, FlxG.mouse.justReleased, FlxG.mouse.pressed);
       /*
          var parentState = super.getConfirm();

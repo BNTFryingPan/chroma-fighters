@@ -9,6 +9,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
+import states.BaseState;
 #if hl
 import hl.Gc;
 #elseif cpp
@@ -176,7 +177,12 @@ class DebugDisplay extends FlxBasic {
             this.leftText.text += "\n";
 
          // this.leftText.text += 'Game ${Version.getVersionString()} (${#if debug 'debug' #else 'release' #end})\n';
-         this.leftText.text += 'FPS: ${Main.fpsCounter.currentFPS}\n';
+         var stateId = 'Unknown';
+         if (Std.isOfType(FlxG.state, BaseState)) {
+            var state:BaseState = cast FlxG.state;
+            stateId = state.stateId();
+         }
+         this.leftText.text += 'FPS: ${Main.fpsCounter.currentFPS}\nState: ${stateId}\n';
 
          this.leftText.text += this.leftAppend;
 
@@ -194,6 +200,8 @@ class DebugDisplay extends FlxBasic {
          // this.rightText.text += 'Elapsed: ${}';
          // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
          // this.rightText.text += 'CPU: \n';
+         var gp = FlxG.gamepads.getFirstActiveGamepad();
+         this.rightText.text += 'a button: ${(gp == null ? 'none' : Std.string(gp.pressed.A))}';
 
          this.rightText.text += '\n${this.rightAppend}';
       }

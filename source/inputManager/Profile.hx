@@ -3,8 +3,8 @@ package inputManager;
 import flixel.FlxG;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
+import inputManager.InputState;
 import inputManager.controllers.GenericController;
 import lime.system.System;
 
@@ -128,11 +128,11 @@ class Profile {
    }
 
    @:access(flixel.input.FlxKeyManager)
-   public function checkActionArray(list:Array<ProfileInput>):INPUT_STATE {
+   public function checkActionArray(list:Array<ProfileInput>):InputState {
       if (this.player == null)
          return NOT_PRESSED;
 
-      var pressed:Array<INPUT_STATE>;
+      var pressed:Array<InputState>;
 
       if (Std.isOfType(this.player.input, KeyboardHandler)) {
          pressed = list.map((action:ProfileInput) -> {
@@ -153,7 +153,7 @@ class Profile {
       return InputHelper.or(...pressed);
    }
 
-   public function getAction(action:Action, gamepad:FlxGamepad):INPUT_STATE {
+   public function getAction(action:Action, gamepad:FlxGamepad):InputState {
       return NOT_PRESSED; // switch (action) {
       // case MENU_CONFIRM;
       // }
@@ -177,7 +177,7 @@ class Profile {
       return output;
    }
 
-   public function getActionState(action:Action, ?gamepad:GenericController):INPUT_STATE {
+   public function getActionState(action:Action, ?gamepad:GenericController):InputState {
       if (action == NULL)
          return NOT_PRESSED;
       var actionStates = this.bindings[action].map(act -> act.getInputState(gamepad));

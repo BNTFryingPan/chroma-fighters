@@ -2,6 +2,7 @@ package match;
 
 import flixel.FlxBasic;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 
 typedef StageModOption = {
    public var type:String;
@@ -28,9 +29,9 @@ typedef StageModJson = {
 class MainGround extends FlxSprite {
    public var groundHeight:Int;
 
-   public function new(height) {
-      super(0, height)
-      this.groundHeight = height;
+   public function new(groundH:Int) {
+      super(100, groundH);
+      this.groundHeight = groundH;
       this.makeGraphic(50, 25, FlxColor.MAGENTA);
    }
 }
@@ -53,4 +54,8 @@ class Stage extends MatchObject {
    }
 
    public function load(key:NamespacedKey, opts:Map<String, String>) {}
+
+   override public function draw() {
+      this.mainGround.draw();
+   }
 }

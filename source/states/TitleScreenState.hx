@@ -7,10 +7,8 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import inputManager.GenericInput;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
 import inputManager.InputManager;
-import inputManager.InputTypes;
 import lime.system.System;
 import states.sub.LocalMenu;
 
@@ -63,6 +61,7 @@ class TitleScreenState extends BaseState {
       super.create();
 
       PlayerSlot.PlayerBox.STATE = PlayerBoxState.HIDDEN;
+      GameState.shouldDrawCursors = true;
 
       this.pressStartText = new FlxText(0, 400, 0, "Press A+S or LB+RB");
       this.pressStartText.screenCenter(X);
@@ -174,5 +173,9 @@ class TitleScreenState extends BaseState {
       }
 
       super.update(elapsed);
+   }
+
+   override public function stateId():String {
+      return 'TitleScreen';
    }
 }

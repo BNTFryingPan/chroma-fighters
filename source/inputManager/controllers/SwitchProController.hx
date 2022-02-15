@@ -1,7 +1,7 @@
 package inputManager.controllers;
 
 import PlayerSlot;
-import inputManager.InputEnums;
+import inputManager.InputState;
 
 class SwitchProController extends GenericController {
    override public function get_inputType() {
@@ -12,7 +12,7 @@ class SwitchProController extends GenericController {
       super(slot, profile);
    }
 
-   public override function getButtonState(button:GenericButton):INPUT_STATE {
+   public override function getButtonState(button:GenericButton):InputState {
       return switch (button) {
          case FACE_A:
             this.getFromFlixelGamepadButton(B);

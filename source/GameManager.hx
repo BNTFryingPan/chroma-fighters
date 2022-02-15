@@ -2,10 +2,10 @@ package;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.MouseHandler;
+import states.MatchState;
 
 enum PlayerBoxState {
    GENERIC; // used for generic screens. has swap/dc buttons and controls/name picker, but no fighter selection
@@ -29,12 +29,12 @@ class GameManager {
    public static function update(elapsed:Float) {
       PlayerSlot.updateAll(elapsed);
 
-      GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState))
+      GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
 
       // var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
       // Main.debugDisplay.rightAppend += '${pads}';
 
-      if (InputManager.enabled) {
+      if (InputManager.enabled && !GameState.isInMatch) {
          var emptySlot = PlayerSlot.getFirstOpenPlayerSlot();
 
          if (emptySlot != null) {
@@ -80,8 +80,7 @@ class GameManager {
 
       for (player in PlayerSlot.getPlayerArray()) {
          ret.push(player.playerBox.background);
-         ret.push(player.playerBox.labelText);
-         ret.push(player.playerBox.inputTypeText);
+         ret.push(player.playerBox.text);
          ret.push(player.playerBox.swapButton);
          ret.push(player.playerBox.disconnectButton);
       }

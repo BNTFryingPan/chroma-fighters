@@ -4,8 +4,7 @@ import flixel.FlxG;
 import flixel.input.FlxInput;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
-import inputManager.InputEnums;
-import inputManager.InputTypes;
+import inputManager.InputState;
 
 class InputHelper {
    static public function isPressingConnectCombo(gamepad:FlxGamepad):Bool {
@@ -17,35 +16,35 @@ class InputHelper {
       return false;
    }
 
-   static public function isPressed(state:INPUT_STATE):Bool {
+   static public function isPressed(state:InputState):Bool {
       if (state == JUST_PRESSED) {
          return true;
       }
       return state == PRESSED;
    }
 
-   static public function isNotPressed(state:INPUT_STATE):Bool {
+   static public function isNotPressed(state:InputState):Bool {
       if (state == JUST_RELEASED) {
          return true;
       }
       return state == NOT_PRESSED;
    }
 
-   static public function justChanged(state:INPUT_STATE):Bool {
+   static public function justChanged(state:InputState):Bool {
       if (state == JUST_PRESSED) {
          return true;
       }
       return state == JUST_RELEASED;
    }
 
-   static public function notChanged(state:INPUT_STATE):Bool {
+   static public function notChanged(state:InputState):Bool {
       if (state == PRESSED) {
          return true;
       }
       return state == NOT_PRESSED;
    }
 
-   static public function getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool):INPUT_STATE {
+   static public function getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool):InputState {
       if (justPressed)
          return JUST_PRESSED;
       if (justReleased)
@@ -55,7 +54,7 @@ class InputHelper {
       return NOT_PRESSED;
    }
 
-   static public function getFromFlxInput(input:FlxInput<Int>):INPUT_STATE {
+   static public function getFromFlxInput(input:FlxInput<Int>):InputState {
       if (input.justPressed)
          return JUST_PRESSED;
       if (input.justReleased)
@@ -66,11 +65,11 @@ class InputHelper {
    }
 
    @:access(flixel.input.FlxKeyManager)
-   static public function getFromFlxKey(key:FlxKey):INPUT_STATE {
+   static public function getFromFlxKey(key:FlxKey):InputState {
       return InputHelper.getFromFlxInput(FlxG.keys.getKey(key));
    }
 
-   static public function or(...inputs:INPUT_STATE):INPUT_STATE {
+   static public function or(...inputs:InputState):InputState {
       if (inputs.length == 0) {
          return NOT_PRESSED;
       }
@@ -92,7 +91,7 @@ class InputHelper {
       return NOT_PRESSED;
    }
 
-   static public function asInt(state:INPUT_STATE):Int {
+   static public function asInt(state:InputState):Int {
       return InputHelper.isPressed(state) ? 1 : 0;
    }
    /*

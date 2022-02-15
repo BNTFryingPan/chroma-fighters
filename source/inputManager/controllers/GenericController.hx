@@ -5,9 +5,7 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import inputManager.GenericInput;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
-import inputManager.InputTypes;
 
 class GenericController extends GenericInput {
    /**
@@ -41,7 +39,7 @@ class GenericController extends GenericInput {
    private function handleNewInput() {}
 
    @:access(flixel.input.gamepad.FlxGamepad)
-   public function getFromFlixelGamepadButton(button:FlxGamepadInputID):INPUT_STATE {
+   public function getFromFlixelGamepadButton(button:FlxGamepadInputID):InputState {
       if (!this._flixelGamepad.connected)
          return NOT_PRESSED;
       return InputHelper.getFromFlxInput(this._flixelGamepad.getButton(this._flixelGamepad.mapping.getRawID(button)));
@@ -55,7 +53,7 @@ class GenericController extends GenericInput {
       }
    }
 
-   public function getButtonState(button:GenericButton):INPUT_STATE {
+   public function getButtonState(button:GenericButton):InputState {
       return switch (button) {
          case NULL:
             NOT_PRESSED;
@@ -102,64 +100,64 @@ class GenericController extends GenericInput {
       }
    }
 
-   override public function getConfirm():INPUT_STATE {
+   override public function getConfirm():InputState {
       return this.profile.getActionState(MENU_CONFIRM, this);
    }
 
-   override public function getCancel():INPUT_STATE {
+   override public function getCancel():InputState {
       return this.profile.getActionState(MENU_CANCEL, this);
    }
 
-   override public function getMenuAction():INPUT_STATE {
+   override public function getMenuAction():InputState {
       return this.profile.getActionState(MENU_ACTION, this);
    }
 
-   override public function getMenuLeft():INPUT_STATE {
+   override public function getMenuLeft():InputState {
       return this.profile.getActionState(MENU_LEFT, this);
    }
 
-   override public function getMenuRight():INPUT_STATE {
+   override public function getMenuRight():InputState {
       return this.profile.getActionState(MENU_RIGHT, this);
    }
 
-   override public function getMenuButton():INPUT_STATE {
+   override public function getMenuButton():InputState {
       return this.profile.getActionState(MENU_BUTTON, this);
    }
 
-   override public function getAttack():INPUT_STATE {
+   override public function getAttack():InputState {
       return this.profile.getActionState(ATTACK, this);
    }
 
-   override public function getJump():INPUT_STATE {
+   override public function getJump():InputState {
       return this.profile.getActionState(JUMP, this);
    }
 
-   override public function getSpecial():INPUT_STATE {
+   override public function getSpecial():InputState {
       return this.profile.getActionState(SPECIAL, this);
    }
 
-   override public function getStrong():INPUT_STATE {
+   override public function getStrong():InputState {
       return this.profile.getActionState(STRONG, this);
    }
 
-   override public function getShield():INPUT_STATE {
+   override public function getShield():InputState {
       return this.profile.getActionState(SHIELD, this);
    }
 
-   override public function getWalk():INPUT_STATE {
+   override public function getWalk():InputState {
       return this.profile.getActionState(WALK, this);
       // return NOT_PRESSED; // unused on controller
    }
 
-   override public function getTaunt():INPUT_STATE {
+   override public function getTaunt():InputState {
       return this.profile.getActionState(TAUNT, this);
    }
 
-   override public function getQuit():INPUT_STATE {
+   override public function getQuit():InputState {
       return this.profile.getActionState(NULL, this);
    }
 
-   override public function getPause():INPUT_STATE {
+   override public function getPause():InputState {
       return this.profile.getActionState(NULL, this);
    }
 
@@ -179,7 +177,7 @@ class GenericController extends GenericInput {
       return Math.max(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK) * 2, 0);
    }
 
-   override public function getStick():StickValue {
+   override public function getStick():StickVector {
       // TODO : make this check the control scheme first!
       var x:Float = 0;
       var y:Float = 0;
@@ -189,10 +187,11 @@ class GenericController extends GenericInput {
       y += this.getDown();
       y -= this.getUp();
 
-      return {x: x, y: y};
+      return new StickVector(x, y);
+      // return {x: x, y: y};
    }
 
-   override public function getCursorStick():StickValue {
+   override public function getCursorStick():StickVector {
       var stick = this.getStick();
 
       stick.x -= InputHelper.asInt(getButtonState(DPAD_LEFT));
@@ -209,11 +208,13 @@ class GenericController extends GenericInput {
       return stick;
    }
 
-   override public function getDirection():StickValue {
-      return {x: 0, y: 0};
+   override public function getDirection():StickVector {
+      return new StickVector(0, 0);
+      // return {x: 0, y: 0};
    }
 
-   override public function getRawDirection():StickValue {
-      return {x: 0, y: 0};
+   override public function getRawDirection():StickVector {
+      return new StickVector(0, 0);
+      // return {x: 0, y: 0};
    }
 }

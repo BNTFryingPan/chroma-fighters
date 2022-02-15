@@ -6,9 +6,7 @@ import flixel.FlxG;
 import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxColor;
-import inputManager.InputEnums;
 import inputManager.InputManager;
-import inputManager.InputTypes;
 import inputManager.MouseHandler;
 
 /**
@@ -40,5 +38,10 @@ class BaseState extends FlxState {
    override public function update(elapsed:Float) {
       super.update(elapsed);
       GameManager.update(elapsed);
+   }
+
+   // used for the debug screen lmao
+   public function stateId():String {
+      return 'Unknown (base state)';
    }
 }

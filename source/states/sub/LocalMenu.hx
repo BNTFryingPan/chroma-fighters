@@ -17,6 +17,7 @@ class LocalMenu extends BaseState {
       super.create();
 
       PlayerSlot.PlayerBox.STATE = PlayerBoxState.HIDDEN;
+      GameState.shouldDrawCursors = true;
 
       this.backButton = new CustomButton(0, -50, '<- Back', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
@@ -58,5 +59,9 @@ class LocalMenu extends BaseState {
             FlxG.switchState(new TitleScreenState());
          });
       }
+   }
+
+   override public function stateId():String {
+      return 'LocalMenu';
    }
 }

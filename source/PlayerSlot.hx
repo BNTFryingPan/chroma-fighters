@@ -6,21 +6,25 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfTwo;
+import inputManager.CursorRotation;
 import inputManager.GenericInput;
-import inputManager.InputEnums;
+import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
-import inputManager.InputTypes;
+import inputManager.InputType;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
+import inputManager.Position;
 import inputManager.controllers.GenericController;
 import inputManager.controllers.SwitchProController;
 import match.Match;
+import match.fighter.AbstractFighter;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
@@ -65,32 +69,38 @@ class PlayerBox extends FlxSpriteGroup {
             for (player in PlayerSlot.getPlayerArray()) {
                player.playerBox.configureCSS();
             }
+         case PlayerBoxState.IN_GAME:
+            for (player in PlayerSlot.getPlayerArray()) {
+               player.playerBox.configureInGame();
+            }
          default:
       }
       PlayerBox.STATE = state;
       return state;
    }
 
-   public var inputTypeText:FlxText;
-   public var labelText:FlxText;
+   public var text:FlxText;
    public var background:FlxSprite;
    public var swapButton:CustomButton;
    public var disconnectButton:CustomButton;
    public var slot:PlayerSlotIdentifier;
 
    public function new(slot:PlayerSlotIdentifier) {
-      this.background = add(new FlxSprite());
-      this.labelText = add(new FlxText(0, 0, 0, "0/0"));
-      this.inputTypeText = add(new FlxText());
-      this.swapButton = add(new CustomButton(0, 0, "swap", (targetslot) -> {
+      super(0, FlxG.height - 80);
+      this.background = new FlxSprite();
+      this.text = new FlxText(0, 0, 0, "0/8\nInput");
+      this.swapButton = new CustomButton(0, 0, "swap", (targetslot) -> {
          PlayerSlot.getPlayer(targetslot).moveToSlot(this.slot);
-      }));
-      this.disconnectButton = add(new CustomButton(0, 0, "disconnect", (targetslot) -> {
+      });
+      this.disconnectButton = new CustomButton(0, 0, "disconnect", (targetslot) -> {
          PlayerSlot.getPlayer(this.slot).setNewInput(NoInput);
-      }));
+      });
       this.background.makeGraphic(64, 64, FlxColor.MAGENTA);
-      
-      this.y = FlxG.height - 80
+
+      this.add(this.background);
+      this.add(this.text);
+      this.add(this.swapButton);
+      this.add(this.disconnectButton);
 
       this.slot = slot;
    }
@@ -98,11 +108,21 @@ class PlayerBox extends FlxSpriteGroup {
    public function configureCSS() {
       // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
       this.x = ((cast this.slot) * 100) + 20;
-      this.labelText.text = '${slot + 1}/8';
-      this.inputTypeText.text = 'input'
-      this.labelText.y = 2;
-      this.swapButton.y = 20;
-      this.disconnectButton.y = 40;
+      this.text.text = '${slot + 1}/8\nInput';
+      this.text.y = this.y + 2;
+      this.swapButton.y = this.y + 20;
+      this.disconnectButton.y = this.y + 40;
+   }
+
+   public function configureInGame() {
+      this.x = ((cast this.slot) * 100) + 20;
+      this.swapButton.visible = false;
+      this.disconnectButton.visible = false;
+   }
+
+   override public function update(elapsed:Float) {
+      super.update(elapsed);
+      if (PlayerBox.STATE == PlayerBoxState.IN_GAME) {}
    }
 }
 
@@ -349,6 +369,7 @@ class PlayerSlot {
    public var color:PlayerColor;
    public var slot(default, set):PlayerSlotIdentifier;
    public var fighterSelection:FighterSelection;
+   public var fighter:AbstractFighter;
    public var input:GenericInput;
    public var debugSprite:FlxSprite;
    public var cursorSprite:FlxSprite;
@@ -527,7 +548,9 @@ class PlayerSlot {
          return;
       if (angle != SAME)
          this.cursorAngle = angle;
-      this.cursorSprite.graphic.destroy();
+      if (this.cursorSprite.graphic != null) {
+         this.cursorSprite.graphic.destroy();
+      }
       this.cursorSprite.graphic = null;
       // Main.log('setting cursor angle ${angle} on ${slot}');
       if (this.cursorAngle == LEFT) {
@@ -579,6 +602,7 @@ class PlayerSlot {
       this.type = NONE;
 
       this.input = new GenericInput(slot);
+      this.fighterSelection = new FighterSelection(slot);
    }
 
    public function setType(type:PlayerType) {
@@ -683,20 +707,40 @@ class PlayerSlot {
                   button.outHandler(this.slot);
             }
          }
-         Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\nCursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
-         Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
+         Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
+         if (GameState.shouldDrawCursors) {
+            Main.debugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
+            Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
+         }
+         if (GameState.isInMatch) {
+            Main.debugDisplay.leftAppend += 'Fighter: (${this.fighter.x}, ${this.fighter.y}) [${this.fighter.velocity.x}, ${this.fighter.velocity.y}]';
+         }
       } else {
          Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
+   }
+
+   public function isReady():Bool {
+      if (this.type == NONE)
+         return true;
+      if (this.type == CPU)
+         return true; // TODO : check if a player is picking the CPUs character
+      if (!this.input.inputEnabled)
+         return true;
+      if (this.fighterSelection.ready)
+         return true;
+      return false;
    }
 
    public function draw() {
       if (Main.debugDisplay == null || /*!this.visible ||*/ !this.ready)
          return;
 
-      this.coinSprite.draw();
-      this.cursorSprite.draw();
-      this.debugSprite.draw();
+      if (GameState.shouldDrawCursors) {
+         this.coinSprite.draw();
+         this.cursorSprite.draw();
+         this.debugSprite.draw();
+      }
    }
 
    public function drawBox() {

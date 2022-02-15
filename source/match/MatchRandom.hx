@@ -1,5 +1,7 @@
 package match;
 
+import flixel.math.FlxMath;
+
 /**
    used to get random numbers that can be recreated in a replay
    based off of flixels FlxRandom class, but slightly different
@@ -11,6 +13,7 @@ package match;
 **/
 class MatchRandom {
    public var currentSeed(get, set):Int;
+
    private var _seed:Float = 1;
 
    function get_currentSeed():Int {
@@ -49,7 +52,7 @@ class MatchRandom {
       return Math.floor(min + this.getRand() / MatchRandom._mod * (max - min + 1));
    }
 
-   public function nextInt(min, max):Int {
+   public function nextInt(min:Int = 0, max:Int = FlxMath.MAX_VALUE_INT):Int {
       var ret = getInt(min, max);
       nextRand();
       return ret;
@@ -58,7 +61,7 @@ class MatchRandom {
    public function getFloat(min:Float = 0, max:Float = 1):Float {
       if (min == 0 && max == 1)
          return this.getRand() / MatchRandom._mod;
-      
+
       if (min == max)
          return min;
 
@@ -71,7 +74,7 @@ class MatchRandom {
       return min + (this.getRand() / MatchRandom._mod) * (max - min);
    }
 
-   public function nextFloat(min, max) {
+   public function nextFloat(min:Float = 0, max:Float = 1) {
       var ret = getFloat(min, max);
       nextRand();
       return ret;
@@ -87,7 +90,7 @@ class MatchRandom {
 
    // non-deterministic function!
    static public function getRandomSeed():Int {
-      return bound(Std.int(Math.random() * FlxMath.MAX_VALUE_INT))
+      return bound(Std.int(Math.random() * FlxMath.MAX_VALUE_INT));
    }
 
    static function bound(value:Int) {

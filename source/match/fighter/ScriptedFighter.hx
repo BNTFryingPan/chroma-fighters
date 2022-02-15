@@ -4,6 +4,7 @@ import AssetHelper;
 import PlayerSlot;
 import flixel.FlxBasic;
 import flixel.math.FlxPoint;
+import inputManager.GenericInput;
 
 typedef FighterModOption = {
    public var type:String;
@@ -84,4 +85,6 @@ class ScriptedFighter extends AbstractFighter {
    }
 
    public function createFighterMoves() {}
+
+   public function handleInput(input:GenericInput) {}
 }

@@ -5,9 +5,8 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import inputManager.InputEnums;
 import inputManager.InputHelper;
-import inputManager.InputTypes;
+import inputManager.InputState;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
@@ -51,71 +50,71 @@ class GenericInput {
       return null;
    }
 
-   public function getCursorStick():StickValue {
+   public function getCursorStick():StickVector {
       return this.getStick();
    }
 
-   public function getConfirm():INPUT_STATE {
+   public function getConfirm():InputState {
       return NOT_PRESSED;
    }
 
-   public function getCancel():INPUT_STATE {
+   public function getCancel():InputState {
       return NOT_PRESSED;
    }
 
-   public function getMenuAction():INPUT_STATE {
+   public function getMenuAction():InputState {
       return NOT_PRESSED;
    }
 
-   public function getMenuLeft():INPUT_STATE {
+   public function getMenuLeft():InputState {
       return NOT_PRESSED;
    }
 
-   public function getMenuRight():INPUT_STATE {
+   public function getMenuRight():InputState {
       return NOT_PRESSED;
    }
 
-   public function getMenuButton():INPUT_STATE {
+   public function getMenuButton():InputState {
       return NOT_PRESSED;
    }
 
-   public function getAttack():INPUT_STATE {
+   public function getAttack():InputState {
       return NOT_PRESSED;
    }
 
-   public function getJump():INPUT_STATE {
+   public function getJump():InputState {
       return NOT_PRESSED;
    }
 
-   public function getSpecial():INPUT_STATE {
+   public function getSpecial():InputState {
       return NOT_PRESSED;
    }
 
-   public function getStrong():INPUT_STATE {
+   public function getStrong():InputState {
       return NOT_PRESSED;
    }
 
-   public function getShield():INPUT_STATE {
+   public function getShield():InputState {
       return NOT_PRESSED;
    }
 
-   public function getDodge():INPUT_STATE {
+   public function getDodge():InputState {
       return NOT_PRESSED;
    }
 
-   public function getWalk():INPUT_STATE {
+   public function getWalk():InputState {
       return NOT_PRESSED;
    }
 
-   public function getTaunt():INPUT_STATE {
+   public function getTaunt():InputState {
       return NOT_PRESSED;
    }
 
-   public function getQuit():INPUT_STATE {
+   public function getQuit():InputState {
       return NOT_PRESSED;
    }
 
-   public function getPause():INPUT_STATE {
+   public function getPause():InputState {
       return NOT_PRESSED;
    }
 
@@ -135,27 +134,26 @@ class GenericInput {
       return 0;
    }
 
-   /*
-      public function getStick():StickVector {
-          return new StickVector(0, 0);
+   public function getStick():StickVector {
+      return new StickVector(0, 0);
+   }
+
+   public function getDirection():StickVector {
+      return new StickVector(0, 0);
+   }
+
+   public function getRawDirection():StickVector {
+      return new StickVector(0, 0);
+   }
+   /*public function getStick():StickValue {
+         return {x: 0, y: 0};
       }
 
-      public function getDirection():StickVector {
-          return new StickVector(0, 0);
+      public function getDirection():StickValue {
+         return {x: 0, y: 0};
       }
 
-      public function getRawDirection():StickVector {
-          return new StickVector(0, 0);
+      public function getRawDirection():StickValue {
+         return {x: 0, y: 0};
    }*/
-   public function getStick():StickValue {
-      return {x: 0, y: 0};
-   }
-
-   public function getDirection():StickValue {
-      return {x: 0, y: 0};
-   }
-
-   public function getRawDirection():StickValue {
-      return {x: 0, y: 0};
-   }
 }

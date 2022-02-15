@@ -3,8 +3,7 @@ package inputManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
-import inputManager.InputEnums;
-import inputManager.InputTypes;
+import inputManager.InputState;
 
 /**
    input handler for keyboard
@@ -40,59 +39,59 @@ class KeyboardHandler extends GenericInput {
       return NOT_PRESSED;
    }
 
-   override public function getConfirm():INPUT_STATE {
+   override public function getConfirm():InputState {
       return getKeyStateAsInputState(Z);
    }
 
-   override public function getCancel():INPUT_STATE {
+   override public function getCancel():InputState {
       return getKeyStateAsInputState(X);
    }
 
-   override public function getMenuAction():INPUT_STATE {
+   override public function getMenuAction():InputState {
       return getKeyStateAsInputState(C);
    }
 
-   override public function getMenuLeft():INPUT_STATE {
+   override public function getMenuLeft():InputState {
       return getKeyStateAsInputState(A);
    }
 
-   override public function getMenuRight():INPUT_STATE {
+   override public function getMenuRight():InputState {
       return getKeyStateAsInputState(S);
    }
 
-   override public function getAttack():INPUT_STATE {
+   override public function getAttack():InputState {
       return getKeyStateAsInputState(X);
    }
 
-   override public function getJump():INPUT_STATE {
+   override public function getJump():InputState {
       return getKeyStateAsInputState(Z);
    }
 
-   override public function getSpecial():INPUT_STATE {
+   override public function getSpecial():InputState {
       return getKeyStateAsInputState(C);
    }
 
-   override public function getStrong():INPUT_STATE {
+   override public function getStrong():InputState {
       return getKeyStateAsInputState(D);
    }
 
-   override public function getDodge():INPUT_STATE {
+   override public function getDodge():InputState {
       return getKeyStateAsInputState(S);
    }
 
-   override public function getWalk():INPUT_STATE {
+   override public function getWalk():InputState {
       return getKeyStateAsInputState(A);
    }
 
-   override public function getTaunt():INPUT_STATE {
+   override public function getTaunt():InputState {
       return getKeyStateAsInputState(F);
    }
 
-   override public function getQuit():INPUT_STATE {
+   override public function getQuit():InputState {
       return getKeyStateAsInputState(BACKSPACE);
    }
 
-   override public function getPause():INPUT_STATE {
+   override public function getPause():InputState {
       return getKeyStateAsInputState(ENTER);
    }
 
@@ -112,7 +111,7 @@ class KeyboardHandler extends GenericInput {
       return FlxG.keys.pressed.RIGHT ? 1 : 0;
    }
 
-   override public function getStick():StickValue {
+   override public function getStick():StickVector {
       // TODO : make this check the control scheme first!
       var x:Float = 0;
       var y:Float = 0;
@@ -122,18 +121,21 @@ class KeyboardHandler extends GenericInput {
       x -= this.getLeft();
       x += this.getRight();
 
-      return {x: x, y: y};
+      return new StickVector(x, y);
+      // return {x: x, y: y};
    }
 
-   override public function getCursorStick():StickValue {
-      return this.getStick(); // todo: normalize
+   override public function getCursorStick():StickVector {
+      return this.getStick().normalize(); // todo: normalize
    }
 
-   override public function getDirection():StickValue {
-      return {x: 0, y: 0};
+   override public function getDirection():StickVector {
+      return new StickVector(0, 0);
+      // return {x: 0, y: 0};
    }
 
-   override public function getRawDirection():StickValue {
-      return {x: 0, y: 0};
+   override public function getRawDirection():StickVector {
+      return new StickVector(0, 0);
+      // return {x: 0, y: 0};
    }
 }
