@@ -24,6 +24,11 @@ typedef ProfileInputOptions = {
    public var ?value:Float; // the axis value if the source type is a button
 }
 
+enum ProfileInputType {
+   AXIS;
+   BUTTON;
+}
+
 class ProfileInput {
    public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
       Main.log('creating input with ${$type(action))}');

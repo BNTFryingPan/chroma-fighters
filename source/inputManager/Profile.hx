@@ -49,62 +49,62 @@ class Profile {
       MODIFIER_Y => [ProfileInput.getFromProfileAction(GenericAxis.RIGHT_STICK_Y)],
       MENU_CONFIRM => [
          ProfileInput.getFromProfileAction(FlxKey.Z),
-         ProfileInput.getFromProfileAction(FACE_A)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_A)
       ],
       MENU_CANCEL => [
          ProfileInput.getFromProfileAction(FlxKey.X),
-         ProfileInput.getFromProfileAction(FACE_B)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_B)
       ],
       MENU_ACTION => [
          ProfileInput.getFromProfileAction(FlxKey.C),
-         ProfileInput.getFromProfileAction(FACE_X),
-         ProfileInput.getFromProfileAction(FACE_Y)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_X),
+         ProfileInput.getFromProfileAction(GenericButton.FACE_Y)
       ],
       MENU_LEFT => [
          ProfileInput.getFromProfileAction(FlxKey.A),
-         ProfileInput.getFromProfileAction(LEFT_TRIGGER),
-         ProfileInput.getFromProfileAction(LEFT_BUMPER)
+         ProfileInput.getFromProfileAction(GenericButton.LEFT_TRIGGER),
+         ProfileInput.getFromProfileAction(GenericButton.LEFT_BUMPER)
       ],
       MENU_RIGHT => [
          ProfileInput.getFromProfileAction(FlxKey.S),
-         ProfileInput.getFromProfileAction(RIGHT_TRIGGER),
-         ProfileInput.getFromProfileAction(RIGHT_BUMPER)
+         ProfileInput.getFromProfileAction(GenericButton.RIGHT_TRIGGER),
+         ProfileInput.getFromProfileAction(GenericButton.RIGHT_BUMPER)
       ],
       MENU_BUTTON => [
          ProfileInput.getFromProfileAction(FlxKey.ENTER),
-         ProfileInput.getFromProfileAction(PLUS),
-         ProfileInput.getFromProfileAction(MINUS),
+         ProfileInput.getFromProfileAction(GenericButton.PLUS),
+         ProfileInput.getFromProfileAction(GenericButton.MINUS),
       ],
       JUMP => [
          ProfileInput.getFromProfileAction(FlxKey.X),
-         ProfileInput.getFromProfileAction(FACE_X),
-         ProfileInput.getFromProfileAction(FACE_Y)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_X),
+         ProfileInput.getFromProfileAction(GenericButton.FACE_Y)
       ],
       SHORT_JUMP => [
          ProfileInput.getFromProfileAction(FlxKey.V),
-         ProfileInput.getFromProfileAction(RIGHT_BUMPER)
+         ProfileInput.getFromProfileAction(GenericButton.RIGHT_BUMPER)
       ],
       ATTACK => [
          ProfileInput.getFromProfileAction(FlxKey.Z),
-         ProfileInput.getFromProfileAction(FACE_A)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_A)
       ],
       SPECIAL => [
          ProfileInput.getFromProfileAction(FlxKey.C),
-         ProfileInput.getFromProfileAction(FACE_B)
+         ProfileInput.getFromProfileAction(GenericButton.FACE_B)
       ],
       STRONG => [ProfileInput.getFromProfileAction(FlxKey.D)],
       TAUNT => [
          ProfileInput.getFromProfileAction(FlxKey.F),
-         ProfileInput.getFromProfileAction(DPAD_UP),
-         ProfileInput.getFromProfileAction(DPAD_DOWN),
-         ProfileInput.getFromProfileAction(DPAD_LEFT),
-         ProfileInput.getFromProfileAction(DPAD_RIGHT)
+         ProfileInput.getFromProfileAction(GenericButton.DPAD_UP),
+         ProfileInput.getFromProfileAction(GenericButton.DPAD_DOWN),
+         ProfileInput.getFromProfileAction(GenericButton.DPAD_LEFT),
+         ProfileInput.getFromProfileAction(GenericButton.DPAD_RIGHT)
       ],
       SHIELD => [
          ProfileInput.getFromProfileAction(FlxKey.S),
-         ProfileInput.getFromProfileAction(LEFT_BUMPER),
-         ProfileInput.getFromProfileAction(LEFT_TRIGGER),
-         ProfileInput.getFromProfileAction(RIGHT_TRIGGER)
+         ProfileInput.getFromProfileAction(GenericButton.LEFT_BUMPER),
+         ProfileInput.getFromProfileAction(GenericButton.LEFT_TRIGGER),
+         ProfileInput.getFromProfileAction(GenericButton.RIGHT_TRIGGER)
       ],
       WALK => [ProfileInput.getFromProfileAction(FlxKey.A)]
    ];

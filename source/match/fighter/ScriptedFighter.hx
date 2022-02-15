@@ -30,11 +30,6 @@ typedef FighterModJson = {
    public var isInBaseGame:Bool;
 }
 
-typedef Position = {
-   public var x:Float;
-   public var y:Float;
-}
-
 typedef FighterScriptError = {
    public var name:String;
    public var desc:String;

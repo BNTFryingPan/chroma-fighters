@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import inputManager.InputHelper;
 import inputManager.InputState;
+import inputManager.Position;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
