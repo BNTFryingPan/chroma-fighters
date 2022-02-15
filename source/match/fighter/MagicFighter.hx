@@ -9,15 +9,20 @@ import inputManager.InputHelper;
 import match.fighter.AbstractFighter;
 
 class MagicFighterMoves extends FighterMoves {
+   private final taunt:MagicFighterTaunt;
+
    public function new(fighter:MagicFighter) {
       super(fighter);
+      this.taunt = new MagicFighterTaunt(fighter);
       this.moves.set('taunt', this.taunt);
    }
+}
 
-   public function taunt() {
-      Main.log('magic taunt!');
+class MagicFighterTaunt extends FighterMove {
+   public function attempt():MoveResult {
+      Main.debugDisplay.notify('magic taunt!');
       FlxTween.color(this.fighter.debugSprite, 1, FlxColor.PINK, FlxColor.WHITE);
-      return SUCCESS;
+      return SUCCESS
    }
 }
 
@@ -29,8 +34,7 @@ class MagicFighter extends AbstractFighter {
    public function handleInput(input:GenericInput) {
       var stick = input.getStick();
 
-      this.x += stick.x;
-      this.y += stick.y;
+      this.acceleration.x = stick.x;
 
       if (InputHelper.isPressed(input.getTaunt())) {
          this.moveset.performMove('taunt');

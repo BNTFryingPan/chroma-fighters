@@ -27,9 +27,16 @@ class GameState { // this might be jank
 
 class GameManager {
    public static function update(elapsed:Float) {
-      PlayerSlot.updateAll(elapsed);
-
       GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
+
+      PlayerSlot.updateAll(elapsed);
+      if (GameState.isInMatch && (GameState.isPlayingOnline || !GameState.isUIOpen)) {
+         for (player in PlayerSlot.getPlayerArray(true)) {
+            if (player.fighter != null) {
+               player.fighter.handleInput(player.input);
+            }
+         }
+      }
 
       // var pads = FlxG.gamepads.getActiveGamepads().map(p -> p.name);
       // Main.debugDisplay.rightAppend += '${pads}';

@@ -30,7 +30,7 @@ enum FighterAirState {
 class FighterMoves {
    private final fighter:AbstractFighter;
 
-   private final moves:Map<String, Function> = [];
+   private final moves:Map<String, FighterMove> = [];
 
    public function new(fighter:AbstractFighter) {
       this.fighter = fighter;
@@ -40,14 +40,65 @@ class FighterMoves {
       if (!this.moves.exists(move))
          return NO_SUCH_MOVE;
       if (params.length > 0)
-         return this.moves.get(move)(params);
-      return this.moves.get(move)();
+         return this.moves.get(move).attempt(params);
+      return this.moves.get(move).attempt();
+   }
+}
+
+abstract class FighterMove {
+   public var useCount:Int = 0;
+   private final fighter:AbstractFighter;
+
+   public function new(fighter:AbstractFighter) {
+      this.fighter = fighter;
+   }
+
+   abstract public function attempt(...params:Any):MoveResult;
+}
+
+abstract class StatusEffect {
+   public final cause(default,never):Null<AbstractFighter>;
+
+   public function new(target:AbstractFighter, ?cause:AbstractFighter) {
+      this.cause = cause;
+   }
+
+   public function moveSpeedModifier(current:Float):Float {
+      return current;
+   }
+
+   public function launchVelocityModifier(current:Float):Float {
+      return current;
+   }
+
+   public function damageDealtModifier(current:Float):Float {
+      return current;
+   }
+
+   public function damageTakenModifier(current:Float):Float {
+      return current;
+   }
+
+   public function update(elapsed:Float) {
+      // default update does nothing, but not abstract because it doesnt need to do anything
+   }
+
+   public function draw() {
+      // default draw also does nothing, but its recommended to show some effect
    }
 }
 
 abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitbox {
    public var percent:Float;
    public var airState:FighterAirState = GROUNDED;
+
+   public var iframes:Int = 0;
+
+   public var kills:Int = 0;
+   public var deaths:Int = 0;
+   public var remainingStocks:Null<Int>; // null is used for time battles if i add those
+
+   public var activeEffects(get,never):Array;
 
    public var debugSprite:FlxSprite;
 
@@ -66,7 +117,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       this.height = 10;
       this.slot = slot;
       this.drag.x = 300;
-      // this.acceleration.y = 200;
+      //this.acceleration.y = 200;
 
       this.debugSprite = new FlxSprite(0, 0);
       this.debugSprite.makeGraphic(10, 10);
@@ -77,18 +128,19 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    override public function update(elapsed:Float) {
       super.update(elapsed);
       this.debugSprite.setPosition(this.x, this.y);
-      this.handleInput(PlayerSlot.getPlayer(this.slot).input);
+      // handleInput is called by GameManager when needed
+      //this.handleInput(PlayerSlot.getPlayer(this.slot).input);
    }
 
    abstract public function handleInput(input:GenericInput):Void;
 
    abstract public function createFighterMoves():Void; // this.moves = new FighterMoves(this);
 
-   public function getPercent(a:String):Float {
+   public function getPercent():Float {
       return this.percent;
    }
 
-   public function getSlot(a:String):Int {
+   public function getSlot():Int {
       return cast this.slot;
    }
 
@@ -101,10 +153,19 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       return null;
    }
 
-   public function launch(angle:Float = 50, knockback:Float = 1.0) {}
+   public function launch(angle:Float = 50, knockback:Float = 1.0) {
+      angle = FlxAngle.wrapAngle(angle) * (Math.PI/180);
+      this.velocity.x = (knockback * 100) * Math.cos(angle);
+      this.velocity.y = (knockback * 100) * Math.sin(angle);
+   }
 
    override public function draw() {
       super.draw();
       this.debugSprite.draw();
+   }
+
+   public function isInBlastzone(stage:Stage):Bool {
+      return false;
+      //if (stage.blastzone.)
    }
 }

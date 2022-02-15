@@ -8,7 +8,7 @@ interface IMatchObject {
 }
 
 interface IMatchObjectWithHitbox extends IMatchObject {
-   function collidesWithPoint(point:FlxPoint):Bool;
+   public var hitbox:AbstractHitbox;
 }
 
 interface IGroundObject extends IMatchObjectWithHitbox {}
