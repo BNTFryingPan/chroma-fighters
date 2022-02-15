@@ -5,6 +5,7 @@ import flixel.FlxG;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
+import inputManager.Position;
 
 class MouseHandler extends KeyboardHandler {
    override public function get_inputType() {

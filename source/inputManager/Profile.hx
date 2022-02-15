@@ -5,6 +5,8 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
 import inputManager.InputHelper;
 import inputManager.InputState;
+import inputManager.GenericAxis;
+import inputManager.GenericButton;
 import inputManager.controllers.GenericController;
 import lime.system.System;
 
@@ -31,20 +33,20 @@ class Profile {
 
    public static var defaultBindings:Map<Action, Array<ProfileInput>> = [
       MOVE_X => [
-         ProfileInput.getFromProfileAction(LEFT_STICK_X),
+         ProfileInput.getFromProfileAction(GenericAxis.LEFT_STICK_X),
          new ProfileInput({source: FlxKey.LEFT, type: AXIS, value: -1.0}),
          new ProfileInput({source: FlxKey.RIGHT, type: AXIS, value: 1.0})
       ],
       MOVE_Y => [
-         ProfileInput.getFromProfileAction(LEFT_STICK_Y),
+         ProfileInput.getFromProfileAction(GenericAxis.LEFT_STICK_Y),
          new ProfileInput({source: FlxKey.DOWN, type: AXIS, value: -1.0}),
          new ProfileInput({source: FlxKey.UP, type: AXIS, value: 1.0})
       ],
       MODIFIER_X => [
          // used for aerials with the c-stick on controller. doesnt apply to keyboard though
-         ProfileInput.getFromProfileAction(RIGHT_STICK_X)
+         ProfileInput.getFromProfileAction(GenericAxis.RIGHT_STICK_X)
       ],
-      MODIFIER_Y => [ProfileInput.getFromProfileAction(RIGHT_STICK_Y)],
+      MODIFIER_Y => [ProfileInput.getFromProfileAction(GenericAxis.RIGHT_STICK_Y)],
       MENU_CONFIRM => [
          ProfileInput.getFromProfileAction(FlxKey.Z),
          ProfileInput.getFromProfileAction(FACE_A)

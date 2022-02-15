@@ -4,8 +4,8 @@ import GameManager;
 import PlayerSlot;
 import flixel.FlxG;
 import flixel.util.FlxColor;
-import inputManager.InputEnums;
 import inputManager.InputManager;
+import inputManager.Action;
 
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;

@@ -130,7 +130,7 @@ isPressed(1):Bool
 isNotPressed(1):Bool
 justChanged(1):Bool
 notChanged(1):Bool
-or(any):INPUT_STATE
+or(any):InputState - used to OR input states. if any are PRESSED, returns PRESSED
 asInt(1):Int
 
 currently only for internal use, but may work in scripts anyways, not sure. probably not, but might add support for something like these in the future
