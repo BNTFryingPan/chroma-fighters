@@ -1,42 +1,43 @@
 package aseprite;
 
-import ase.AnimationDirection;
-import ase.Ase;
-import ase.chunks.CelChunk;
-import ase.chunks.LayerChunk;
-import ase.chunks.PaletteChunk;
-import ase.chunks.SliceChunk;
-import ase.chunks.TagsChunk;
-import ase.types.CelType;
-import ase.types.ChunkType;
-import flixel.FlxSprite;
-import haxe.io.Bytes;
-import haxe.io.BytesInput;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.Shape;
-import openfl.display.Sprite;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.utils.Assets;
-import openfl.utils.ByteArray;
+/*
+   import ase.AnimationDirection;
+   import ase.Ase;
+   import ase.chunks.CelChunk;
+   import ase.chunks.LayerChunk;
+   import ase.chunks.PaletteChunk;
+   import ase.chunks.SliceChunk;
+   import ase.chunks.TagsChunk;
+   import ase.types.CelType;
+   import ase.types.ChunkType;
+   import flixel.FlxSprite;
+   import haxe.io.Bytes;
+   import haxe.io.BytesInput;
+   import openfl.display.Bitmap;
+   import openfl.display.BitmapData;
+   import openfl.display.BlendMode;
+   import openfl.display.Shape;
+   import openfl.display.Sprite;
+   import openfl.geom.Matrix;
+   import openfl.geom.Point;
+   import openfl.geom.Rectangle;
+   import openfl.utils.Assets;
+   import openfl.utils.ByteArray;
 
-enum abstract ColorDepth(Int) from Int to Int {
+   enum abstract ColorDepth(Int) from Int to Int {
    var RGBA:Int = 32;
    var GREYSCALE:Int = 16;
    var INDEXED:Int = 8;
-}
+   }
 
-typedef NineSliceSlices = Array<Array<BitmapData>>;
+   typedef NineSliceSlices = Array<Array<BitmapData>>;
 
-typedef FrameLayer = {
+   typedef FrameLayer = {
    layerChunk:LayerChunk,
    cel:Cel,
-}
+   }
 
-class Cel extends BitmapData {
+   class Cel extends BitmapData {
    public var data(default, null):CelChunk;
 
    public function new(sprite:Aseprite, chunk:CelChunk) {
@@ -70,9 +71,9 @@ class Cel extends BitmapData {
 
       pixels.clear();
    }
-}
+   }
 
-class Color {
+   class Color {
    public static function rgbaToargb(rgba:Bytes):UInt {
       var argb:Bytes = Bytes.alloc(4);
       argb.set(0, rgba.get(2));
@@ -113,9 +114,9 @@ class Color {
 
       return 0x00000000;
    }
-}
+   }
 
-class Frame {
+   class Frame {
    public static var blendModes:Array<BlendMode> = [
       NORMAL, // 0 - Normal
       MULTIPLY, // 1 - Multiply
@@ -240,9 +241,9 @@ class Frame {
    public function resize(newWidth:Int, newHeight:Int) {
       this.render9Slice(newWidth, newHeight);
    }
-}
+   }
 
-class NineSlice extends FlxSprite {
+   class NineSlice extends FlxSprite {
    public static function generate(bitmap:BitmapData, sliceKey:SliceKey):NineSliceSlices {
       var result:NineSliceSlices = [for (_ in 0...3) [for (_ in 0...3) null]];
 
@@ -282,9 +283,9 @@ class NineSlice extends FlxSprite {
 
       return result;
    }
-}
+   }
 
-class Palette {
+   class Palette {
    public var data(default, null):PaletteChunk;
    public var entries(default, null):Map<Int, UInt> = [];
    public var size(get, null):Int;
@@ -305,9 +306,9 @@ class Palette {
          entries.set(i, color.getInt32(0));
       }
    }
-}
+   }
 
-class Slice {
+   class Slice {
    public var name(get, never):String;
    public var data(default, null):SliceChunk;
    public var has9Slices(get, never):Bool;
@@ -328,9 +329,9 @@ class Slice {
    inline function get_firstKey() {
       return data.sliceKeys[0];
    }
-}
+   }
 
-class Tag {
+   class Tag {
    public var data(default, null):ase.chunks.TagsChunk.Tag;
    public var name(get, never):String;
 
@@ -341,9 +342,9 @@ class Tag {
    inline function get_name():String {
       return data.tagName;
    }
-}
+   }
 
-class Aseprite extends FlxSprite {
+   class Aseprite extends FlxSprite {
    public var ase:Ase;
 
    public var filePath:String;
@@ -386,7 +387,7 @@ class Aseprite extends FlxSprite {
       if (file != null) {
          this.filePath = file;
 
-         // bytes = AssetHelper.getAsepriteFile(/* what */);
+         // bytes = AssetHelper.getAsepriteFile(/* what );
       }
 
       if (bytes != null) {
@@ -562,4 +563,5 @@ class Aseprite extends FlxSprite {
 
       return currentFrame;
    }
-}
+   }
+ */

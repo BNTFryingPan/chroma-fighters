@@ -1,5 +1,7 @@
 package inputManager;
 
+import inputManager.GenericButton;
+
 enum abstract SpecificButton(GenericButton) to GenericButton {
    // abxy buttons
    // var FACE_BUTTON_ANY = [FACE_A, FACE_B, FACE_X, FACE_Y];

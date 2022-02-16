@@ -1,5 +1,7 @@
 package match;
 
+import inputManager.Position;
+
 enum HitboxType {
    TRIGGER; // may not do anything, but will run a function
    DAMAGE; // damages or launches Fighters that enter it
@@ -9,7 +11,8 @@ enum HitboxType {
 abstract class AbstractHitbox {
    private var x:Float;
    private var y:Float;
-   public final type:HitboxType;
+
+   public var type:HitboxType;
 
    public function new(x:Float, y:Float) {
       this.x = x;
@@ -19,5 +22,6 @@ abstract class AbstractHitbox {
    abstract public function intersectsPoint(pos:Position):Bool;
 
    public function onEnter(thing:MatchObject):Void {};
+
    public function onExit(thing:MatchObject):Void {};
 }

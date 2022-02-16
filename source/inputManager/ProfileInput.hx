@@ -31,7 +31,7 @@ enum ProfileInputType {
 
 class ProfileInput {
    public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
-      Main.log('creating input with ${$type(action))}');
+      // Main.log('creating input with ${$type(action))}');
       if (Std.isOfType(action, ProfileInput))
          return cast action;
 

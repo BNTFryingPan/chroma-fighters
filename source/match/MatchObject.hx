@@ -23,5 +23,6 @@ abstract class MatchObject extends FlxObject implements IMatchObject {
       super();
       this.rand = new MatchRandom();
    }
+
    // idk what i needed this for. L
 }

@@ -19,10 +19,10 @@ class MagicFighterMoves extends FighterMoves {
 }
 
 class MagicFighterTaunt extends FighterMove {
-   public function attempt():MoveResult {
+   public function attempt(...params:Any):MoveResult {
       Main.debugDisplay.notify('magic taunt!');
       FlxTween.color(this.fighter.debugSprite, 1, FlxColor.PINK, FlxColor.WHITE);
-      return SUCCESS
+      return SUCCESS(null);
    }
 }
 
@@ -34,7 +34,13 @@ class MagicFighter extends AbstractFighter {
    public function handleInput(input:GenericInput) {
       var stick = input.getStick();
 
-      this.acceleration.x = stick.x;
+      this.velocity.x = stick.x * 100;
+
+      if ((this.airState == GROUNDED || this.airJumps > 0) && InputHelper.isPressed(input.getJump())) {
+         this.velocity.y = -125;
+      }
+
+      // todo : fastfall
 
       if (InputHelper.isPressed(input.getTaunt())) {
          this.moveset.performMove('taunt');

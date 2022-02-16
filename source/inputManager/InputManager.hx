@@ -4,8 +4,9 @@ import PlayerSlot.PlayerSlotIdentifier;
 import cpuController.CpuController;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.typeLimit.OneOfTwo;
-import inputManager.controllers.GenericController;
+import inputManager.InputDevice;
 import inputManager.Position;
+import inputManager.controllers.GenericController;
 
 class InputManager {
    /*private static var players:Map<PlayerSlotIdentifier, GenericInput> = [

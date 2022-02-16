@@ -1,6 +1,7 @@
 package;
 
 import GameManager.PlayerBoxState;
+import GameManager;
 import PlayerSlot.PlayerBox;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -78,6 +79,7 @@ class Main extends Sprite {
       FlxG.game.debugger.console.registerClass(Match);
       FlxG.game.debugger.console.registerClass(PlayerBox);
       FlxG.game.debugger.console.registerEnum(PlayerBoxState);
+      FlxG.game.debugger.console.registerClass(GameState);
       // FlxG.game.debugger.console.registerClass(GameManager);
       #end
       return;

@@ -30,9 +30,10 @@ class MainGround extends FlxSprite {
    public var groundHeight:Int;
 
    public function new(groundH:Int) {
-      super(100, groundH);
+      super((250 / 2) * -1, groundH);
       this.groundHeight = groundH;
-      this.makeGraphic(50, 25, FlxColor.MAGENTA);
+      this.makeGraphic(250, 50, FlxColor.MAGENTA);
+      this.immovable = true;
    }
 }
 

@@ -7,6 +7,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import inputManager.GenericInput;
+import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import lime.system.System;

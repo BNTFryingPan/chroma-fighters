@@ -3,6 +3,7 @@ package match.fighter;
 import PlayerSlot;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.math.FlxAngle;
 import haxe.Constraints.Function;
 import inputManager.GenericInput;
 import match.MatchObject;
@@ -47,6 +48,7 @@ class FighterMoves {
 
 abstract class FighterMove {
    public var useCount:Int = 0;
+
    private final fighter:AbstractFighter;
 
    public function new(fighter:AbstractFighter) {
@@ -57,7 +59,7 @@ abstract class FighterMove {
 }
 
 abstract class StatusEffect {
-   public final cause(default,never):Null<AbstractFighter>;
+   public var cause(default, null):Null<AbstractFighter>;
 
    public function new(target:AbstractFighter, ?cause:AbstractFighter) {
       this.cause = cause;
@@ -91,14 +93,16 @@ abstract class StatusEffect {
 abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitbox {
    public var percent:Float;
    public var airState:FighterAirState = GROUNDED;
+   public var hitbox:AbstractHitbox;
 
    public var iframes:Int = 0;
+   public var airJumps:Int = 1;
 
    public var kills:Int = 0;
    public var deaths:Int = 0;
    public var remainingStocks:Null<Int>; // null is used for time battles if i add those
 
-   public var activeEffects(get,never):Array;
+   public var activeEffects(get, null):Array<StatusEffect> = [];
 
    public var debugSprite:FlxSprite;
 
@@ -117,7 +121,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       this.height = 10;
       this.slot = slot;
       this.drag.x = 300;
-      //this.acceleration.y = 200;
+      this.acceleration.y = 200;
 
       this.debugSprite = new FlxSprite(0, 0);
       this.debugSprite.makeGraphic(10, 10);
@@ -129,7 +133,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       super.update(elapsed);
       this.debugSprite.setPosition(this.x, this.y);
       // handleInput is called by GameManager when needed
-      //this.handleInput(PlayerSlot.getPlayer(this.slot).input);
+      // this.handleInput(PlayerSlot.getPlayer(this.slot).input);
    }
 
    abstract public function handleInput(input:GenericInput):Void;
@@ -154,7 +158,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    }
 
    public function launch(angle:Float = 50, knockback:Float = 1.0) {
-      angle = FlxAngle.wrapAngle(angle) * (Math.PI/180);
+      angle = FlxAngle.wrapAngle(angle) * (Math.PI / 180);
       this.velocity.x = (knockback * 100) * Math.cos(angle);
       this.velocity.y = (knockback * 100) * Math.sin(angle);
    }
@@ -166,6 +170,10 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
 
    public function isInBlastzone(stage:Stage):Bool {
       return false;
-      //if (stage.blastzone.)
+      // if (stage.blastzone.)
+   }
+
+   function get_activeEffects():Array<StatusEffect> {
+      return this.activeEffects;
    }
 }

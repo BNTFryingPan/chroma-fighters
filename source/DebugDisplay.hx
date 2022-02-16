@@ -50,6 +50,13 @@ class DebugDisplay extends FlxBasic {
       this.notif = new FlxText(10, FlxG.height - 20, 0, "", DebugDisplay.fontSize);
       this.notif.alignment = RIGHT;
       this.notif.alpha = 0;
+
+      this.leftText.scrollFactor.x = 0;
+      this.leftText.scrollFactor.y = 0;
+      this.rightText.scrollFactor.x = 0;
+      this.rightText.scrollFactor.y = 0;
+      this.notif.scrollFactor.x = 0;
+      this.notif.scrollFactor.y = 0;
    }
 
    public override function destroy() {

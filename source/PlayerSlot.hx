@@ -102,6 +102,9 @@ class PlayerBox extends FlxSpriteGroup {
       this.add(this.swapButton);
       this.add(this.disconnectButton);
 
+      this.scrollFactor.x = 0;
+      this.scrollFactor.y = 0;
+
       this.slot = slot;
    }
 
@@ -593,6 +596,13 @@ class PlayerSlot {
 
       this.coinSprite.graphic.persist = true;
       this.debugSprite.graphic.persist = true;
+
+      this.coinSprite.scrollFactor.x = 0;
+      this.coinSprite.scrollFactor.y = 0;
+      this.cursorSprite.scrollFactor.x = 0;
+      this.cursorSprite.scrollFactor.y = 0;
+      this.debugSprite.scrollFactor.x = 0;
+      this.debugSprite.scrollFactor.y = 0;
 
       this.setCursorAngle(RIGHT);
    }

@@ -2,8 +2,10 @@ package;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
+import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
+import inputManager.InputType;
 import inputManager.MouseHandler;
 import states.MatchState;
 
