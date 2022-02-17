@@ -2,9 +2,9 @@ package match;
 
 import inputManager.Position;
 
-/*typedef CompoundHitbox = TypedCompoundHitbox<AbstractHitbox>;
+typedef CompoundHitbox = TypedCompoundHitbox<AbstractHitbox>;
 
-   class TypedCompoundHitbox<T:AbstractHitbox> extends AbstractHitbox {
+class TypedCompoundHitbox<T:AbstractHitbox> extends AbstractHitbox {
    public var limit:Int;
    public final parts:Array<T> = [];
 
@@ -27,4 +27,4 @@ import inputManager.Position;
       }
       return false;
    }
-}*/
+}

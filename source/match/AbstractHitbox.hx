@@ -3,6 +3,7 @@ package match;
 import inputManager.Position;
 
 enum HitboxType {
+   NOTHING; // doesnt do anything, only used for collisions
    TRIGGER; // may not do anything, but will run a function
    DAMAGE; // damages or launches Fighters that enter it
    WINDBOX; // moves MatchObjects that enter

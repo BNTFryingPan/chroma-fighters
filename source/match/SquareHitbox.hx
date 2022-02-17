@@ -2,8 +2,20 @@ package match;
 
 import inputManager.Position;
 
-/*class SquareHitbox extends AbstractHitbox {
-   public function intersectsPoint(pos:Position):Bool {
-      throw new haxe.exceptions.NotImplementedException();
+class SquareHitbox extends AbstractHitbox {
+   public var width:Float;
+   public var height:Float;
+
+   public function new(x:Float, y:Float, width:Float, height:Float) {
+      super(x, y);
+      this.width = width;
+      this.height = height;
    }
-}*/
+
+   public function intersectsPoint(pos:Position):Bool {
+      if (!(this.x <= pos.x && (this.x + this.width) >= pos.x))
+         return false;
+
+      return this.y <= pos.y && (thix.y + this.height) >= pos.y
+   }
+}
