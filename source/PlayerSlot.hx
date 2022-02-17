@@ -8,6 +8,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -723,7 +724,8 @@ class PlayerSlot {
             Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
          }
          if (GameState.isInMatch) {
-            Main.debugDisplay.leftAppend += 'Fighter: (${this.fighter.x}, ${this.fighter.y}) [${this.fighter.velocity.x}, ${this.fighter.velocity.y}]';
+            Main.debugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
+            Main.debugDisplay.leftAppend += '${this.fighter.getDebugString()}';
          }
       } else {
          Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';

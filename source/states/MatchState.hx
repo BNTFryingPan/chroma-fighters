@@ -29,21 +29,20 @@ class MatchState extends BaseState {
             continue;
 
          // TODO : change this lmao
-         player.fighter = cast add(new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight + 20));
+         player.fighter = cast add(new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight - 20));
       }
    }
 
-   @:access(flixel.FlxObject)
-   override public function update(elapsed:Float) {
-      for (player in PlayerSlot.getPlayerArray(true)) {
-         if (player.fighter == null)
-            continue;
-
-         FlxObject.separate(player.fighter, this.stage.mainGround);
-      }
-
-      super.update(elapsed);
-   }
+   // @:access(flixel.FlxObject)
+   // override public function update(elapsed:Float) {
+   // super.update(elapsed);
+   // for (player in PlayerSlot.getPlayerArray(true)) {
+   // if (player.fighter == null)
+   // continue;
+   // FlxG.collide(player.fighter, this.stage.mainGround);
+   // }
+   // super.update(elapsed);
+   // }
 
    override public function stateId():String {
       return 'MatchState';

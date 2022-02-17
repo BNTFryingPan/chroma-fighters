@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
+import flixel.FlxObject;
 import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
@@ -34,8 +35,14 @@ class GameManager {
       PlayerSlot.updateAll(elapsed);
       if (GameState.isInMatch && (GameState.isPlayingOnline || !GameState.isUIOpen)) {
          for (player in PlayerSlot.getPlayerArray(true)) {
-            if (player.fighter != null) {
-               player.fighter.handleInput(player.input);
+            if (player.fighter != null && player.fighter.alive) {
+               player.fighter.handleInput(elapsed, player.input);
+               if (player.fighter.isInBlastzone((cast FlxG.state).stage)) {
+                  player.fighter.x = 0;
+                  player.fighter.y = -100;
+                  player.fighter.velocity.x = 0;
+                  player.fighter.velocity.y = 0;
+               }
             }
          }
       }
@@ -95,5 +102,13 @@ class GameManager {
       }
 
       return ret;
+   }
+
+   public static function collideWithStage(obj:FlxObject):Bool {
+      if (Std.isOfType(FlxG.state, MatchState)) {
+         var state:MatchState = cast FlxG.state;
+         return FlxG.collide(obj, state.stage.mainGround);
+      }
+      return false;
    }
 }

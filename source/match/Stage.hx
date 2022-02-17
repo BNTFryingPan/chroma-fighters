@@ -1,6 +1,7 @@
 package match;
 
 import flixel.FlxBasic;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 
@@ -51,7 +52,9 @@ class Stage extends MatchObject {
    public function new() {
       super();
       this.blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
-      this.mainGround = new MainGround(100);
+      this.mainGround = new MainGround(0);
+      FlxG.worldBounds.set(this.blastzone.sideBlastzone * -1, this.blastzone.topBlastzone * -1, this.blastzone.sideBlastzone * 2,
+         this.blastzone.topBlastzone + this.blastzone.bottomBlastzone);
    }
 
    public function load(key:NamespacedKey, opts:Map<String, String>) {}

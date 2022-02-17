@@ -121,7 +121,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       this.height = 10;
       this.slot = slot;
       this.drag.x = 300;
-      this.acceleration.y = 200;
+      this.acceleration.y = 500;
 
       this.debugSprite = new FlxSprite(0, 0);
       this.debugSprite.makeGraphic(10, 10);
@@ -132,11 +132,21 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    override public function update(elapsed:Float) {
       super.update(elapsed);
       this.debugSprite.setPosition(this.x, this.y);
+
+      GameManager.collideWithStage(this);
+
+      if (this.isTouching(DOWN)) {
+         this.airState = GROUNDED;
+      } else {
+         this.airState = FULL_CONTROL;
+      }
+
       // handleInput is called by GameManager when needed
+
       // this.handleInput(PlayerSlot.getPlayer(this.slot).input);
    }
 
-   abstract public function handleInput(input:GenericInput):Void;
+   abstract public function handleInput(elapsed:Float, input:GenericInput):Void;
 
    abstract public function createFighterMoves():Void; // this.moves = new FighterMoves(this);
 
@@ -169,11 +179,20 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    }
 
    public function isInBlastzone(stage:Stage):Bool {
+      if (this.y < stage.blastzone.topBlastzone * -1)
+         return true;
+      if (this.y > stage.blastzone.bottomBlastzone)
+         return true;
+      if (Math.abs(this.x) > stage.blastzone.sideBlastzone)
+         return true;
       return false;
-      // if (stage.blastzone.)
    }
 
    function get_activeEffects():Array<StatusEffect> {
       return this.activeEffects;
+   }
+
+   public function getDebugString():String {
+      return "";
    }
 }
