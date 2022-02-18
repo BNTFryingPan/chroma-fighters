@@ -6,8 +6,11 @@ import PlayerSlot.PlayerBox;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.graphics.FlxGraphic;
+import inputManager.Action;
+import inputManager.GenericButton;
 import inputManager.InputHelper;
 import inputManager.InputManager;
+import inputManager.Profile;
 import lime.app.Application;
 import match.Match;
 import match.Stage;
@@ -68,6 +71,8 @@ class Main extends Sprite {
       registerClassesWithFlxDebuggerConsole();
 
       PlayerSlot.initAll();
+
+      trace(Profile.defaultBindings[MENU_CONFIRM].map(b -> b.source));
    }
 
    public static function registerClassesWithFlxDebuggerConsole():Void {

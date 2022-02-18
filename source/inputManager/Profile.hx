@@ -3,10 +3,10 @@ package inputManager;
 import flixel.FlxG;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.keyboard.FlxKey;
-import inputManager.InputHelper;
-import inputManager.InputState;
 import inputManager.GenericAxis;
 import inputManager.GenericButton;
+import inputManager.InputHelper;
+import inputManager.InputState;
 import inputManager.controllers.GenericController;
 import lime.system.System;
 
@@ -34,7 +34,11 @@ class Profile {
    public static var defaultBindings:Map<Action, Array<ProfileInput>> = [
       MOVE_X => [
          ProfileInput.getFromProfileAction(GenericAxis.LEFT_STICK_X),
-         new ProfileInput({source: FlxKey.LEFT, type: AXIS, value: -1.0}),
+         new ProfileInput({
+            source: FlxKey.LEFT,
+            type: AXIS,
+            value: -1.0
+         }),
          new ProfileInput({source: FlxKey.RIGHT, type: AXIS, value: 1.0})
       ],
       MOVE_Y => [
@@ -130,25 +134,28 @@ class Profile {
    }
 
    @:access(flixel.input.FlxKeyManager)
-   public function checkActionArray(list:Array<ProfileInput>):InputState {
-      if (this.player == null)
+   public function checkActionArray(list:Array<ProfileInput>, input:GenericInput):InputState {
+      /*if (this.player == null) {
+         trace('player is null');
          return NOT_PRESSED;
+      }*/
 
       var pressed:Array<InputState>;
 
-      if (Std.isOfType(this.player.input, KeyboardHandler)) {
+      if (Std.isOfType(input, KeyboardHandler)) {
          pressed = list.map((action:ProfileInput) -> {
             if (Std.isOfType(action.source, GenericButton))
                return NOT_PRESSED;
 
             return InputHelper.getFromFlxInput(FlxG.keys.getKey(cast action.source));
          });
-      } else if (Std.isOfType(this.player.input, GenericController)) {
+      } else if (Std.isOfType(input, GenericController)) {
          pressed = list.map(action -> {
+            // $type(action.source);
             if (Std.isOfType(action.source, Int))
                return NOT_PRESSED;
 
-            return (cast this.player.input).getButtonState(cast action.source);
+            return (cast input).getButtonState(cast action.source);
          });
       } else
          return NOT_PRESSED;
@@ -182,7 +189,10 @@ class Profile {
    public function getActionState(action:Action, ?gamepad:GenericController):InputState {
       if (action == NULL)
          return NOT_PRESSED;
-      var actionStates = this.bindings[action].map(act -> act.getInputState(gamepad));
-      return InputHelper.or(...actionStates);
+      return this.checkActionArray(this.bindings[action], gamepad);
+      // var actionStates = this.bindings[action].map(act -> act.getInputState(gamepad));
+      // if (action == MENU_CONFIRM)
+      // trace(actionStates);
+      // return InputHelper.or(...actionStates);
    }
 }

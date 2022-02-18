@@ -3,10 +3,13 @@ package inputManager;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.typeLimit.OneOfFour;
 import flixel.util.typeLimit.OneOfThree;
+import haxe.extern.EitherType;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
 import inputManager.controllers.GenericController;
+
+// typedef ProfileInputSource = EitherType<FlxKey, EitherType<GenericButton, GenericAxis>>;
 
 typedef ProfileInputSource = OneOfThree<FlxKey, GenericButton, GenericAxis>;
 typedef ProfileActionSource = OneOfFour<FlxKey, GenericButton, GenericAxis, ProfileInput>;
@@ -31,6 +34,7 @@ enum ProfileInputType {
 
 class ProfileInput {
    public static function getFromProfileAction(action:ProfileActionSource):ProfileInput {
+      // $type(action);
       // Main.log('creating input with ${$type(action))}');
       if (Std.isOfType(action, ProfileInput))
          return cast action;
@@ -58,7 +62,6 @@ class ProfileInput {
    private var rawOptions:ProfileInputOptions;
 
    public final type:ProfileInputType;
-
    public var deadzone:Null<Float> = 0.05;
    public var minThreshold:Null<Float> = 0.05;
    public var maxThreshold:Null<Float> = 1;
@@ -103,13 +106,23 @@ class ProfileInput {
       if (this.type == AXIS) {
          return NOT_PRESSED; // you cant really "press" an output axis. axis input can be "pressed" though
       }
-      if (Std.isOfType(this.source, Int) && gamepad == null) { // if gamepad is null, then dont check keyboard input for this action
+      if (Std.isOfType(this.source, Int) && gamepad == null) { // if gamepad is not null, then dont check keyboard input for this action
          return InputHelper.getFromFlxKey(cast this.source);
       }
-      if (Std.isOfType(this.source, GenericButton) && gamepad != null) {
-         return gamepad.getButtonState(cast this.source);
+      try {
+         trace(!Std.isOfType(this.source, Int)); /*Std.isOfType(this.source, GenericButton)*/
+         if ((!Std.isOfType(this.source, Int)) && gamepad != null) {
+            var button:GenericButton = cast this.source;
+            var ret = gamepad.getButtonState(button);
+            trace(ret);
+            return ret;
+         }
       }
-
+      catch (e) {
+         trace('failed!');
+      }
+      // trace(this.source); // if (gamepad != null)
+      // trace(gamepad == null ? 'no gamepad + fallback' : Std.string(gamepad));
       return NOT_PRESSED; // fall back
    }
 

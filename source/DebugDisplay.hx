@@ -7,6 +7,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import inputManager.Action;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
 import states.BaseState;
@@ -208,7 +209,7 @@ class DebugDisplay extends FlxBasic {
          // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
          // this.rightText.text += 'CPU: \n';
          var gp = FlxG.gamepads.getFirstActiveGamepad();
-         this.rightText.text += 'a button: ${(gp == null ? 'none' : Std.string(gp.pressed.A))}';
+         this.rightText.text += 'a button: ${PlayerSlot.getPlayerArray().map(p -> p.input.profile.bindings[Action.MENU_CONFIRM].map(b -> b.source))}';
 
          this.rightText.text += '\n${this.rightAppend}';
       }
