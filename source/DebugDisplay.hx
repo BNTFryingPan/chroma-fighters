@@ -35,7 +35,11 @@ class DebugDisplay extends FlxBasic {
 
    public static final fontSize:Int = 8;
 
+   #if cpp
    private static final os:String = '${FlCap.os}';
+   #else
+   private static final os:String = 'windows lmao';
+   #end
 
    public function new() {
       super();
@@ -108,7 +112,7 @@ class DebugDisplay extends FlxBasic {
             this.hasTriggeredDebugAction = true;
             #if hl
             Gc.dumpMemory('hlmemory.dump');
-            this.notify('dumped memory to `hlmemory.dump`')
+            this.notify('dumped memory to `hlmemory.dump`');
             #else
             this.notify('dump not supported on this target');
             #end

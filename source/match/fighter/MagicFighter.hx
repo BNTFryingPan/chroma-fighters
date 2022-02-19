@@ -31,6 +31,8 @@ class MagicFighter extends AbstractFighter {
    private var maxJumpTime:Float = 0.3;
    private var isJumping:Bool = false;
    private var maxAirJumps:Int = 1;
+   var dodgeTimer:Float;
+   var dodgeDuration:Int = 3;
 
    public function createFighterMoves() {
       this.moveset = new MagicFighterMoves(this);
@@ -38,9 +40,13 @@ class MagicFighter extends AbstractFighter {
 
    public function handleInput(elapsed:Float, input:GenericInput) {
       var stick = input.getStick();
+      // trace(elapsed);
+
+      // if (input.getDodge())
 
       if (stick.length > 0) {
-         this.velocity.x += stick.x * 25;
+         var horizontalGroundModifier = this.airState == GROUNDED ? 1 : 0.4;
+         this.velocity.x += stick.x * 4000 * elapsed * horizontalGroundModifier;
          this.velocity.x = FlxMath.bound(this.velocity.x, -200, 200);
       }
 
@@ -66,14 +72,14 @@ class MagicFighter extends AbstractFighter {
       }
 
       if (jumpTime > 0 && jumpTime < maxJumpTime) {
-         this.velocity.y = -200;
+         this.velocity.y = -300;
       }
 
-      if (this.velocity.y > 0 && input.getDown() > 0) {
+      if (this.velocity.y > 0 && input.getDown() > 0.3) {
          if (this.airState == GROUNDED) {
             // crouch
          } else {
-            this.velocity.y += 10;
+            this.velocity.y += 1000 * elapsed;
          }
       }
 

@@ -8,12 +8,16 @@ import inputManager.InputState;
 
 class InputHelper {
    static public function isPressingConnectCombo(gamepad:FlxGamepad):Bool {
-      if (gamepad.pressed.LEFT_SHOULDER && gamepad.pressed.RIGHT_SHOULDER && gamepad.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER])) {
-         return true;
-      } else if (gamepad.pressed.LEFT_TRIGGER && gamepad.pressed.RIGHT_TRIGGER && gamepad.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER])) {
-         return true;
-      }
-      return false;
+      return (gamepad.pressed.LEFT_SHOULDER && gamepad.pressed.RIGHT_SHOULDER)
+         || (gamepad.pressed.RIGHT_TRIGGER_BUTTON && gamepad.pressed.LEFT_TRIGGER_BUTTON);
+      /*if (gamepad.anyPressed([LEFT_SHOULDER])
+            && gamepad.anyPressed([RIGHT_SHOULDER])
+            && gamepad.anyJustPressed([LEFT_SHOULDER, RIGHT_SHOULDER])) {
+            return true;
+         } else if (gamepad.pressed.LEFT_TRIGGER && gamepad.pressed.RIGHT_TRIGGER && gamepad.anyJustPressed([LEFT_TRIGGER, RIGHT_TRIGGER])) {
+            return true;
+         }
+         return false; */
    }
 
    static public function isPressed(state:InputState):Bool {

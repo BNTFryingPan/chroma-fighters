@@ -68,12 +68,11 @@ class GameManager {
                   }
                }
             }
-            FlxG.gamepads.getActiveGamepads().filter(p -> {
-               if (InputHelper.isPressingConnectCombo(p)) {
-                  PlayerSlot.tryToAddPlayerFromInputDevice(p);
+            for (gp in FlxG.gamepads.getActiveGamepads()) {
+               if (InputHelper.isPressingConnectCombo(gp)) {
+                  PlayerSlot.tryToAddPlayerFromInputDevice(gp);
                }
-               return true;
-            });
+            }
 
             Main.skipKeyboardModeToggleCheckNextUpdate = false;
          }

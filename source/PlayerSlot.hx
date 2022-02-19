@@ -210,7 +210,7 @@ class PlayerSlot {
    }
 
    public static function getPlayerSlotByInput(input:OneOfTwo<FlxGamepad, InputType>):Null<PlayerSlotIdentifier> {
-      if (Std.isOfType(input, InputType)) {
+      if (!Std.isOfType(input, FlxGamepad)) {
          var type:InputType = cast input;
          if (type == KeyboardInput || type == KeyboardAndMouseInput) {
             var matchingInputs = PlayerSlot.getPlayerInputArray().filter(thisInput -> {
@@ -274,8 +274,9 @@ class PlayerSlot {
    }
 
    public static function tryToAddPlayerFromInputDevice(inputDevice:FlxGamepad):Null<PlayerSlot> {
-      if (PlayerSlot.getPlayerByInput(inputDevice) != null)
+      if (PlayerSlot.getPlayerSlotByInput(inputDevice) != null) {
          return null;
+      }
 
       var player = PlayerSlot.getFirstEmptyPlayer();
 
