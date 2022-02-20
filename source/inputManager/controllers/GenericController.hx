@@ -132,6 +132,10 @@ class GenericController extends GenericInput {
       return this.profile.getActionState(JUMP, this);
    }
 
+   override public function getShortJump():InputState {
+      return this.profile.getActionState(SHORT_JUMP, this);
+   }
+
    override public function getSpecial():InputState {
       return this.profile.getActionState(SPECIAL, this);
    }
@@ -162,19 +166,19 @@ class GenericController extends GenericInput {
    }
 
    override public function getUp():Float {
-      return -Math.min(this._flixelGamepad.getYAxis(LEFT_ANALOG_STICK) * 2, 0);
+      return -Math.min(this._flixelGamepad.getYAxis(LEFT_ANALOG_STICK), 0);
    }
 
    override public function getDown():Float {
-      return Math.max(this._flixelGamepad.getYAxis(LEFT_ANALOG_STICK) * 2, 0);
+      return Math.max(this._flixelGamepad.getYAxis(LEFT_ANALOG_STICK), 0);
    }
 
    override public function getLeft():Float {
-      return -Math.min(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK) * 2, 0);
+      return -Math.min(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK), 0);
    }
 
    override public function getRight():Float {
-      return Math.max(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK) * 2, 0);
+      return Math.max(this._flixelGamepad.getXAxis(LEFT_ANALOG_STICK), 0);
    }
 
    override public function getStick():StickVector {

@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.math.FlxAngle;
 import haxe.Constraints.Function;
 import inputManager.GenericInput;
+import inputManager.InputState;
 import match.MatchObject;
 
 typedef MoveResultData = {
@@ -24,8 +25,8 @@ enum FighterAirState {
    FULL_CONTROL; // can do any aerial action
    NO_JUMPS; // can do any moves, but cant jump
    PRATFALL; // cant do any actions
-   DODGE_PRATFALL; // short pratfall after an air dodge, becomes NO_JUMPS
    SPECIAL_FALL; // like pratfall, but can still do some special moves if the fighter allows it
+   RESPAWN; // on the respawn platform. is a weird state where your technically not on the ground, but can do some things that normally require being on the ground
 }
 
 class FighterMoves {
@@ -33,16 +34,20 @@ class FighterMoves {
 
    private final moves:Map<String, FighterMove> = [];
 
+   // private function register(move:String, attack:FighterMove) {}
+
    public function new(fighter:AbstractFighter) {
       this.fighter = fighter;
    }
 
-   public function performMove(move:String, ...params:Any):Null<MoveResult> {
-      if (!this.moves.exists(move))
+   public function attempt(move:String, state:InputState, ...params:Any):Null<MoveResult> {
+      if (!this.moves.exists(move)) {
+         trace('NO_SUCH_MOVE ${move}');
          return NO_SUCH_MOVE;
+      }
       if (params.length > 0)
-         return this.moves.get(move).attempt(params);
-      return this.moves.get(move).attempt();
+         return this.moves.get(move).attempt(state, params);
+      return this.moves.get(move).attempt(state);
    }
 }
 
@@ -55,7 +60,7 @@ abstract class FighterMove {
       this.fighter = fighter;
    }
 
-   abstract public function attempt(...params:Any):MoveResult;
+   abstract public function attempt(state:InputState, ...params:Any):MoveResult;
 }
 
 abstract class StatusEffect {
@@ -95,8 +100,9 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    public var airState:FighterAirState = GROUNDED;
    public var hitbox:AbstractHitbox;
 
-   public var iframes:Int = 0;
    public var airJumps:Int = 1;
+   public var iframes:Float = 0;
+   public var hitstunTime:Float = 0;
 
    public var kills:Int = 0;
    public var deaths:Int = 0;
@@ -120,7 +126,7 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
       this.width = 10;
       this.height = 10;
       this.slot = slot;
-      this.drag.x = 300;
+      this.drag.x = 400;
       this.acceleration.y = 500;
 
       this.debugSprite = new FlxSprite(0, 0);
@@ -132,6 +138,9 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    override public function update(elapsed:Float) {
       super.update(elapsed);
       this.debugSprite.setPosition(this.x, this.y);
+
+      if (this.hitstunTime > 0)
+         this.hitstunTime = Math.max(this.hitstunTime - elapsed, 0);
 
       GameManager.collideWithStage(this);
 
@@ -168,14 +177,26 @@ abstract class AbstractFighter extends FlxObject implements IMatchObjectWithHitb
    }
 
    public function launch(angle:Float = 50, knockback:Float = 1.0) {
+      this.hitstunTime += knockback * 2;
       angle = FlxAngle.wrapAngle(angle) * (Math.PI / 180);
-      this.velocity.x = (knockback * 100) * Math.cos(angle);
-      this.velocity.y = (knockback * 100) * Math.sin(angle);
+      this.velocity.x = (knockback * 1000) * Math.cos(angle);
+      this.velocity.y = (knockback * 1000) * -Math.sin(angle);
    }
 
    override public function draw() {
       super.draw();
       this.debugSprite.draw();
+   }
+
+   public function die() {
+      this.x = 0;
+      this.y = -100;
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+      this.airJumps = 0;
+      this.deaths++;
+      this.hitstunTime = 0;
+      this.iframes = 1.75;
    }
 
    public function isInBlastzone(stage:Stage):Bool {

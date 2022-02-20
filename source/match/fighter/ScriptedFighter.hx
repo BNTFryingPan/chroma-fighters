@@ -81,5 +81,5 @@ class ScriptedFighter extends AbstractFighter {
 
    public function createFighterMoves() {}
 
-   public function handleInput(input:GenericInput) {}
+   public function handleInput(elapsed:Float, input:GenericInput) {}
 }

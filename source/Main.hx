@@ -51,10 +51,12 @@ class Main extends Sprite {
 
       FlxG.gamepads.deviceConnected.add(gamepad -> {
          Main.log('${gamepad.name}.${gamepad.id} connected');
+         Main.debugDisplay.notify('${gamepad.name}.${gamepad.id} connected');
       });
 
       FlxG.gamepads.deviceDisconnected.add(gamepad -> {
          Main.log('${gamepad.name}.${gamepad.id} disconnected');
+         Main.debugDisplay.notify('${gamepad.name}.${gamepad.id} disconnected');
          if (InputManager.getUsedGamepads().contains(gamepad)) {
             var slot = InputManager.getPlayerSlotByInput(gamepad);
             if (slot != null) {

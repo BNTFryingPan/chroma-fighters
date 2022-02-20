@@ -98,27 +98,40 @@ class InputHelper {
    static public function asInt(state:InputState):Int {
       return InputHelper.isPressed(state) ? 1 : 0;
    }
+
+   static public function realJumpState(input:GenericInput):InputState {
+      var jump = input.getJump();
+      var shortJump = input.getShortJump();
+
+      if (InputHelper.isPressed(jump) || jump == JUST_RELEASED)
+         return jump;
+
+      if (shortJump == JUST_PRESSED)
+         return JUST_PRESSED;
+
+      return NOT_PRESSED;
+   }
    /*
       static public function badUnitTest():Bool {
-          Main.log('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
-          Main.log('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
-          Main.log('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
-          Main.log('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
-          Main.log('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
-          Main.log('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
-          Main.log('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
-          Main.log('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
-          Main.log('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
-          Main.log('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
-          Main.log('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
-          Main.log('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
-          Main.log('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
-          Main.log('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
-          Main.log('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
-          Main.log('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
-          return true;
-      }
+         Main.log('NOT_PRESSED   + NOT_PRESSED  : ${or(NOT_PRESSED, NOT_PRESSED)}');
+         Main.log('NOT_PRESSED   + JUST_PRESSED : ${or(NOT_PRESSED, JUST_PRESSED)}');
+         Main.log('NOT_PRESSED   + PRESSED      : ${or(NOT_PRESSED, PRESSED)}');
+         Main.log('NOT_PRESSED   + JUST_RELEASED: ${or(NOT_PRESSED, JUST_RELEASED)}');
+         Main.log('JUST_PRESSED  + NOT_PRESSED  : ${or(JUST_PRESSED, NOT_PRESSED)}');
+         Main.log('JUST_PRESSED  + JUST_PRESSED : ${or(JUST_PRESSED, JUST_PRESSED)}');
+         Main.log('JUST_PRESSED  + PRESSED      : ${or(JUST_PRESSED, PRESSED)}');
+         Main.log('JUST_PRESSED  + JUST_RELEASED: ${or(JUST_PRESSED, JUST_RELEASED)}');
+         Main.log('PRESSED       + NOT_PRESSED  : ${or(PRESSED, NOT_PRESSED)}');
+         Main.log('PRESSED       + JUST_PRESSED :  ${or(PRESSED, JUST_PRESSED)}');
+         Main.log('PRESSED       + PRESSED      : ${or(PRESSED, PRESSED)}');
+             Main.log('PRESSED       + JUST_RELEASED: ${or(PRESSED, JUST_RELEASED)}');
+             Main.log('JUST_RELEASED + NOT_PRESSED  : ${or(JUST_RELEASED, NOT_PRESSED)}');
+             Main.log('JUST_RELEASED + JUST_PRESSED : ${or(JUST_RELEASED, JUST_PRESSED)}');
+             Main.log('JUST_RELEASED + PRESSED      : ${or(JUST_RELEASED, PRESSED)}');
+             Main.log('JUST_RELEASED + JUST_RELEASED: ${or(JUST_RELEASED, JUST_RELEASED)}');
+             return true;
+         }
 
-      static public var a = badUnitTest();
+         static public var a = badUnitTest();
     */
 }

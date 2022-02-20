@@ -38,10 +38,7 @@ class GameManager {
             if (player.fighter != null && player.fighter.alive) {
                player.fighter.handleInput(elapsed, player.input);
                if (player.fighter.isInBlastzone((cast FlxG.state).stage)) {
-                  player.fighter.x = 0;
-                  player.fighter.y = -100;
-                  player.fighter.velocity.x = 0;
-                  player.fighter.velocity.y = 0;
+                  player.fighter.die();
                }
             }
          }

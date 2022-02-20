@@ -9,7 +9,11 @@ enum HitboxType {
    WINDBOX; // moves MatchObjects that enter
 }
 
-abstract class AbstractHitbox {
+interface IHitbox {
+   public function intersectsPoint(pos:Position):Bool;
+}
+
+abstract class AbstractHitbox implements IHitbox {
    private var x:Float;
    private var y:Float;
 
@@ -20,9 +24,9 @@ abstract class AbstractHitbox {
       this.y = y;
    }
 
-   abstract public function intersectsPoint(pos:Position):Bool;
-
    public function onEnter(thing:MatchObject):Void {};
 
    public function onExit(thing:MatchObject):Void {};
+
+   abstract public function intersectsPoint(pos:Position):Bool;
 }

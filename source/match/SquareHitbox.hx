@@ -2,6 +2,7 @@ package match;
 
 import inputManager.Position;
 
+// class SquareAttackHitbox extends AttackHitbox
 class SquareHitbox extends AbstractHitbox {
    public var width:Float;
    public var height:Float;
@@ -16,6 +17,6 @@ class SquareHitbox extends AbstractHitbox {
       if (!(this.x <= pos.x && (this.x + this.width) >= pos.x))
          return false;
 
-      return this.y <= pos.y && (thix.y + this.height) >= pos.y
+      return this.y <= pos.y && (this.y + this.height) >= pos.y;
    }
 }

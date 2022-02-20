@@ -87,6 +87,10 @@ class GenericInput {
       return NOT_PRESSED;
    }
 
+   public function getShortJump():InputState {
+      return NOT_PRESSED;
+   }
+
    public function getSpecial():InputState {
       return NOT_PRESSED;
    }
