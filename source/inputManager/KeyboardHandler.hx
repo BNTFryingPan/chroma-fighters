@@ -121,7 +121,7 @@ class KeyboardHandler extends GenericInput {
       x -= this.getLeft();
       x += this.getRight();
 
-      return new StickVector(x, y);
+      return new StickVector(x * (InputHelper.isPressed(this.getWalk()) ? 0.4 : 1), y);
       // return {x: x, y: y};
    }
 

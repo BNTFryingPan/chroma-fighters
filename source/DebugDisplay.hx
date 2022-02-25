@@ -1,6 +1,7 @@
 package;
 
 import AssetHelper;
+import GameManager.GameState;
 import exception.DebugException;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -138,6 +139,21 @@ class DebugDisplay extends FlxBasic {
             this.notify('Cleared script cache');
          }
 
+         if (FlxG.keys.anyJustPressed([B])) {
+            this.hasTriggeredDebugAction = true;
+            if (FlxG.keys.anyPressed([SHIFT])) {
+               #if FLX_DEBUG
+               FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
+               this.notify('Flixel debug drawing ${FlxG.debugger.drawDebug ? 'en' : 'dis'}abled.');
+               #else
+               this.notify('Flixel debugger not available in non-debug builds!');
+               #end
+            } else {
+               GameState.showTrainingHitboxes = !GameState.showTrainingHitboxes;
+               this.notify('Hitbox rendering ${GameState.showTrainingHitboxes ? 'en' : 'dis'}abled.');
+            }
+         }
+
          if (FlxG.keys.anyJustPressed([H])) {
             this.hasTriggeredDebugAction = true;
             #if hl
@@ -190,7 +206,8 @@ class DebugDisplay extends FlxBasic {
 
          // this.leftText.text += 'Game ${Version.getVersionString()} (${#if debug 'debug' #else 'release' #end})\n';
          var stateId = 'Unknown';
-         if (Std.isOfType(FlxG.state, BaseState)) {
+         // if (Std.isOfType(FlxG.state, BaseState)) {
+         if ((FlxG.state is BaseState)) {
             var state:BaseState = cast FlxG.state;
             stateId = state.stateId();
          }
@@ -213,7 +230,7 @@ class DebugDisplay extends FlxBasic {
          // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
          // this.rightText.text += 'CPU: \n';
          var gp = FlxG.gamepads.getFirstActiveGamepad();
-         this.rightText.text += 'a button: ${PlayerSlot.getPlayerArray().map(p -> p.input.profile.bindings[Action.MENU_CONFIRM].map(b -> b.source))}';
+         this.rightText.text += 'gp: ${gp == null ? 'none' : gp.name}';
 
          this.rightText.text += '\n${this.rightAppend}';
       }

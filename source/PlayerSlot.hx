@@ -109,6 +109,10 @@ class PlayerBox extends FlxSpriteGroup {
       this.slot = slot;
    }
 
+   public function setPercentText(value:String) {
+      this.text.text = '${slot + 1}/8\nInput\n${value}';
+   }
+
    public function configureCSS() {
       // this.xPos = Math.floor((FlxG.width * 0.9) / max + 1) * (Math.floor((FlxG.width * 0.9) / max) * (cast this.slot));
       this.x = ((cast this.slot) * 100) + 20;
@@ -210,11 +214,13 @@ class PlayerSlot {
    }
 
    public static function getPlayerSlotByInput(input:OneOfTwo<FlxGamepad, InputType>):Null<PlayerSlotIdentifier> {
-      if (!Std.isOfType(input, FlxGamepad)) {
+      // if (!Std.isOfType(input, FlxGamepad)) {
+      if (!(input is FlxGamepad)) {
          var type:InputType = cast input;
          if (type == KeyboardInput || type == KeyboardAndMouseInput) {
             var matchingInputs = PlayerSlot.getPlayerInputArray().filter(thisInput -> {
-               return Std.isOfType(thisInput, KeyboardHandler);
+               // return Std.isOfType(thisInput, KeyboardHandler);
+               return (thisInput is KeyboardHandler);
             });
             if (matchingInputs.length > 0) {
                return matchingInputs[0].slot;
@@ -225,7 +231,8 @@ class PlayerSlot {
 
       var gamepad:FlxGamepad = cast input;
       for (slot => player in PlayerSlot.players) {
-         if (Std.isOfType(player.input, GenericController)) {
+         // if (Std.isOfType(player.input, GenericController)) {
+         if ((player.input is GenericController)) {
             var c:GenericController = cast player.input;
             if (c._flixelGamepad == gamepad) {
                return cast slot;
@@ -707,7 +714,8 @@ class PlayerSlot {
 
       if (this.input.inputEnabled) {
          for (mem in GameManager.getAllObjects()) {
-            if (Std.isOfType(mem, CustomButton)) {
+            // if (Std.isOfType(mem, CustomButton)) {
+            if ((mem is CustomButton) && GameState.isUIOpen) {
                var button:CustomButton = cast mem;
                if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
                   button.overHandler(this.slot);

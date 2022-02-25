@@ -3,11 +3,16 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
 import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
+import inputManager.Position;
+import match.AbstractHitbox;
 import states.MatchState;
 
 enum PlayerBoxState {
@@ -23,14 +28,74 @@ class GameState { // this might be jank
    public static var shouldDrawCursors = false;
    public static var isPlayingOnline = false;
    public static var isInMatch = false;
+   public static var isTrainingMode = false;
+   public static var showTrainingHitboxes = false;
+   public static var showTrainingLaunchLines = false;
+
    // public static function getShouldDrawCursors():Bool {
    //    return isUIOpen && s
    // }
+
+   public static function shouldDrawHitboxes():Bool {
+      return #if !debug isTrainingMode && #end showTrainingHitboxes;
+   }
+}
+
+class ScreenSprite extends FlxSprite {
+   public function new() {
+      super(0, 0);
+      this.scrollFactor.set(0, 0);
+      this.makeGraphic(FlxG.width, FlxG.height, 0, true);
+   }
+
+   override public function draw() {
+      super.draw();
+      FlxSpriteUtil.fill(this, 0);
+      // FlxSpriteUtil.drawCircle(this, 100, 100, 100, 0xffffffff);
+   }
+
+   private static function p(pos:Position):Position {
+      return {x: pos.x - Main.screenSprite.camera.scroll.x, y: pos.y - Main.screenSprite.camera.scroll.y};
+   }
+
+   public static function line(p1:Position, p2:Position, ?opts:LineStyle) {
+      p1 = p(p1);
+      p2 = p(p2);
+      FlxSpriteUtil.drawLine(Main.screenSprite, p1.x, p1.y, p2.x, p2.y, opts);
+   }
+
+   public static function circle(pos:Position, radius:Float, ?opts:LineStyle) {
+      var m = p(pos);
+      // Main.debugDisplay.rightPrepend += '${pos} -> ${m}\n';
+      FlxSpriteUtil.drawCircle(Main.screenSprite, m.x, m.y, radius, 0x55FF00FF, opts);
+   }
+
+   public static function rect(p1:Position, p2:Position, ?opts:LineStyle) {
+      p1 = p(p1);
+      p2 = p(p2);
+   }
+}
+
+class Physics {
+   public static function overlapRaw(?obj1:AbstractHitbox, ?obj2:AbstractHitbox):Bool {
+      if (obj1 == null || obj2 == null)
+         return false;
+
+      return false;
+   }
 }
 
 class GameManager {
    public static function update(elapsed:Float) {
-      GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
+      // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
+      GameState.isInMatch = (FlxG.state is MatchState);
+
+      if (GameState.isInMatch) {
+         for (p in PlayerSlot.getPlayerArray()) {
+            if (p.fighter != null)
+               p.fighter.update(elapsed);
+         }
+      }
 
       PlayerSlot.updateAll(elapsed);
       if (GameState.isInMatch && (GameState.isPlayingOnline || !GameState.isUIOpen)) {
@@ -56,7 +121,8 @@ class GameManager {
                   PlayerSlot.getPlayer(emptySlot).setNewInput(KeyboardInput, Keyboard);
                } else if (!Main.skipKeyboardModeToggleCheckNextUpdate) {
                   var keyboardPlayer = PlayerSlot.getPlayerByInput(KeyboardInput);
-                  if (Std.isOfType(keyboardPlayer.input, MouseHandler)) {
+                  // if (Std.isOfType(keyboardPlayer.input, MouseHandler)) {
+                  if ((keyboardPlayer.input is MouseHandler)) {
                      keyboardPlayer.setNewInput(KeyboardInput, Keyboard, keyboardPlayer.input.profile.name);
                      Main.debugDisplay.notify("kb player now using only kb");
                   } else {
@@ -79,6 +145,15 @@ class GameManager {
    }
 
    public static function draw() {
+      // ScreenSprite.circle({x: 100, y: 100}, 50);
+      Main.screenSprite.draw();
+      if (GameState.isInMatch) {
+         for (p in PlayerSlot.getPlayerArray()) {
+            if (p.fighter != null)
+               p.fighter.draw();
+         }
+      }
+      // ScreenSprite.circle({x: 100, y: 200}, 75);
       PlayerSlot.drawAll();
       Main.debugDisplay.draw();
    }
@@ -101,7 +176,8 @@ class GameManager {
    }
 
    public static function collideWithStage(obj:FlxObject):Bool {
-      if (Std.isOfType(FlxG.state, MatchState)) {
+      // if (Std.isOfType(FlxG.state, MatchState)) {
+      if ((FlxG.state is MatchState)) {
          var state:MatchState = cast FlxG.state;
          return FlxG.collide(obj, state.stage.mainGround);
       }

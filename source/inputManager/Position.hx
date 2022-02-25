@@ -1,3 +1,3 @@
 package inputManager;
 
-typedef Position = {x:Int, y:Int}
+typedef Position = {x:Float, y:Float}

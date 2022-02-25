@@ -116,6 +116,7 @@ class TitleScreenState extends BaseState {
 
       if (TitleScreenState.shouldShowTitleScreenAnyways) {
          TitleScreenState.shouldShowTitleScreenAnyways = false;
+         TitleScreenState.pastStartScreen = false;
       }
    }
 
@@ -139,6 +140,8 @@ class TitleScreenState extends BaseState {
    }
 
    override public function update(elapsed:Float) {
+      Main.debugDisplay.rightAppend += '\n${TitleScreenState.pastStartScreen ? 'P' : 'p'}${TitleScreenState.hasEverPassedStartScreenThisSession ? 'S' : 's'}${this.hasPressedButtons ? 'B' : 'b'}';
+
       if (!this.isFading) {
          if (!TitleScreenState.pastStartScreen && !this.hasPressedButtons) {
             var startingGamepads = FlxG.gamepads.getActiveGamepads()

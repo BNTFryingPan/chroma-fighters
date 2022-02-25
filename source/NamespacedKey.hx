@@ -45,9 +45,11 @@ class NamespacedKey extends AbstractNamespacedKey {
    }
 
    public static function ofDefaultNamespace(obj:Dynamic) {
-      if (Std.isOfType(obj, String)) {
+      // if (Std.isOfType(obj, String)) {
+      if ((obj is String)) {
          return oDN_string(cast obj);
-      } else if (Std.isOfType(obj, NamespacedKey)) {
+         // } else if (Std.isOfType(obj, NamespacedKey)) {
+      } else if ((obj is NamespacedKey)) {
          return oDN_key(cast obj);
       } else {
          throw new TypeError("Invalid object passed to default namespace function.");

@@ -22,6 +22,7 @@ class Main extends Sprite {
    public static var fpsCounter:FPS;
    public static var debugDisplay:DebugDisplay;
    public static var targetFps:Int = 90;
+   public static var screenSprite:ScreenSprite;
 
    public static function log(data:Dynamic) {
       try {
@@ -66,6 +67,7 @@ class Main extends Sprite {
       });
 
       Main.debugDisplay = new DebugDisplay();
+      Main.screenSprite = new ScreenSprite();
 
       Application.current.window.title = 'chroma-fighters';
       FlxG.mouse.visible = false;
@@ -79,6 +81,8 @@ class Main extends Sprite {
 
    public static function registerClassesWithFlxDebuggerConsole():Void {
       #if FLX_DEBUG
+      FlxG.debugger.drawDebug = true;
+
       FlxG.game.debugger.console.registerClass(PlayerSlot);
       FlxG.game.debugger.console.registerClass(InputHelper);
       FlxG.game.debugger.console.registerClass(InputManager);
