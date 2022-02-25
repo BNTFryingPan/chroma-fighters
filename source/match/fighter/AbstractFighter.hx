@@ -196,6 +196,8 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    override public function update(elapsed:Float) {
       super.update(elapsed);
       this.debugSprite.setPosition(this.x, this.y);
+      this.hitbox.x = this.x;
+      this.hitbox.y = this.y;
 
       if (this.hitstunTime > 0)
          this.hitstunTime = Math.max(this.hitstunTime - elapsed, 0);
@@ -282,6 +284,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.hitstunTime = 0;
       this.iframes = 1.75;
       this.percent = 0;
+      this.airState = RESPAWN;
    }
 
    public function isInBlastzone(stage:Stage):Bool {

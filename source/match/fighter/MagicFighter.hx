@@ -118,6 +118,10 @@ class MagicFighter extends AbstractFighter {
 
    override public function handleInput(elapsed:Float, input:GenericInput) {
       var stick = input.getStick();
+
+      if (this.slot == P2) {
+         this.sprite.alpha = 0.5;
+      }
       // this.lastStickDownValue = '${stick.y} ${input.getDown()}';
       // this.lastStickDownValue = input.getDown();
       // trace(elapsed);

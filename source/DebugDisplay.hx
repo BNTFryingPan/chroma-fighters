@@ -9,9 +9,11 @@ import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import inputManager.Action;
+import inputManager.InputManager;
 import lime.system.System as LimeSys;
 import openfl.system.Capabilities as FlCap;
 import states.BaseState;
+import states.MatchState;
 #if hl
 import hl.Gc;
 #elseif cpp
@@ -165,6 +167,18 @@ class DebugDisplay extends FlxBasic {
             #else
             this.notify('garbage collector not supported on this target');
             #end
+         }
+
+         if (FlxG.keys.anyJustPressed([Q])) {
+            this.hasTriggeredDebugAction = true;
+            if (!InputManager.enabled) {
+               this.notify('Input Manager not enabled yet...');
+            } else {
+               PlayerSlot.getPlayer(P2).setNewInput(CPUInput);
+               PlayerSlot.getPlayer(P2).fighterSelection.ready = true;
+               PlayerSlot.getPlayer(P1).fighterSelection.ready = true;
+               FlxG.switchState(new MatchState());
+            }
          }
       }
 

@@ -18,8 +18,8 @@ class CircleHitbox extends AbstractHitbox {
       // Main.debugDisplay.notify('enter! ${thing is AbstractFighter} ${thing is MagicFighter} ${Std.isOfType(thing, AbstractFighter)}');
       if (thing is IFighter) {
          var fighter:IFighter = cast thing;
-         // if (fighter.getSlot() == this.owner)
-         // return;
+         if (fighter.getSlot() == this.owner)
+            return;
          if (fighter.iframes > 0)
             return;
          fighter.percent += this.damage;

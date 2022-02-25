@@ -22,8 +22,8 @@ interface IHitbox {
 }
 
 abstract class AbstractHitbox implements IHitbox {
-   private var x:Float;
-   private var y:Float;
+   public var x:Float;
+   public var y:Float;
 
    public var duration:Float;
    public var active:Bool = true;
