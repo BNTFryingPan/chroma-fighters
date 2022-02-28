@@ -182,17 +182,7 @@ class GenericController extends GenericInput {
    }
 
    override public function getStick():StickVector {
-      // TODO : make this check the control scheme first!
-      var x:Float = 0;
-      var y:Float = 0;
-
-      x += this.getRight();
-      x -= this.getLeft();
-      y += this.getDown();
-      y -= this.getUp();
-
-      return new StickVector(x, y);
-      // return {x: x, y: y};
+      return super.getStick().normalize();
    }
 
    override public function getCursorStick():StickVector {
@@ -212,13 +202,13 @@ class GenericController extends GenericInput {
       return stick;
    }
 
-   override public function getDirection():StickVector {
-      return new StickVector(0, 0);
+   /*override public function getDirection():StickVector {
+      return new// StickVector(0, 0);
       // return {x: 0, y: 0};
    }
 
    override public function getRawDirection():StickVector {
-      return new StickVector(0, 0);
+      return new// StickVector(0, 0);
       // return {x: 0, y: 0};
-   }
+   }*/
 }

@@ -22,6 +22,11 @@ class GenericInput {
 
    public var inputType(get, never):String;
 
+   public var stick:StickVector = new StickVector();
+   public var cursorStick:StickVector = new StickVector();
+   public var directionStick:StickVector = new StickVector();
+   public var rawDirectionStick:StickVector = new StickVector();
+
    public function get_inputEnabled() {
       return false;
    }
@@ -52,7 +57,7 @@ class GenericInput {
    }
 
    public function getCursorStick():StickVector {
-      return this.getStick();
+      return this.getStick().clone(this.cursorStick);
    }
 
    public function getConfirm():InputState {
@@ -140,25 +145,22 @@ class GenericInput {
    }
 
    public function getStick():StickVector {
-      return new StickVector(0, 0);
+      var x:Float = 0;
+      var y:Float = 0;
+
+      x += this.getRight();
+      x -= this.getLeft();
+      y += this.getDown();
+      y -= this.getUp();
+
+      return this.stick.update(x, y);
    }
 
    public function getDirection():StickVector {
-      return new StickVector(0, 0);
+      return this.directionStick.update(0, 0);
    }
 
    public function getRawDirection():StickVector {
-      return new StickVector(0, 0);
+      return this.rawDirectionStick.update(0, 0);
    }
-   /*public function getStick():StickValue {
-         return {x: 0, y: 0};
-      }
-
-      public function getDirection():StickValue {
-         return {x: 0, y: 0};
-      }
-
-      public function getRawDirection():StickValue {
-         return {x: 0, y: 0};
-   }*/
 }

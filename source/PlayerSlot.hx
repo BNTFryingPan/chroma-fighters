@@ -589,6 +589,7 @@ class PlayerSlot {
    private var ready = false;
 
    public var playerBox:PlayerBox;
+   public var cpuSettings:CpuSettings = new CpuSettings();
 
    public function init() {
       if (this.ready)

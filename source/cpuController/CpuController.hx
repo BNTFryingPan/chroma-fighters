@@ -5,6 +5,11 @@ import inputManager.GenericInput;
 import inputManager.InputState;
 
 class CpuController extends GenericInput {
+   private var settings(get, null):CpuSettings;
+   private function get_settings():CpuSettings {
+      return PlayerSlot.getPlayer(this.slot).cpuSettings;
+   }
+
    override public function get_inputType() {
       return "CPU";
    }
@@ -14,7 +19,7 @@ class CpuController extends GenericInput {
    }
 
    override public function getShortJump() {
-      if (!GameState.isInMatch)
+      if (!(GameState.isInMatch && this.settings.shouldProcessCpuInput()))
          return NOT_PRESSED;
       var p = PlayerSlot.getPlayer(this.slot);
       if (p == null)
