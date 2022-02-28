@@ -39,6 +39,7 @@ class SquareHitbox extends AbstractHitbox {
    }
 
    public function getPointClosestToInside(pos:Position):Position {
+      ScreenSprite.line({x: c(this.x, this.x + this.width, pos.x), y: c(this.y, this.y + this.height, pos.y)}, pos);
       return {x: c(this.x, this.x + this.width, pos.x), y: c(this.y, this.y + this.height, pos.y)}
    }
 }

@@ -21,7 +21,7 @@ import states.TitleScreenState;
 class Main extends Sprite {
    public static var fpsCounter:FPS;
    public static var debugDisplay:DebugDisplay;
-   public static var targetFps:Int = 90;
+   public static var targetFps:Int = 60;
    public static var screenSprite:ScreenSprite;
 
    public static function log(data:Dynamic) {
@@ -49,6 +49,8 @@ class Main extends Sprite {
       Main.fpsCounter.alpha = 0;
 
       addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
+
+      FlxG.fixedTimestep = true;
 
       FlxG.gamepads.deviceConnected.add(gamepad -> {
          Main.log('${gamepad.name}.${gamepad.id} connected');

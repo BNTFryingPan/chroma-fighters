@@ -22,13 +22,13 @@ class MagicFighterMoves extends FighterMoves {
       super(fighter);
       this.moves.set('taunt', new MagicFighterTaunt(fighter));
       this.moves.set('special', new MagicFighterSpecial(fighter));
-      this.moves.set('dair', new MagicFighterAerialMove(fighter));
+      this.moves.set('dair', new MagicFighterDownAirMove(fighter));
       this.moves.set('jab', new MagicFighterJab(fighter));
    }
 }
 
 class MagicFighterTaunt extends FighterMove {
-   public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       if (state == JUST_PRESSED) {
          Main.debugDisplay.notify('magic taunt!');
          FlxTween.color((cast this.fighter).sprite, 1, FlxColor.PINK, FlxColor.WHITE);
@@ -41,34 +41,49 @@ class MagicFighterTaunt extends FighterMove {
 }
 
 class MagicFighterSpecial extends FighterMove {
-   public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      if (state == JUST_PRESSED) {
-         this.fighter.launch(Math.atan2(-input.getStick().y, input.getStick().x) * FlxAngle.TO_DEG, 10, true);
-         this.fighter.airState = PRATFALL;
-         return SUCCESS(null);
-      }
-      return REJECTED(null);
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      this.fighter.launch((Math.atan2(-input.getStick().y, -input.getStick().x) * FlxAngle.TO_DEG) - 90, 5, true);
+      this.fighter.hitstunTime = 1;
+      this.fighter.airState = PRATFALL;
+      return SUCCESS(null);
+   }
+
+   override public function canPerform() {
+      if (this.fighter.airState == PRATFALL)
+         return REJECTED(null);
+      return SUCCESS(null);
    }
 }
 
 class MagicFighterJab extends FighterMove {
-   public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      if (state == JUST_PRESSED) {
-         this.fighter.createRoundAttackHitbox({x: 25, y: 40}, 15, 10, 45, 0.5, 1);
-         return SUCCESS(null);
-      }
-      return REJECTED(null);
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      this.fighter.createRoundAttackHitbox({x: 30, y: 40}, 15, 8, true, 80, 0.2, 1);
+      return SUCCESS(null);
    }
 }
 
 class MagicFighterAerialMove extends FighterMove {
-   public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+   public function attack():Void {}
+
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       if (state != JUST_PRESSED)
          return REJECTED(null);
-      if (this.fighter.airState == GROUNDED)
-         return REJECTED({success: false, reason: "NOT_IN_AIR"}); // this.fighter.createRoundAttackHitbox()
-      this.fighter.createRoundAttackHitbox({x: 30, y: 40}, 15, 10, 80, 0.2, 1);
+      this.attack();
       return SUCCESS(null);
+   }
+
+   override public function canPerform() {
+      if (this.fighter.airState == GROUNDED)
+         return REJECTED({success: false, reason: "NOT_IN_AIR"});
+      if (this.fighter.airState == PRATFALL)
+         return REJECTED({success: false, reason: 'IN_PRATFALL'});
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterDownAirMove extends MagicFighterAerialMove {
+   override public function attack() {
+      this.fighter.createRoundAttackHitbox({x: 30, y: 40}, 15, 8, true, 180, 0.2, 1);
    }
 }
 
@@ -95,7 +110,7 @@ class MagicFighter extends AbstractFighter {
       this.height = 64;
       this.sprite = new FlxSprite();
       this.setSpriteString('images/martha_idle');
-      this.sprite.angularVelocity = 100;
+      // this.sprite.angularVelocity = 100;
 
       // this.sprite.centerOffsets();
 
@@ -117,6 +132,7 @@ class MagicFighter extends AbstractFighter {
    }
 
    override public function handleInput(elapsed:Float, input:GenericInput) {
+      super.handleInput(elapsed, input);
       var stick = input.getStick();
 
       if (this.slot == P2) {
@@ -171,11 +187,11 @@ class MagicFighter extends AbstractFighter {
 
       if (jumpTime > 0 && jumpTime < maxJumpTime) {
          this.velocity.y = -200;
-         this.airState = FULL_CONTROL;
+         // this.airState = FULL_CONTROL;
       }
 
       if (stick.y >= 0.3) {
-         if (!this.hasBufferedFastFall && this.velocity.y >= -50 && this.velocity.y <= 250) {
+         if (!this.hasBufferedFastFall && this.velocity.y >= -50 && this.velocity.y <= 250 && !(this.airState == GROUNDED)) {
             this.hasBufferedFastFall = true;
          } else if (this.airState == GROUNDED) {
             // crouch
@@ -224,6 +240,6 @@ class MagicFighter extends AbstractFighter {
 
    override public function getDebugString():String {
       return
-         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}';
+         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)}';
    }
 }

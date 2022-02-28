@@ -29,8 +29,8 @@ class GameState { // this might be jank
    public static var isPlayingOnline = false;
    public static var isInMatch = false;
    public static var isTrainingMode = false;
-   public static var showTrainingHitboxes = false;
-   public static var showTrainingLaunchLines = false;
+   public static var showTrainingHitboxes = #if debug true #else false #end;
+   public static var showTrainingLaunchLines = #if debug true #else false #end;
 
    // public static function getShouldDrawCursors():Bool {
    //    return isUIOpen && s
@@ -50,8 +50,13 @@ class ScreenSprite extends FlxSprite {
 
    override public function draw() {
       super.draw();
-      FlxSpriteUtil.fill(this, 0);
+      // FlxSpriteUtil.fill(this, 0);
       // FlxSpriteUtil.drawCircle(this, 100, 100, 100, 0xffffffff);
+   }
+
+   override public function update(elapsed:Float) {
+      super.update(elapsed);
+      FlxSpriteUtil.fill(this, 0);
    }
 
    private static function p(pos:Position):Position {
@@ -73,6 +78,11 @@ class ScreenSprite extends FlxSprite {
    public static function rect(p1:Position, p2:Position, ?opts:LineStyle) {
       p1 = p(p1);
       p2 = p(p2);
+      var x = Math.min(p1.x, p2.x);
+      var y = Math.min(p1.y, p2.y);
+      var w = Math.max(p1.x, p2.x) - x;
+      var h = Math.max(p1.y, p2.y) - y;
+      FlxSpriteUtil.drawRect(Main.screenSprite, x, y, w, h, 0x2200ff00, opts);
    }
 }
 
@@ -87,6 +97,7 @@ class Physics {
 
 class GameManager {
    public static function update(elapsed:Float) {
+      Main.screenSprite.update(elapsed);
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
       GameState.isInMatch = (FlxG.state is MatchState);
 
@@ -145,16 +156,13 @@ class GameManager {
    }
 
    public static function draw() {
-      // ScreenSprite.circle({x: 100, y: 100}, 50);
-      Main.screenSprite.draw();
-      if (GameState.isInMatch) {
-         for (p in PlayerSlot.getPlayerArray()) {
-            if (p.fighter != null)
-               p.fighter.draw();
-         }
-      }
-      // ScreenSprite.circle({x: 100, y: 200}, 75);
       PlayerSlot.drawAll();
+
+      Main.screenSprite.draw();
+      if (GameState.isInMatch)
+         for (p in PlayerSlot.getPlayerArray().filter(p -> p.fighter != null))
+            p.fighter.draw();
+
       Main.debugDisplay.draw();
    }
 

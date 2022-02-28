@@ -31,6 +31,9 @@ abstract class AbstractHitbox implements IHitbox {
    public var damage:Float = 0;
    public var knockback:Float = 1;
    public var angle:Float = 0;
+   public var kbGrowth:Float = 1;
+   public var offset:Position = {x: 0, y: 0};
+   public var follow:Bool = true;
 
    public var owner:PlayerSlotIdentifier;
 

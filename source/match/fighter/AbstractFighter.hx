@@ -1,6 +1,8 @@
 package match.fighter;
 
+import GameManager.GameState;
 import PlayerSlot;
+import cpuController.CpuController;
 import flixel.FlxBasic;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -8,6 +10,7 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import haxe.Constraints.Function;
 import inputManager.GenericInput;
+import inputManager.InputHelper;
 import inputManager.InputState;
 import inputManager.Position;
 import match.MatchObject;
@@ -63,7 +66,30 @@ abstract class FighterMove {
       this.fighter = fighter;
    }
 
-   abstract public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult;
+   public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      var can = this.canPerform();
+      if (can.match(REJECTED(_)))
+         return can;
+
+      var should = this.shouldPerform(state, input);
+      if (should != '')
+         return REJECTED({success: false, reason: should});
+
+      var res = this.perform(state, input, ...params);
+      if (res == null)
+         return SUCCESS({success: true, reason: 'ASSUMED_FROM_NO_RESULT'});
+      return res;
+   };
+
+   abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
+
+   public function shouldPerform(state:InputState, input:GenericInput):String {
+      return (state == JUST_PRESSED) ? '' : 'NOT_PRESSED';
+   }
+
+   public function canPerform():MoveResult {
+      return SUCCESS(null);
+   }
 }
 
 abstract class StatusEffect {
@@ -105,10 +131,11 @@ enum Facing {
 
 interface IFighter extends IMatchObjectWithHitbox {
    public var percent:Float;
-   public var airState:FighterAirState;
+   public var airState(default, set):FighterAirState;
    public var hitbox:AbstractHitbox;
    public var facing:Facing;
 
+   public var airStateTime:Float;
    public var airJumps:Int;
    public var iframes:Float;
    public var hitstunTime:Float;
@@ -120,7 +147,7 @@ interface IFighter extends IMatchObjectWithHitbox {
    public var activeEffects(get, null):Array<StatusEffect>;
 
    // public var drawChildren:Array<FlxBasic>;
-   public var debugSprite:FlxSprite;
+   // public var debugSprite:FlxSprite;
    public var moveset:FighterMoves;
 
    // public static var recentStaleModifier:Map<Int, Float>;
@@ -148,15 +175,17 @@ interface IFighter extends IMatchObjectWithHitbox {
    public function isInBlastzone(stage:Stage):Bool;
    public function getDebugString():String;
    public var activeHitboxes:Array<AbstractHitbox>;
-   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, ?angle:Float = 45, ?duration:Float = 0.2, ?knockback:Float = 1):Void;
+   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
+      knockback:Float = 1, growth:Float = 1):Void;
 }
 
 abstract class AbstractFighter extends FlxObject implements IFighter {
    public var percent:Float;
-   public var airState:FighterAirState = GROUNDED;
+   public var airState(default, set):FighterAirState = GROUNDED;
    public var hitbox:AbstractHitbox;
    public var facing:Facing = RIGHT;
 
+   public var airStateTime:Float = 0;
    public var airJumps:Int = 1;
    public var iframes:Float = 0;
    public var hitstunTime:Float = 0;
@@ -168,7 +197,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    public var activeEffects(get, null):Array<StatusEffect> = [];
 
    // public var drawChildren:Array<FlxBasic>;
-   public var debugSprite:FlxSprite;
+   // public var debugSprite:FlxSprite;
    public var moveset:FighterMoves;
 
    public static var recentStaleModifier:Map<Int, Float> = [
@@ -178,29 +207,50 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    private var slot:PlayerSlotIdentifier;
    private var recentMoves:Array<String> = ["", "", "", "", "", "", "", "", "", ""];
 
+   public var gravity:Float = 500;
+   public var aliveTime:Float = 0;
+
    public function new(slot:PlayerSlotIdentifier, x:Float, y:Float) {
       super(x, y);
       this.width = 10;
       this.height = 10;
       this.slot = slot;
       this.drag.x = 400;
-      this.acceleration.y = 500;
+      this.acceleration.y = this.gravity;
 
-      this.debugSprite = new FlxSprite(0, 0);
+      // this.debugSprite = new FlxSprite(0, 0);
 
-      this.debugSprite.makeGraphic(40, 64, 0x22ffffff);
+      // this.debugSprite.makeGraphic(40, 64, 0x22ffffff);
 
       this.createFighterMoves();
    }
 
+   public var hitstunElasticity = 0.5;
+
    override public function update(elapsed:Float) {
       super.update(elapsed);
-      this.debugSprite.setPosition(this.x, this.y);
+      // this.debugSprite.setPosition(this.x, this.y);
       this.hitbox.x = this.x;
       this.hitbox.y = this.y;
 
-      if (this.hitstunTime > 0)
+      this.airStateTime += elapsed;
+      this.aliveTime += elapsed;
+      if (this.airState == RESPAWN && this.aliveTime >= 3) {
+         this.airState = FULL_CONTROL;
+         Main.debugDisplay.notify('${this.airState}');
+      }
+
+      for (box in this.activeHitboxes.filter(box -> box.follow)) {
+         box.x = this.x + (this.width / 2) + (box.offset.x * (this.facing == LEFT ? 1 : -1));
+         box.y = this.y + box.offset.y;
+      }
+
+      if (this.hitstunTime > 0) {
          this.hitstunTime = Math.max(this.hitstunTime - elapsed, 0);
+         this.elasticity = this.hitstunElasticity;
+      } else {
+         this.elasticity = 0;
+      }
 
       if (this.iframes > 0)
          this.iframes = Math.max(this.iframes - elapsed, 0);
@@ -208,7 +258,14 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       GameManager.collideWithStage(this);
 
       if (this.isTouching(DOWN)) {
-         this.airState = GROUNDED;
+         if (this.airState != GROUNDED)
+            this.airState = GROUNDED;
+      } else if (this.airState == GROUNDED) {
+         this.airState = FULL_CONTROL;
+      }
+
+      if (this.airState != RESPAWN) {
+         this.acceleration.y = this.gravity;
       }
 
       for (box in this.activeHitboxes) {
@@ -224,7 +281,15 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    }
 
    // abstract public function handleInput(elapsed:Float, input:GenericInput):Void;
-   public function handleInput(elapsed:Float, input:GenericInput):Void {};
+   public function handleInput(elapsed:Float, input:GenericInput):Void {
+      if (this.airState == RESPAWN
+         && (InputHelper.isPressed(InputHelper.or(input.getAttack(), input.getJump(), input.getShortJump(), input.getSpecial()))
+            || input.getStick().length >= 0.2
+            || input is CpuController)) {
+         this.airState = FULL_CONTROL;
+         this.acceleration.y = this.gravity;
+      }
+   };
 
    // abstract public function createFighterMoves():Void; // this.moves = new FighterMoves(this);
    public function createFighterMoves():Void {}; // this.moves = new FighterMoves(this);
@@ -246,28 +311,51 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       return null;
    }
 
+   /*
+      p = percent
+      d = damage
+      w = weight
+
+      a = (percent/10)+((percent*damage)/20)
+      c = (200/(w+100)) * 1.4
+      e = a*c
+      e += 18
+      e *= kb_growth
+      e += base_knockback
+      e *= launch_rate
+
+    */
+   public static function calculateKnockback(percent:Float, knockback:Float, damage:Float = 0, /*weight:Float = 100,*/ growth:Float = 1,
+         multiplier:Float = 1):Float {
+      // return knockback + (growth * percent * multiplier * * 0.12)
+      return (knockback + damage * growth * 0.12 * percent) * multiplier;
+   }
+
    public function launch(angle:Float = 50, knockback:Float = 1.0, ?ignorePercent = false) {
-      angle -= 90;
-      this.hitstunTime += knockback * 0.4;
-      // angle = FlxAngle.wrapAngle(angle) * (Math.PI / 180);
-      angle *= (Math.PI / 180);
+      var lAngle = (angle * -1) + 90;
+      this.hitstunTime = knockback / this.drag.x;
+      lAngle *= (Math.PI / 180);
       var p = this.percent;
       if (ignorePercent)
          p = 0;
-      this.velocity.x = (knockback * 100 * (1 + (p / 100))) * Math.cos(angle);
-      this.velocity.y = (knockback * 100 * (1 + (p / 100))) * Math.sin(angle);
+      this.velocity.x = knockback * Math.cos(lAngle);
+      this.velocity.y = knockback * Math.sin(lAngle) * -1;
+      Main.debugDisplay.notify('kb: ${this.velocity.x} ${this.velocity.y} ${angle} ${lAngle} ${knockback}');
    }
 
    override public function draw() {
       super.draw();
-      for (box in this.activeHitboxes) {
-         if (box.active)
-            box.draw();
+      if (GameState.shouldDrawHitboxes()) {
+         for (box in this.activeHitboxes) {
+            if (box.active)
+               box.draw();
+         }
+         if (this.hitbox != null) {
+            this.hitbox.draw();
+         }
       }
-      if (this.hitbox != null) {
-         this.hitbox.draw();
-      }
-      this.debugSprite.draw();
+
+      // this.debugSprite.draw();
    }
 
    override public function drawDebug() {
@@ -285,6 +373,9 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.iframes = 1.75;
       this.percent = 0;
       this.airState = RESPAWN;
+      this.acceleration.y = 0;
+      this.aliveTime = 0;
+      this.activeHitboxes.resize(0);
    }
 
    public function isInBlastzone(stage:Stage):Bool {
@@ -302,18 +393,29 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    }
 
    public function getDebugString():String {
-      return "";
+      return "NO_DEBUG_STRING";
    }
 
    public var activeHitboxes:Array<AbstractHitbox> = [];
 
-   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, ?angle:Float = 45, ?duration:Float = 0.2, ?knockback:Float = 1) {
+   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
+         knockback:Float = 1, growth:Float = 1) {
       var newHitBox = new CircleHitbox(this.x + (this.width / 2) + (offset.x * (this.facing == LEFT ? 1 : -1)), this.y + offset.y, radius);
       newHitBox.duration = duration;
       newHitBox.damage = damage;
       newHitBox.knockback = knockback;
-      newHitBox.angle = angle + (this.facing == LEFT ? 180 : 0);
+      newHitBox.kbGrowth = growth;
+      if (this.facing == RIGHT)
+         angle *= -1;
+      newHitBox.angle = angle;
       newHitBox.owner = this.getSlot();
+      newHitBox.offset = offset;
       this.activeHitboxes.push(newHitBox);
+   }
+
+   function set_airState(value:FighterAirState):FighterAirState {
+      if (this.airState != value)
+         this.airStateTime = 0;
+      return this.airState = value;
    }
 }

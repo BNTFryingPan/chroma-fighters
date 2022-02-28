@@ -29,7 +29,7 @@ class MatchState extends BaseState {
             continue;
 
          // TODO : change this lmao
-         player.fighter = new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight - 20);
+         player.fighter = new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight - 100);
       }
    }
 
