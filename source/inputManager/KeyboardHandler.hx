@@ -40,59 +40,67 @@ class KeyboardHandler extends GenericInput {
    }
 
    override public function getConfirm():InputState {
-      return getKeyStateAsInputState(Z);
+      return this.profile.getActionState(MENU_CONFIRM, this);
    }
 
    override public function getCancel():InputState {
-      return getKeyStateAsInputState(X);
+      return this.profile.getActionState(MENU_CANCEL, this);
    }
 
    override public function getMenuAction():InputState {
-      return getKeyStateAsInputState(C);
+      return this.profile.getActionState(MENU_ACTION, this);
    }
 
    override public function getMenuLeft():InputState {
-      return getKeyStateAsInputState(A);
+      return this.profile.getActionState(MENU_LEFT, this);
    }
 
    override public function getMenuRight():InputState {
-      return getKeyStateAsInputState(S);
+      return this.profile.getActionState(MENU_RIGHT, this);
+   }
+
+   override public function getMenuButton():InputState {
+      return this.profile.getActionState(MENU_BUTTON, this);
    }
 
    override public function getAttack():InputState {
-      return getKeyStateAsInputState(X);
+      return this.profile.getActionState(ATTACK, this);
    }
 
    override public function getJump():InputState {
-      return getKeyStateAsInputState(Z);
+      return this.profile.getActionState(JUMP, this);
+   }
+
+   override public function getShortJump():InputState {
+      return this.profile.getActionState(SHORT_JUMP, this);
    }
 
    override public function getSpecial():InputState {
-      return getKeyStateAsInputState(C);
+      return this.profile.getActionState(SPECIAL, this);
    }
 
    override public function getStrong():InputState {
-      return getKeyStateAsInputState(D);
+      return this.profile.getActionState(STRONG, this);
    }
 
-   override public function getDodge():InputState {
-      return getKeyStateAsInputState(S);
+   override public function getShield():InputState {
+      return this.profile.getActionState(SHIELD, this);
    }
 
    override public function getWalk():InputState {
-      return getKeyStateAsInputState(A);
+      return this.profile.getActionState(WALK, this);
    }
 
    override public function getTaunt():InputState {
-      return getKeyStateAsInputState(F);
+      return this.profile.getActionState(TAUNT, this);
    }
 
    override public function getQuit():InputState {
-      return getKeyStateAsInputState(BACKSPACE);
+      return this.getKeyStateAsInputState(BACKSPACE);
    }
 
    override public function getPause():InputState {
-      return getKeyStateAsInputState(ENTER);
+      return this.getKeyStateAsInputState(ENTER);
    }
 
    override public function getUp():Float {
