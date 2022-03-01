@@ -85,24 +85,24 @@ class ProfileInput {
       return (Std.isOfType(this.source, Int) || Std.isOfType(this.source, GenericButton));
    }
 
-   private function getAxisValue(?gamepad:GenericController):Float {
+   private function getAxisValue(?gamepad:GenericInput):Float {
       if (this.isDigitalSource())
          return 0.0;
       return 0.0;
    }
 
-   public function getDigitalState(?gamepad:GenericController):Bool {
+   public function getDigitalState(?gamepad:GenericInput):Bool {
       if (Std.isOfType(this.source, Int)) {
          return InputHelper.isPressed(InputHelper.getFromFlxKey(cast this.source));
       } else if (gamepad == null) {
          return false;
       } else if (Std.isOfType(this.source, GenericButton)) {
-         return InputHelper.isPressed(gamepad.getButtonState(cast this.source));
+         return InputHelper.isPressed((cast gamepad).getButtonState(cast this.source));
       }
       return (this.getAxisValue() > this.digitalThreshold ? true : false);
    }
 
-   public function getInputState(?gamepad:GenericController):InputState {
+   public function getInputState(?gamepad:GenericInput):InputState {
       if (this.type == AXIS) {
          return NOT_PRESSED; // you cant really "press" an output axis. axis input can be "pressed" though
       }
@@ -113,7 +113,7 @@ class ProfileInput {
          trace(!Std.isOfType(this.source, Int)); /*Std.isOfType(this.source, GenericButton)*/
          if ((!Std.isOfType(this.source, Int)) && gamepad != null) {
             var button:GenericButton = cast this.source;
-            var ret = gamepad.getButtonState(button);
+            var ret = (cast gamepad).getButtonState(button);
             trace(ret);
             return ret;
          }
@@ -129,7 +129,7 @@ class ProfileInput {
    /**
     * returns the actual value of the input as a float between -1.0 or 0.0 and 1.0
    **/
-   public function getInputValue(?gamepad:GenericController):Float {
+   public function getInputValue(?gamepad:GenericInput):Float {
       if (this.type == AXIS) {
          if (this.isDigitalSource())
             return this.getDigitalState(gamepad) ? this.value : 0.0;

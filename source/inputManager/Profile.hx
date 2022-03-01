@@ -80,7 +80,7 @@ class Profile {
          ProfileInput.getFromProfileAction(GenericButton.MINUS),
       ],
       JUMP => [
-         ProfileInput.getFromProfileAction(FlxKey.X),
+         ProfileInput.getFromProfileAction(FlxKey.Z),
          ProfileInput.getFromProfileAction(GenericButton.FACE_X),
          ProfileInput.getFromProfileAction(GenericButton.FACE_Y)
       ],
@@ -89,7 +89,7 @@ class Profile {
          ProfileInput.getFromProfileAction(GenericButton.RIGHT_BUMPER)
       ],
       ATTACK => [
-         ProfileInput.getFromProfileAction(FlxKey.Z),
+         ProfileInput.getFromProfileAction(FlxKey.X),
          ProfileInput.getFromProfileAction(GenericButton.FACE_A)
       ],
       SPECIAL => [
@@ -168,7 +168,7 @@ class Profile {
       // }
    }
 
-   public function getActionValue(action:Action, ?gamepad:GenericController):Float {
+   public function getActionValue(action:Action, ?gamepad:GenericInput):Float {
       if (action == NULL)
          return 0.0;
       var actionValues = this.bindings[action].map(act -> act.getInputValue(gamepad));
@@ -186,7 +186,7 @@ class Profile {
       return output;
    }
 
-   public function getActionState(action:Action, ?gamepad:GenericController):InputState {
+   public function getActionState(action:Action, ?gamepad:GenericInput):InputState {
       if (action == NULL)
          return NOT_PRESSED;
       return this.checkActionArray(this.bindings[action], gamepad);

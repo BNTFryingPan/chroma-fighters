@@ -96,11 +96,11 @@ class KeyboardHandler extends GenericInput {
    }
 
    override public function getQuit():InputState {
-      return this.getKeyStateAsInputState(BACKSPACE);
+      return KeyboardHandler.getKeyStateAsInputState(BACKSPACE);
    }
 
    override public function getPause():InputState {
-      return this.getKeyStateAsInputState(ENTER);
+      return KeyboardHandler.getKeyStateAsInputState(ENTER);
    }
 
    override public function getUp():Float {
@@ -132,18 +132,16 @@ class KeyboardHandler extends GenericInput {
       return new //StickVector(x * (InputHelper.isPressed(this.getWalk()) ? 0.4 : 1), y);
       // return {x: x, y: y};
    }*/
-
    override public function getCursorStick():StickVector {
       return super.getCursorStick().normalize();
    }
-
    /*override public function getDirection():StickVector {
-      return new //StickVector(0, 0);
-      // return {x: 0, y: 0};
-   }
+         return new //StickVector(0, 0);
+         // return {x: 0, y: 0};
+      }
 
-   override public function getRawDirection():StickVector {
-      return new //StickVector(0, 0);
-      // return {x: 0, y: 0};
+      override public function getRawDirection():StickVector {
+         return new //StickVector(0, 0);
+         // return {x: 0, y: 0};
    }*/
 }
