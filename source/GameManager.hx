@@ -61,10 +61,13 @@ class ScreenSprite extends FlxSprite {
 
    public static function line(p1:Coordinates, p2:Coordinates, ?opts:LineStyle) {
       FlxSpriteUtil.drawLine(Main.screenSprite, p1.sx, p1.sy, p2.sx, p2.sy, opts);
+      p1.putWeak();
+      p2.putWeak();
    }
 
    public static function circle(pos:Coordinates, radius:Float, ?opts:LineStyle) {
       FlxSpriteUtil.drawCircle(Main.screenSprite, m.sx, m.sy, radius, 0x55FF00FF, opts);
+      pos.putWeak();
    }
 
    public static function rect(p1:Coordinates, p2:Coordinates, ?opts:LineStyle) {
@@ -73,6 +76,8 @@ class ScreenSprite extends FlxSprite {
       var w = Math.max(p1.x, p2.x) - x;
       var h = Math.max(p1.y, p2.y) - y;
       FlxSpriteUtil.drawRect(Main.screenSprite, x, y, w, h, 0x2200ff00, opts);
+      p1.putWeak();
+      p2.putWeak();
    }
 }
 

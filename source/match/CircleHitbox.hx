@@ -28,28 +28,41 @@ class CircleHitbox extends AbstractHitbox {
       }
    };
 
-   public function intersectsPoint(pos:Position):Bool {
-      var dx = this.x - pos.x;
-      var dy = this.y - pos.y;
+   public function intersectsPoint(x:Float, y:Float):Bool {
+      var dx = this.x - x;
+      var dy = this.y - y;
       // Main.debugDisplay.notify('${Math.sqrt((dx * dx) + (dy * dy))} ${Math.sqrt((dx * dx) + (dy * dy)) < this.radius}');
       return Math.sqrt((dx * dx) + (dy * dy)) < this.radius;
    }
 
-   public function intersectsHitbox(box:IHitbox):Bool {
-      return this.intersectsPoint(box.getPointClosestToInside({x: this.x, y: this.y}));
+   public function intersectsCircle(x, y, radius):Bool {
+      var thisCoords = Coordinates.get(this.x, this.y);
+      var ret = thisCoords.distanceFrom(x, y) <= (this.radius + radius);
+      thisCoords.put();
+      return ret;
    }
 
-   public function getPointClosestToInside(pos:Position):Position {
-      if (this.intersectsPoint(pos))
-         return pos;
-      var angle = Math.atan2(pos.x - this.x, pos.y - this.y);
-      ScreenSprite.line({x: this.x + (this.radius * Math.sin(angle)), y: this.y + (this.radius * Math.cos(angle))}, pos, {thickness: 3, color: 0xff0000ff});
-      return {x: this.x + (this.radius * Math.sin(angle)), y: this.y + (this.radius * Math.cos(angle))};
+   override public function intersectsHitbox(box:IHitbox):Bool {
+      if (box is CircleHitbox) {
+         return this.intersectsCircle(box.x, box.y, (cast box).radius);
+      }
+      return super.intersectsHitbox(box);
+   }
+
+   public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates {
+      if (use == null)
+         use = Coordinates.get();
+      if (this.intersectsPoint(x, y))
+         return use.set(x, y);
+      var angle = Math.atan2(x - this.x, y - this.y);
+      use.set(this.x + (this.radius * Math.sin(angle)), this.y + (this.radius * Math.cos(angle)))
+      ScreenSprite.line(use, Coordinates.weak(x, y), {thickness: 3, color: 0xff0000ff});
+      return use;
    }
 
    public function draw() {
-      ScreenSprite.circle({x: this.x, y: this.y}, this.radius);
+      ScreenSprite.circle(Coordinates.weak(this.x, this.y), this.radius);
       var lAngle = ((-this.angle) + 90) * (Math.PI / 180);
-      ScreenSprite.line({x: this.x + (this.radius * Math.cos(lAngle)), y: this.y + (this.radius * Math.sin(lAngle) * -1)}, {x: this.x, y: this.y});
+      ScreenSprite.line(Coordinates.weak(this.x + (this.radius * Math.cos(lAngle)), this.y + (this.radius * Math.sin(lAngle) * -1)), Coordinates.weak(this.x, this.y));
    }
 }

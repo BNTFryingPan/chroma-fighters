@@ -26,7 +26,7 @@ class GenericInput {
    public var cursorStick:StickVector = new StickVector();
    public var directionStick:StickVector = new StickVector();
    public var rawDirectionStick:StickVector = new StickVector();
-   private final cursorPosition:Coordiates = new Coordinates(0, 0);
+   private final cursorPosition:Coordinates = new Coordinates(0, 0);
 
    public function get_inputEnabled() {
       return false;

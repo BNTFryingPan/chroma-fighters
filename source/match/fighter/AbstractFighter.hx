@@ -175,7 +175,7 @@ interface IFighter extends IMatchObjectWithHitbox {
    public function isInBlastzone(stage:Stage):Bool;
    public function getDebugString():String;
    public var activeHitboxes:Array<AbstractHitbox>;
-   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
+   public function createRoundAttackHitbox(offsetX:Float, offsetY:Floay, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
       knockback:Float = 1, growth:Float = 1):Void;
 }
 
@@ -398,7 +398,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    public var activeHitboxes:Array<AbstractHitbox> = [];
 
-   public function createRoundAttackHitbox(offset:Position, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
+   public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
          knockback:Float = 1, growth:Float = 1) {
       var newHitBox = new CircleHitbox(this.x + (this.width / 2) + (offset.x * (this.facing == LEFT ? 1 : -1)), this.y + offset.y, radius);
       newHitBox.duration = duration;

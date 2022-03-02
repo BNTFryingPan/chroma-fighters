@@ -108,7 +108,7 @@ PRESSED = the button is currently being pressed
 JUST_RELEASED = the button was released this frame
 NOT_PRESSED = the button is not being pressed
 
-getCursorPosition():Position - the x,y position of the cursor on menus
+getCursorPosition():Coordinates - the x,y position of the cursor on menus
 getConfirm(): the button used to confirm in menus, usually con-A or kb-Z
 getCancel(): the button used to cancel or go back in menus, usually con-B or kb-X;
 getMenuAction(): action button in menus, usually con-X and con-Y or kb-C;

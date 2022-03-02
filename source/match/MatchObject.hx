@@ -13,7 +13,7 @@ interface IMatchObject {
 
 interface IMatchObjectWithHitbox extends IMatchObject {
    public var hitbox:AbstractHitbox;
-   // public function collidesWithPoint(pos:Position):Bool;
+   // public function collidesWithPoint(x:Float, y:Float):Bool;
    // public function collidesWithObject(obj:IMatchObjectWithHitbox):Bool;
 }
 

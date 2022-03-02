@@ -57,7 +57,7 @@ class MagicFighterSpecial extends FighterMove {
 
 class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      this.fighter.createRoundAttackHitbox({x: 30, y: 40}, 15, 8, true, 80, 0.2, 1);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 80, 0.2, 1);
       return SUCCESS(null);
    }
 }
@@ -83,7 +83,7 @@ class MagicFighterAerialMove extends FighterMove {
 
 class MagicFighterDownAirMove extends MagicFighterAerialMove {
    override public function attack() {
-      this.fighter.createRoundAttackHitbox({x: 30, y: 40}, 15, 8, true, 180, 0.2, 1);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, 0.2, 1);
    }
 }
 
@@ -96,6 +96,14 @@ class MagicFighter extends AbstractFighter {
 
    public var sprite:FlxSprite;
 
+   public var canDodge(get, never):Bool;
+   public function get_canDodge():Bool {
+      if (this.airState == PRATFALL)
+         return false;
+      return true;
+   }
+   var timedDodge:Timed = new Timed()
+   var isDodging:Bool = false;
    var dodgeTimer:Float = -1;
    var dodgeDuration:Float = 1;
    var hasBufferedFastFall:Bool = false;
@@ -138,16 +146,15 @@ class MagicFighter extends AbstractFighter {
       if (this.slot == P2) {
          this.sprite.alpha = 0.5;
       }
-      // this.lastStickDownValue = '${stick.y} ${input.getDown()}';
-      // this.lastStickDownValue = input.getDown();
-      // trace(elapsed);
-
-      // ScreenSprite.circle({x: this.x, y: this.y}, 50, {thickness: 3, color: 0xFFFF00FF});
 
       if (this.hitstunTime > 0)
          return;
 
-      // if (input.getDodge())
+      this.lastPressedDodge += elapsed;
+
+      if (input.getDodge()) {
+         this.lastPressedDodge = 0;
+      }
 
       if (stick.length > 0) {
          var horizontalGroundModifier = this.airState == GROUNDED ? 1 : 0.4;

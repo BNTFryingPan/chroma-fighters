@@ -21,7 +21,7 @@ class TypedCompoundHitbox<T:AbstractHitbox> extends AbstractHitbox {
       return true;
    }
 
-   public function intersectsPoint(pos:Position):Bool {
+   public function intersectsPoint(x:Float, y:Float):Bool {
       for (box in this.parts) {
          if (box.intersectsPoint(pos))
             return true;
@@ -33,7 +33,7 @@ class TypedCompoundHitbox<T:AbstractHitbox> extends AbstractHitbox {
       throw new haxe.exceptions.NotImplementedException();
    }
 
-   public function getPointClosestToInside(pos:Position):Position {
+   public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates {
       throw new haxe.exceptions.NotImplementedException();
    }
 

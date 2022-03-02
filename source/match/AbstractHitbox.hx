@@ -15,14 +15,15 @@ enum HitboxType {
 
 interface IHitbox {
    public var type:HitboxType;
-   public function intersectsPoint(pos:Coordinates):Bool;
+   public function intersectsPoint(x:Float, y:Float):Bool;
    public function intersectsHitbox(box:IHitbox):Bool;
-   public function getPointClosestToInside(pos:Coordintes, ?use:Coordinates):Coordinates;
+   public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates;
    public function draw():Void;
 }
 
 abstract class AbstractHitbox implements IHitbox {
-   public final position:Coordinates;
+   public var x:Float;
+   public var y:Float;
 
    public var duration:Float;
    public var active:Bool = true;
@@ -31,7 +32,8 @@ abstract class AbstractHitbox implements IHitbox {
    public var knockback:Float = 1;
    public var angle:Float = 0;
    public var kbGrowth:Float = 1;
-   public var offset:Position = {x: 0, y: 0};
+   public var offsetX:Float = 0;
+   public var offsetY:Float = 0;
    public var follow:Bool = true;
 
    public var owner:PlayerSlotIdentifier;
@@ -65,11 +67,16 @@ abstract class AbstractHitbox implements IHitbox {
 
    public function onExit(thing:IMatchObject):Void {};
 
-   abstract public function intersectsPoint(pos:Position):Bool;
+   abstract public function intersectsPoint(x:Float, y:Float):Bool;
 
-   abstract public function intersectsHitbox(box:IHitbox):Bool;
+   abstract public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates;
 
-   abstract public function getPointClosestToInside(pos:Position):Position;
+   public function intersectsHitbox(box:IHitbox):Bool {
+      var close = box.getPointClosestToInside(this.x, this.y);
+      var ret = this.intersectsPoint(close.x, close.y);
+      close.put();
+      return ret;
+   };
 
    abstract public function draw():Void;
 }
