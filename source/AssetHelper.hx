@@ -94,7 +94,10 @@ class AssetHelper {
 
    public static function getImageAsset(key:NamespacedKey):BitmapData {
       // return getNullBitmap();
-      #if (sys && !mobile)
+      #if mobile
+      return getNullBitmap();
+      // return AssetPaths
+      #elseif (sys)
       // Main.log('loading ${key.toString()}');
       // if (FlxG.bitmap.checkCache(key.toString())) {
       // return FlxG.bitmap.get(key.toString()).bitmap;
@@ -114,10 +117,9 @@ class AssetHelper {
          // return graphic.bitmap;
       }
       // Main.log('not found');
-      return getNullBitmap();
-      #else
-      return getNullBitmap();
       #end
+
+      return getNullBitmap();
    }
 
    public static function getTextAsset(key:NamespacedKey):Array<String> {
@@ -186,8 +188,10 @@ class AssetHelper {
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
-      #if (sys && !mobile)
-      #if (debug && !mobile)
+      #if mobile
+      return null;
+      #elseif (sys)
+      #if (debug)
       // Main.log('debug paths');
       var rootPath = "./../../../mods/";
       var namespacedPath = "mods/";
@@ -217,16 +221,11 @@ class AssetHelper {
 
       // Main.log(FileSystem.absolutePath(rootPath + namespacedPath + fileName));
 
-      #if (!mobile)
       if (FileSystem.exists(rootPath + namespacedPath + fileName)) {
          // Main.log("exists");
          return rootPath + namespacedPath + fileName;
       } else
          return null;
-      #else
-      // if (sys.io.)
-      return null;
-      #end
       #else
       return null;
       #end
