@@ -61,6 +61,17 @@ class GenericInput {
       return this.getStick().clone(this.cursorStick);
    }
 
+   public final timed:Map<Action, Timed> = [
+      JUMP => new Timed(),
+      SHORT_JUMP => new Timed(),
+      ATTACK => new Timed(),
+      SPECIAL => new Timed(),
+      STRONG => new Timed(),
+      TAUNT => new Timed(),
+      SHIELD => new Timed(),
+      DODGE => new Timed()
+   ];
+
    public function getConfirm():InputState {
       return NOT_PRESSED;
    }

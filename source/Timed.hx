@@ -21,6 +21,7 @@ class Timed /*implements IFlxPooled*/ {
 
    private var _frames:Int = 0;
    private var _seconds:Float = 0;
+   private var _invalid:Bool = false;
 
    public function new(frames:Int=0, seconds:Float=0) {
       this.setFrames(frames);
@@ -28,10 +29,12 @@ class Timed /*implements IFlxPooled*/ {
    }
 
    public function inFrames(frames:Int):Bool {
+      if (this._invalid) return false;
       return this._frames <= frames;
    }
 
    public function inSeconds(seconds:Float):Bool {
+      if (this._invalid) return false;
       return this._seconds <= seconds;
    }
 
@@ -43,7 +46,19 @@ class Timed /*implements IFlxPooled*/ {
       return this._seconds;
    }
 
-   public function tick(elapsed:Float):Void {
+   public function valid():Bool {
+      return this._invalid;
+   }
+
+   public function invalidate(state:Bool):Bool {
+      return this._invalid = state;
+   }
+
+   public function tick(elapsed:Float, reset:Bool):Void {
+      if (reset) {
+         this.reset();
+         return;
+      }
       this._seconds += elapsed;
       this._frames++;
    }

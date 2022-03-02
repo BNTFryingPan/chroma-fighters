@@ -148,6 +148,10 @@ class GenericController extends GenericInput {
       return this.profile.getActionState(SHIELD, this);
    }
 
+   override public function getDodge():InputState {
+      return this.profile.getActionState(DODGE, this);
+   }
+
    override public function getWalk():InputState {
       return this.profile.getActionState(WALK, this);
       // return NOT_PRESSED; // unused on controller

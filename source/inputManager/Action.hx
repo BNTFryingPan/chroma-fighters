@@ -15,6 +15,7 @@ enum Action {
    STRONG;
    TAUNT;
    SHIELD; // might only do parries, not sure yet
+   DODGE;
    WALK;
    DIRECTION_X;
    DIRECTION_Y;
