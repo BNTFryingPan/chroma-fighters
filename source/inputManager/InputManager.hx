@@ -95,7 +95,7 @@ class InputManager {
       player._flixelGamepad = input;
    }
 
-   public static function getCursors():Array<Position> {
+   public static function getCursors():Array<Coordinates> {
       return PlayerSlot.getPlayerArray().map(function(p) {
          return p.getCursorPosition();
       });

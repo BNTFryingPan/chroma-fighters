@@ -11,7 +11,7 @@ import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
-import inputManager.Position;
+import inputManager.Coordinates;
 import match.AbstractHitbox;
 import states.MatchState;
 
@@ -59,27 +59,17 @@ class ScreenSprite extends FlxSprite {
       FlxSpriteUtil.fill(this, 0);
    }
 
-   private static function p(pos:Position):Position {
-      return {x: pos.x - Main.screenSprite.camera.scroll.x, y: pos.y - Main.screenSprite.camera.scroll.y};
+   public static function line(p1:Coordinates, p2:Coordinates, ?opts:LineStyle) {
+      FlxSpriteUtil.drawLine(Main.screenSprite, p1.sx, p1.sy, p2.sx, p2.sy, opts);
    }
 
-   public static function line(p1:Position, p2:Position, ?opts:LineStyle) {
-      p1 = p(p1);
-      p2 = p(p2);
-      FlxSpriteUtil.drawLine(Main.screenSprite, p1.x, p1.y, p2.x, p2.y, opts);
+   public static function circle(pos:Coordinates, radius:Float, ?opts:LineStyle) {
+      FlxSpriteUtil.drawCircle(Main.screenSprite, m.sx, m.sy, radius, 0x55FF00FF, opts);
    }
 
-   public static function circle(pos:Position, radius:Float, ?opts:LineStyle) {
-      var m = p(pos);
-      // Main.debugDisplay.rightPrepend += '${pos} -> ${m}\n';
-      FlxSpriteUtil.drawCircle(Main.screenSprite, m.x, m.y, radius, 0x55FF00FF, opts);
-   }
-
-   public static function rect(p1:Position, p2:Position, ?opts:LineStyle) {
-      p1 = p(p1);
-      p2 = p(p2);
-      var x = Math.min(p1.x, p2.x);
-      var y = Math.min(p1.y, p2.y);
+   public static function rect(p1:Coordinates, p2:Coordinates, ?opts:LineStyle) {
+      var x = Math.min(p1.sx, p2.sx);
+      var y = Math.min(p1.sy, p2.sy);
       var w = Math.max(p1.x, p2.x) - x;
       var h = Math.max(p1.y, p2.y) - y;
       FlxSpriteUtil.drawRect(Main.screenSprite, x, y, w, h, 0x2200ff00, opts);

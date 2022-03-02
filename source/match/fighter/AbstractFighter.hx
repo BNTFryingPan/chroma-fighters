@@ -358,9 +358,9 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       // this.debugSprite.draw();
    }
 
-   override public function drawDebug() {
-      super.drawDebug();
-   }
+   //override public function drawDebug() {
+   //   super.drawDebug();
+   //}
 
    public function die() {
       this.x = 0;

@@ -5,6 +5,8 @@ class Coordinates {
 
    public var x(default, set):Float;
    public var y(default, set):Float;
+   public var sx(get, null):Float;
+   public var sy(get, null):Float;
    public final readOnly:Bool; // final so it cant be changed
 
    public function set_x(val:Float):Float {
@@ -29,9 +31,37 @@ class Coordinates {
       return this;
    }
 
-   public function getRelative(x:Float=0, y:Float=0) {
-      return new Coordinates(this.x + x, this.y + y);
+   public function getRelative(x:Float=0, y:Float=0):Coordinates {
+      return new Coordinates(this.getRelX(x), this.getRelY(y));
    }
+
+   public function getRelX(x:Float=0):Float {
+      return this.x + x;
+   }
+
+   public function getRelY(y:Float=0):Float {
+      return this.y + y;
+   }
+
+   public static function xInScreenSpace(x:Float=0, ?camera:FlxCamera):Float {
+      if (camera == null) camera = Main.screenSprite.camera;
+      return camera.x + x;
+   }
+
+   public static function yInScreenSpace(y:Float=0, ?camera:FlxCamera):Float {
+      if (camera == null) camera = Main.screenSprite.camera;
+      return camera.y + y;
+   }
+
+   public function get_sx():Float {
+      return Coordinates.xInScreenSpace(this.x)
+   }
+
+   public function get_sy():Float {
+      return Coordinates.xInScreenSpace(this.y)
+   }
+
+   // TODO : to screenspace coords?
 
    public function distance(?other:Coordinates):Float {
       return (this.x - other.x)/(this.y - other.y);

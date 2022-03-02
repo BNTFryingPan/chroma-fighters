@@ -342,26 +342,59 @@ class PlayerSlot {
       });*/
    }
 
-   public static function getOffset(angle:CursorRotation):Position {
-      if (angle == LEFT) {
-         return {x: 0, y: 15};
-      } else if (angle == RIGHT) {
-         return {x: 30, y: 15};
-      } else if (angle == UP_LEFT) {
-         return {x: 3, y: 0};
-      } else if (angle == UP_RIGHT) {
-         return {x: 27, y: 0};
-      } else if (angle == DOWN_LEFT) {
-         return {x: 3, y: 30};
-      } else if (angle == DOWN_RIGHT) {
-         return {x: 27, y: 30};
-      }
+   public static final OFFSET_LEFT = new Coordinates(0, 15, true);
+   public static final OFFSET_RIGHT = new Coordinates(30, 15, true);
+   public static final OFFSET_UP_LEFT = new Coordinates(3, 0, true);
+   public static final OFFSET_UP_RIGHT = new Coordinates(27, 0, true);
+   public static final OFFSET_DOWN_LEFT = new Coordinates(3, 30, true);
+   public static final OFFSET_DOWN_RIGHT = new Coordinates(27, 30, true);
 
-      return {x: 30, y: 15};
+   public static function getOffset(angle:CursorRotation):Coordinates {
+      return switch (angle) {
+         case LEFT:
+            OFFSET_LEFT;
+         case RIGHT:
+            OFFSET_RIGHT;
+         case UP_LEFT:
+            OFFSET_UP_LEFT;
+         case UP_RIGHT:
+            OFFSET_UP_RIGHT;
+         case DOWN_LEFT:
+            OFFSET_DOWN_LEFT;
+         case DOWN_RIGHT:
+            OFFSET_DOWN_RIGHT;
+         case _:
+         default:
+            OFFSET_RIGHT;
+      };
    }
 
-   public static function getCoinOffset(angle:CursorRotation):Position {
-      if (angle == LEFT) {
+   public static final COIN_OFFSET_LEFT = new Coordinates(-30, 15, true);
+   public static final COIN_OFFSET_RIGHT = new Coordinates(60, 15, true);
+   public static final COIN_OFFSET_UP_LEFT = new Coordinates(-7, -23, true);
+   public static final COIN_OFFSET_UP_RIGHT = new Coordinates(38, -23, true);
+   public static final COIN_OFFSET_DOWN_LEFT = new Coordinates(-7, 50, true);
+   public static final COIN_OFFSET_DOWN_RIGHT = new Coordinates(36, 50, true);
+
+   public static function getCoinOffset(angle:CursorRotation):Coordinates {
+      return switch (angle) {
+         case LEFT:
+            COIN_OFFSET_LEFT;
+         case RIGHT:
+            COIN_OFFSET_RIGHT;
+         case UP_LEFT:
+            COIN_OFFSET_UP_LEFT;
+         case UP_RIGHT:
+            COIN_OFFSET_UP_RIGHT;
+         case DOWN_LEFT:
+            COIN_OFFSET_DOWN_LEFT;
+         case DOWN_RIGHT:
+            COIN_OFFSET_DOWN_RIGHT;
+         case _:
+         default:
+            COIN_OFFSET_RIGHT;
+      };
+      /*if (angle == LEFT) {
          return {x: -30, y: 15};
       } else if (angle == RIGHT) {
          return {x: 60, y: 15};
@@ -375,7 +408,7 @@ class PlayerSlot {
          return {x: 36, y: 50};
       }
 
-      return {x: 16, y: 16};
+      return {x: 16, y: 16};*/
    }
 
    public var type:PlayerType = NONE;
@@ -386,11 +419,11 @@ class PlayerSlot {
    public var input:GenericInput;
    public var debugSprite:FlxSprite;
    public var cursorSprite:FlxSprite;
-   public var cursorPosition:Position = {x: Math.round(FlxG.width / 2), y: Math.round(FlxG.height / 2)};
+   public final cursorPosition:Coordinates = new Coordinates({Math.round(FlxG.width / 2), Math.round(FlxG.height / 2));
    public var cursorAngle:CursorRotation = RIGHT;
    public var coinSprite:FlxSprite;
-   public var cursorSpriteOffset:Position = {x: 30, y: 15};
-   public var coinSpriteOffset:Position = {x: 16, y: 16};
+   public final cursorSpriteOffset:Coordinates = new Coordinates(30, 15);
+   public final coinSpriteOffset:Coordinates = new Coordinates(16, 16);
    public var visible(get, default):Bool = false;
 
    private function set_slot(v:PlayerSlotIdentifier) {
@@ -466,8 +499,7 @@ class PlayerSlot {
          return;
       var stick = this.input.getCursorStick();
 
-      this.cursorPosition.x += Math.round(stick.x * 500 * elapsed);
-      this.cursorPosition.y += Math.round(stick.y * 500 * elapsed);
+      this.cursorPosition.move(Math.round(stick.x * 500 * elapsed), Math.round(stick.y * 500 * elapsed))
 
       this.cursorPosition.x = Std.int(Math.min(this.cursorPosition.x, FlxG.width));
       this.cursorPosition.x = Std.int(Math.max(this.cursorPosition.x, 0));
@@ -650,7 +682,7 @@ class PlayerSlot {
    /**
       returns the screen position where the cursor should be drawn and the "click point"
    **/
-   public function getCursorPosition():Position {
+   public function getCursorPosition():Coordinates {
       var inputCursor = this.input.getCursorPosition();
       return inputCursor != null ? inputCursor : this.cursorPosition;
    }

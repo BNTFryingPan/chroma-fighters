@@ -16,8 +16,9 @@ class MouseHandler extends KeyboardHandler {
       super(slot, profile);
    }
 
-   override public function getCursorPosition():Position {
-      return {x: FlxG.mouse.screenX, y: FlxG.mouse.screenY}
+   override public function getCursorPosition():Coordinates {
+      this.cursorPosition.update(FlxG.mouse.screenX, FlxG.mouse.screenY);
+      return super.getCursorPosition();
    }
 
    override function getConfirm():InputState {

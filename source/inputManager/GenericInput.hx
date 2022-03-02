@@ -26,6 +26,7 @@ class GenericInput {
    public var cursorStick:StickVector = new StickVector();
    public var directionStick:StickVector = new StickVector();
    public var rawDirectionStick:StickVector = new StickVector();
+   private final cursorPosition:Coordiates = new Coordinates(0, 0);
 
    public function get_inputEnabled() {
       return false;
@@ -52,7 +53,7 @@ class GenericInput {
    /**
       can be used to override the cursor position. mainly so mouse input works, but could theoretically be used for wii remote pointer or touchscreen inputs too
    **/
-   public function getCursorPosition():Null<Position> {
+   public function getCursorPosition():Null<Coordinates> {
       return null;
    }
 

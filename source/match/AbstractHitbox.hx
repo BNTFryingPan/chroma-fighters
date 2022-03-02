@@ -15,15 +15,14 @@ enum HitboxType {
 
 interface IHitbox {
    public var type:HitboxType;
-   public function intersectsPoint(pos:Position):Bool;
+   public function intersectsPoint(pos:Coordinates):Bool;
    public function intersectsHitbox(box:IHitbox):Bool;
-   public function getPointClosestToInside(pos:Position):Position;
+   public function getPointClosestToInside(pos:Coordintes, ?use:Coordinates):Coordinates;
    public function draw():Void;
 }
 
 abstract class AbstractHitbox implements IHitbox {
-   public var x:Float;
-   public var y:Float;
+   public final position:Coordinates;
 
    public var duration:Float;
    public var active:Bool = true;
