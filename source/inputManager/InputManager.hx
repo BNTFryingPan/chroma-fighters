@@ -1,11 +1,9 @@
 package inputManager;
 
 import PlayerSlot.PlayerSlotIdentifier;
-import cpuController.CpuController;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.typeLimit.OneOfTwo;
 import inputManager.InputDevice;
-import inputManager.Position;
 import inputManager.controllers.GenericController;
 
 class InputManager {

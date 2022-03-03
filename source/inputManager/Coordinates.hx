@@ -1,18 +1,25 @@
 package inputManager;
 
+import flixel.FlxCamera;
+import flixel.math.FlxAngle;
+import flixel.util.FlxPool;
+
 class Coordinates implements IFlxPooled {
-   public static var pool(get, never):IFlxPool<Coordinates>
+   public static var pool(get, never):IFlxPool<Coordinates>;
+
    public static function get_pool():IFlxPool<Coordinates> {
       return Coordinates._pool;
    }
+
    private static var _pool:FlxPool<Coordinates> = new FlxPool<Coordinates>(Coordinates);
 
    public static final ZERO:Coordinates = new Coordinates(0, 0, true);
+
    // a is a reusable coordinates object that should be used instead of making a new one when you only need it for like one thing
    // if it needs to be stored, make a new one instead
-   //public static final a:Coordinates = new Coordinates(0, 0, false);
+   // public static final a:Coordinates = new Coordinates(0, 0, false);
 
-   public static function get(x:Float, y:Float) {
+   public static function get(?x:Float, ?y:Float) {
       var ret = _pool.get().set(x, y);
       ret._inPool = false;
       return ret;
@@ -36,16 +43,18 @@ class Coordinates implements IFlxPooled {
    var _weak:Bool = false;
 
    public function set_x(val:Float):Float {
-      if (this.readOnly) return this.x;
+      if (this.readOnly)
+         return this.x;
       return this.x = val;
    }
 
    public function set_y(val:Float):Float {
-      if (this.readOnly) return this.y;
+      if (this.readOnly)
+         return this.y;
       return this.y = val;
    }
 
-   public function new(x:Float=0, y:Float=0, readOnly:Bool=false) {
+   public function new(x:Float = 0, y:Float = 0, readOnly:Bool = false) {
       this.set(x, y);
       this.readOnly = readOnly;
    }
@@ -65,7 +74,7 @@ class Coordinates implements IFlxPooled {
          this.put();
    }
 
-   public function move(x:Float=0, y:Float=0):Coordinates {
+   public function move(x:Float = 0, y:Float = 0):Coordinates {
       this.x += x;
       this.y += y;
       return this;
@@ -83,18 +92,20 @@ class Coordinates implements IFlxPooled {
       return this;
    }
 
-   public function set(x:Float=0, y:Float=0):Coordinates {
-      this.x = x;
-      this.y = y;
+   public function set(?x:Float = 0, ?y:Float = 0):Coordinates {
+      if (x != null)
+         this.x = x;
+      if (y != null)
+         this.y = y;
       return this;
    }
 
    private static inline var EPSILON:Float = 0.0000001;
 
-   public function equals(x:Float, y:Float, ?ep:Float=null):Bool {
+   public function equals(x:Float, y:Float, ?ep:Float = null):Bool {
       if (ep == null)
          ep = Coordinates.EPSILON;
-      return (Math.abs(x - this.x) <= ep) && (Math.abs(y - this.y) <= ep)
+      return (Math.abs(x - this.x) <= ep) && (Math.abs(y - this.y) <= ep);
    }
 
    public function equalsOther(other:Coordinates):Bool {
@@ -103,34 +114,36 @@ class Coordinates implements IFlxPooled {
       return ret;
    }
 
-   public function getRelative(x:Float=0, y:Float=0):Coordinates {
+   public function getRelative(x:Float = 0, y:Float = 0):Coordinates {
       return Coordinates.get(this.getRelX(x), this.getRelY(y));
    }
 
-   public function getRelX(x:Float=0):Float {
+   public function getRelX(x:Float = 0):Float {
       return this.x + x;
    }
 
-   public function getRelY(y:Float=0):Float {
+   public function getRelY(y:Float = 0):Float {
       return this.y + y;
    }
 
-   public static function xInScreenSpace(x:Float=0, ?camera:FlxCamera):Float {
-      if (camera == null) camera = Main.screenSprite.camera;
+   public static function xInScreenSpace(x:Float = 0, ?camera:FlxCamera):Float {
+      if (camera == null)
+         camera = Main.screenSprite.camera;
       return camera.x + x;
    }
 
-   public static function yInScreenSpace(y:Float=0, ?camera:FlxCamera):Float {
-      if (camera == null) camera = Main.screenSprite.camera;
+   public static function yInScreenSpace(y:Float = 0, ?camera:FlxCamera):Float {
+      if (camera == null)
+         camera = Main.screenSprite.camera;
       return camera.y + y;
    }
 
    public function get_sx():Float {
-      return Coordinates.xInScreenSpace(this.x)
+      return Coordinates.xInScreenSpace(this.x);
    }
 
    public function get_sy():Float {
-      return Coordinates.xInScreenSpace(this.y)
+      return Coordinates.xInScreenSpace(this.y);
    }
 
    public function ceil():Coordinates {
@@ -147,7 +160,7 @@ class Coordinates implements IFlxPooled {
 
    public function angleBetween(x:Float, y:Float):Float {
       var angle = Math.atan2(x - this.x, y - this.y);
-      return angle * FlxAngle.TO_DEG
+      return angle * FlxAngle.TO_DEG;
    }
 
    // TODO : to screenspace coords?
@@ -161,7 +174,7 @@ class Coordinates implements IFlxPooled {
    public function distanceFrom(x:Float, y:Float):Float {
       var dx = this.x - x;
       var dy = this.y - y;
-      return dx/dy;
+      return dx / dy;
    }
 
    public function writable():Coordinates {

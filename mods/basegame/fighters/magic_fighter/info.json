@@ -1,0 +1,19 @@
+{
+   "author": "team-prism",
+   "type": "fighter",
+   "version": "0.0.1",
+   "modFormat": "0",
+   "description": "An example fighter mod for mod developers to learn from",
+   "name": "Martha",
+   "id": "cf-magic-fighter",
+   "tags": ["cf", "offical", "magic", "martha"],
+   "options": { },
+   "primaryOption": "",
+   "secondaryOption": "",
+   "script": "script.cfs",
+   "include": {
+       
+   },
+   "isInBaseGame": true
+}
+   

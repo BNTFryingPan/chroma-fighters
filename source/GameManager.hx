@@ -6,12 +6,12 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import inputManager.Coordinates;
 import inputManager.InputDevice;
 import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
-import inputManager.Coordinates;
 import match.AbstractHitbox;
 import states.MatchState;
 
@@ -66,7 +66,7 @@ class ScreenSprite extends FlxSprite {
    }
 
    public static function circle(pos:Coordinates, radius:Float, ?opts:LineStyle) {
-      FlxSpriteUtil.drawCircle(Main.screenSprite, m.sx, m.sy, radius, 0x55FF00FF, opts);
+      FlxSpriteUtil.drawCircle(Main.screenSprite, pos.sx, pos.sy, radius, 0x55FF00FF, opts);
       pos.putWeak();
    }
 

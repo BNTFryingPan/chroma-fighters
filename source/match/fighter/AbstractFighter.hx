@@ -3,16 +3,11 @@ package match.fighter;
 import GameManager.GameState;
 import PlayerSlot;
 import cpuController.CpuController;
-import flixel.FlxBasic;
 import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
-import haxe.Constraints.Function;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
-import inputManager.Position;
 import match.MatchObject;
 
 typedef MoveResultData = {
@@ -175,8 +170,8 @@ interface IFighter extends IMatchObjectWithHitbox {
    public function isInBlastzone(stage:Stage):Bool;
    public function getDebugString():String;
    public var activeHitboxes:Array<AbstractHitbox>;
-   public function createRoundAttackHitbox(offsetX:Float, offsetY:Floay, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
-      knockback:Float = 1, growth:Float = 1):Void;
+   public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45,
+      duration:Float = 0.2, knockback:Float = 1, growth:Float = 1):Void;
 }
 
 abstract class AbstractFighter extends FlxObject implements IFighter {
@@ -241,8 +236,8 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       }
 
       for (box in this.activeHitboxes.filter(box -> box.follow)) {
-         box.x = this.x + (this.width / 2) + (box.offset.x * (this.facing == LEFT ? 1 : -1));
-         box.y = this.y + box.offset.y;
+         box.x = this.x + (this.width / 2) + (box.offsetX * (this.facing == LEFT ? 1 : -1));
+         box.y = this.y + box.offsetY;
       }
 
       if (this.hitstunTime > 0) {
@@ -358,9 +353,9 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       // this.debugSprite.draw();
    }
 
-   //override public function drawDebug() {
+   // override public function drawDebug() {
    //   super.drawDebug();
-   //}
+   // }
 
    public function die() {
       this.x = 0;
@@ -398,9 +393,9 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    public var activeHitboxes:Array<AbstractHitbox> = [];
 
-   public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45, duration:Float = 0.2,
-         knockback:Float = 1, growth:Float = 1) {
-      var newHitBox = new CircleHitbox(this.x + (this.width / 2) + (offset.x * (this.facing == LEFT ? 1 : -1)), this.y + offset.y, radius);
+   public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45,
+         duration:Float = 0.2, knockback:Float = 1, growth:Float = 1) {
+      var newHitBox = new CircleHitbox(this.x + (this.width / 2) + (offsetX * (this.facing == LEFT ? 1 : -1)), this.y + offsetY, radius);
       newHitBox.duration = duration;
       newHitBox.damage = damage;
       newHitBox.knockback = knockback;
@@ -409,7 +404,8 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
          angle *= -1;
       newHitBox.angle = angle;
       newHitBox.owner = this.getSlot();
-      newHitBox.offset = offset;
+      newHitBox.offsetX = offsetX;
+      newHitBox.offsetY = offsetY;
       this.activeHitboxes.push(newHitBox);
    }
 

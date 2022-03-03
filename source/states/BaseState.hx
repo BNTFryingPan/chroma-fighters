@@ -1,13 +1,7 @@
 package states;
 
-import CustomButton;
-import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.input.gamepad.FlxGamepad;
-import flixel.util.FlxColor;
-import inputManager.InputManager;
-import inputManager.MouseHandler;
 
 /**
    a base for other states in the game

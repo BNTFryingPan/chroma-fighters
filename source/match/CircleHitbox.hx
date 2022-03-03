@@ -1,7 +1,7 @@
 package match;
 
 import GameManager.ScreenSprite;
-import inputManager.Position;
+import inputManager.Coordinates;
 import match.AbstractHitbox;
 import match.MatchObject;
 import match.fighter.AbstractFighter;
@@ -44,7 +44,8 @@ class CircleHitbox extends AbstractHitbox {
 
    override public function intersectsHitbox(box:IHitbox):Bool {
       if (box is CircleHitbox) {
-         return this.intersectsCircle(box.x, box.y, (cast box).radius);
+         var circle:CircleHitbox = cast box;
+         return this.intersectsCircle(circle.x, circle.y, circle.radius);
       }
       return super.intersectsHitbox(box);
    }
@@ -55,7 +56,7 @@ class CircleHitbox extends AbstractHitbox {
       if (this.intersectsPoint(x, y))
          return use.set(x, y);
       var angle = Math.atan2(x - this.x, y - this.y);
-      use.set(this.x + (this.radius * Math.sin(angle)), this.y + (this.radius * Math.cos(angle)))
+      use.set(this.x + (this.radius * Math.sin(angle)), this.y + (this.radius * Math.cos(angle)));
       ScreenSprite.line(use, Coordinates.weak(x, y), {thickness: 3, color: 0xff0000ff});
       return use;
    }
@@ -63,6 +64,7 @@ class CircleHitbox extends AbstractHitbox {
    public function draw() {
       ScreenSprite.circle(Coordinates.weak(this.x, this.y), this.radius);
       var lAngle = ((-this.angle) + 90) * (Math.PI / 180);
-      ScreenSprite.line(Coordinates.weak(this.x + (this.radius * Math.cos(lAngle)), this.y + (this.radius * Math.sin(lAngle) * -1)), Coordinates.weak(this.x, this.y));
+      ScreenSprite.line(Coordinates.weak(this.x + (this.radius * Math.cos(lAngle)), this.y + (this.radius * Math.sin(lAngle) * -1)),
+         Coordinates.weak(this.x, this.y));
    }
 }

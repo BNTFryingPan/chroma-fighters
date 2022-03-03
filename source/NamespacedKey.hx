@@ -35,7 +35,7 @@ abstract class AbstractNamespacedKey {
 }
 
 class NamespacedKey extends AbstractNamespacedKey {
-   public static final DEFAULT_NAMESPACE = "chromafighers";
+   public static final DEFAULT_NAMESPACE = "chromafighters";
 
    public function new(namespace:String, key:String) {
       if (namespace == null)
@@ -45,15 +45,17 @@ class NamespacedKey extends AbstractNamespacedKey {
    }
 
    public static function ofDefaultNamespace(obj:Dynamic) {
-      // if (Std.isOfType(obj, String)) {
       if ((obj is String)) {
          return oDN_string(cast obj);
-         // } else if (Std.isOfType(obj, NamespacedKey)) {
       } else if ((obj is NamespacedKey)) {
          return oDN_key(cast obj);
       } else {
          throw new TypeError("Invalid object passed to default namespace function.");
       }
+   }
+
+   public function withKey(key:String):NamespacedKey {
+      return new NamespacedKey(this.namespace, key);
    }
 
    private static function oDN_string(str:String) {

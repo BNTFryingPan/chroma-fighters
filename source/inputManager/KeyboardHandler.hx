@@ -132,6 +132,13 @@ class KeyboardHandler extends GenericInput {
       return new //StickVector(x * (InputHelper.isPressed(this.getWalk()) ? 0.4 : 1), y);
       // return {x: x, y: y};
    }*/
+   override public function getStick():StickVector {
+      var ret = super.getStick();
+      if (InputHelper.isPressed(this.getWalk()))
+         ret.multiply(0.4);
+      return ret;
+   }
+
    override public function getCursorStick():StickVector {
       return super.getCursorStick().normalize();
    }

@@ -1,7 +1,8 @@
 package match;
 
+import inputManager.Coordinates;
 import inputManager.Position;
-import match.AbstractHitbox.IHitbox;
+import match.AbstractHitbox;
 
 typedef CompoundHitbox = TypedCompoundHitbox<AbstractHitbox>;
 
@@ -23,14 +24,18 @@ class TypedCompoundHitbox<T:AbstractHitbox> extends AbstractHitbox {
 
    public function intersectsPoint(x:Float, y:Float):Bool {
       for (box in this.parts) {
-         if (box.intersectsPoint(pos))
+         if (box.intersectsPoint(x, y))
             return true;
       }
       return false;
    }
 
-   public function intersectsHitbox(box:IHitbox):Bool {
-      throw new haxe.exceptions.NotImplementedException();
+   override public function intersectsHitbox(box:IHitbox):Bool {
+      for (tbox in this.parts) {
+         if (tbox.intersectsHitbox(box))
+            return true;
+      }
+      return false;
    }
 
    public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates {

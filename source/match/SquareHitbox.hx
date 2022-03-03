@@ -1,7 +1,7 @@
 package match;
 
 import GameManager.ScreenSprite;
-import inputManager.Position;
+import inputManager.Coordinates;
 import match.AbstractHitbox.IHitbox;
 
 class SquareHitbox extends AbstractHitbox {
@@ -31,11 +31,12 @@ class SquareHitbox extends AbstractHitbox {
       ScreenSprite.rect(Coordinates.weak(this.x, this.y), Coordinates.weak(this.x + this.width, this.y + this.height));
    }
 
-   public function intersectsHitbox(box:IHitbox):Bool {
+   override public function intersectsHitbox(box:IHitbox):Bool {
       var center = this.getCenterPosition();
       var close = box.getPointClosestToInside(center.x, center.y, center);
       var ret = this.intersectsPoint(close.x, close.y);
       close.put();
+      return ret;
    }
 
    private function c(min:Float, max:Float, val:Float) {
@@ -45,7 +46,7 @@ class SquareHitbox extends AbstractHitbox {
    public function getPointClosestToInside(x:Float, y:Float, ?use:Coordinates):Coordinates {
       if (use == null)
          use = Coordinates.get();
-      //ScreenSprite.line({x: c(this.x, this.x + this.width, pos.x), y: c(this.y, this.y + this.height, pos.y)}, pos);
-      return use.set(c(this.x, this.x + this.width, pos.x), c(this.y, this.y + this.height, pos.y))
+      // ScreenSprite.line({x: c(this.x, this.x + this.width, pos.x), y: c(this.y, this.y + this.height, pos.y)}, pos);
+      return use.set(c(this.x, this.x + this.width, x), c(this.y, this.y + this.height, y));
    }
 }

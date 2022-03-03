@@ -16,6 +16,8 @@ import inputManager.InputHelper;
 import inputManager.InputState;
 import match.fighter.AbstractFighter;
 
+using StringTools;
+
 class MagicFighterMoves extends FighterMoves {
    // private final taunt:MagicFighterTaunt;
    public function new(fighter:MagicFighter) {
@@ -97,32 +99,76 @@ class MagicFighter extends AbstractFighter {
    public var sprite:FlxSprite;
 
    public var canDodge(get, never):Bool;
+
    public function get_canDodge():Bool {
       if (this.airState == PRATFALL)
          return false;
       return true;
    }
-   var timedDodge:Timed = new Timed()
+
+   // var timedDodge:Timed = new Timed();
    var isDodging:Bool = false;
    var dodgeTimer:Float = -1;
    var dodgeDuration:Float = 1;
    var hasBufferedFastFall:Bool = false;
 
-   public function setSpriteString(key:String) {
-      this.sprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace(key)));
-   }
+   /*public function setSpriteString(key:String, namespace:String = 'cf_magic_fighter') {
+      var asset = AssetHelper.getImageAsset(new NamespacedKey(namespace, key));
+      var frames = Math.floor(asset.width / asset.height);
 
+      this.sprite.loadGraphic(asset, frames > 1, asset.height, asset.height);
+      this.sprite.animation.
+   }*/
    public function new(slot:PlayerSlotIdentifier, x:Float, y:Float) {
       super(slot, x, y);
       this.width = 40;
       this.height = 64;
       this.sprite = new FlxSprite();
-      this.setSpriteString('images/martha_idle');
+      AssetHelper.generateCombinedSpriteSheetForFighter(new NamespacedKey('cf_magic_fighter', 'sprites'), this.sprite, 112, "idle");
+
       // this.sprite.angularVelocity = 100;
 
       // this.sprite.centerOffsets();
 
       this.hitbox = new SquareHitbox(this.x, this.y, this.width, this.height);
+   }
+
+   public function updateAnim(?prev:String) {
+      if (prev == null)
+         prev = this.sprite.animation.name;
+      if (prev.endsWith('_air') && this.airState != GROUNDED) {
+         return this.play('idle_air');
+      }
+
+      if (this.airState == GROUNDED) {
+         /*if (Math.abs(this.velocity.x) > 100) {
+            return this.play('dash');
+         } else*/
+         if (Math.abs(this.velocity.x) > 10) {
+            return this.play('walk');
+         } else if (this.isCrouching) {
+            if (prev == 'crouch_start' || prev == 'crouch_idle') {
+               return this.play('crouch_idle');
+            }
+            return this.play('crouch_start');
+         } else if (prev == 'crouch_idle') {
+            return this.play('crouch_end');
+         }
+      }
+
+      if (this.airState != GROUNDED) {
+         if (this.velocity.y < 0) {
+            return this.play('jumping');
+         } else {
+            return this.play('idle_air');
+         }
+      }
+
+      this.play('idle');
+   };
+
+   public function play(name:String) {
+      return this.sprite.animation.play(name);
    }
 
    override public function createFighterMoves() {
@@ -142,6 +188,7 @@ class MagicFighter extends AbstractFighter {
    override public function handleInput(elapsed:Float, input:GenericInput) {
       super.handleInput(elapsed, input);
       var stick = input.getStick();
+      this.updateAnim();
 
       if (this.slot == P2) {
          this.sprite.alpha = 0.5;
@@ -150,11 +197,11 @@ class MagicFighter extends AbstractFighter {
       if (this.hitstunTime > 0)
          return;
 
-      this.lastPressedDodge += elapsed;
+      /*this.lastPressedDodge += elapsed;
 
-      if (input.getDodge()) {
-         this.lastPressedDodge = 0;
-      }
+         if (input.getDodge()) {
+            this.lastPressedDodge = 0;
+      }*/
 
       if (stick.length > 0) {
          var horizontalGroundModifier = this.airState == GROUNDED ? 1 : 0.4;
@@ -197,11 +244,12 @@ class MagicFighter extends AbstractFighter {
          // this.airState = FULL_CONTROL;
       }
 
+      this.isCrouching = false;
       if (stick.y >= 0.3) {
          if (!this.hasBufferedFastFall && this.velocity.y >= -50 && this.velocity.y <= 250 && !(this.airState == GROUNDED)) {
             this.hasBufferedFastFall = true;
          } else if (this.airState == GROUNDED) {
-            // crouch
+            this.isCrouching = true;
          }
       }
 
@@ -230,8 +278,11 @@ class MagicFighter extends AbstractFighter {
       }
    }
 
+   public var isCrouching:Bool = false;
+
    override public function update(elapsed:Float) {
       super.update(elapsed);
+      this.sprite.animation.update(elapsed);
       this.sprite.setPosition(this.x - 20, this.y - 7);
       this.sprite.flipX = this.facing == RIGHT;
    }
@@ -247,6 +298,6 @@ class MagicFighter extends AbstractFighter {
 
    override public function getDebugString():String {
       return
-         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)}';
+         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)}';
    }
 }

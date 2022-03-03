@@ -79,7 +79,7 @@ class ScriptedFighter extends AbstractFighter {
       throw new haxe.exceptions.NotImplementedException();
    }
 
-   public function createFighterMoves() {}
+   override public function createFighterMoves() {}
 
-   public function handleInput(elapsed:Float, input:GenericInput) {}
+   override public function handleInput(elapsed:Float, input:GenericInput) {}
 }

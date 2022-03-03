@@ -1,10 +1,8 @@
 package match;
 
 import PlayerSlot.PlayerSlotIdentifier;
-import inputManager.Position;
+import inputManager.Coordinates;
 import match.MatchObject;
-import match.fighter.AbstractFighter;
-import match.fighter.MagicFighter;
 
 enum HitboxType {
    NOTHING; // doesnt do anything, only used for collisions

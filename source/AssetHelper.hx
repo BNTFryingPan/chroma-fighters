@@ -1,6 +1,11 @@
 package;
 
+import NamespacedKey.AbstractNamespacedKey;
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.animation.FlxAnimationController;
+import flixel.graphics.frames.FlxTileFrames;
+import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.extern.Rest;
 import haxe.io.Bytes;
@@ -8,6 +13,9 @@ import hscript.Expr;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.display.BitmapData;
+
+using StringTools;
+
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -51,6 +59,9 @@ class ModScript {
 
 class AssetHelper {
    public static final instance = new AssetHelper();
+
+   public static final SpecialNamespaces:Map<String, String> = ['cf_magic_fighter' => 'chromafighters:fighters/magic_fighter/{key}'];
+
    public static final saveDirectory:String = "./save/";
    static inline final saveNamespace:String = "chromasave";
 
@@ -187,7 +198,53 @@ class AssetHelper {
       #end
    }
 
+   private static function getFramesArray(start:Int, length:Int):Array<Int> {
+      var array:Array<Int> = [];
+      var cur = start;
+      while (cur < (start + length)) {
+         array.push(cur++);
+      }
+      return array;
+   }
+
+   public static function generateCombinedSpriteSheetForFighter(folderKey:NamespacedKey, sprite:FlxSprite, size:Int, play:String) {
+      var folderPath = AssetHelper.getAssetDirectory(folderKey);
+
+      var spritesToLoad = FileSystem.readDirectory(folderPath).filter(name -> name.endsWith('.png'));
+      var animations:Array<AnimationCombinerThing> = [];
+      var curFrame:Int = 0;
+      for (asset in spritesToLoad) {
+         var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
+         var frames = Math.floor(bitmap.width / bitmap.height);
+         animations.push({
+            bitmap: bitmap,
+            frames: frames,
+            startIndex: curFrame - 1,
+            name: asset.substr(0, -4)
+         });
+         curFrame += frames;
+      }
+      sprite.loadGraphic(FlxTileFrames.combineTileSets(animations.map(a -> a.bitmap), FlxPoint.weak(size, size)).parent, true, size, size);
+      // FlxG.bitmapLog.add(sprite.graphic.bitmap, 'combined');
+      // PlayerSlot.getPlayer(0).fighter.sprite.animation.play('crouch_idle')
+      for (animation in animations) {
+         trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
+         sprite.animation.add(animation.name, getFramesArray(animation.startIndex, animation.frames), 5, false);
+      }
+      sprite.animation.play(play);
+      sprite.graphic.persist = true;
+   }
+
+   public static function parseSpecialNamespaces(key:NamespacedKey):NamespacedKey {
+      if (AssetHelper.SpecialNamespaces.exists(key.namespace)) {
+         // trace('${key} parsed to ${AssetHelper.SpecialNamespaces.get(key.namespace)}: ${AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key)} -> ${AbstractNamespacedKey.fromString(AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key))}');
+         return AbstractNamespacedKey.fromString(AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key));
+      }
+      return key;
+   }
+
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
+      key = parseSpecialNamespaces(key);
       #if mobile
       return null;
       #elseif (sys)
@@ -202,9 +259,8 @@ class AssetHelper {
       #end
 
       var fileName = key.key;
-      if (ext != "" && !StringTools.endsWith(fileName, ext)) {
+      if (ext != "" && !fileName.endsWith(ext))
          fileName += ext;
-      }
 
       if (key.namespace == saveNamespace) {
          #if debug
@@ -223,11 +279,21 @@ class AssetHelper {
 
       if (FileSystem.exists(rootPath + namespacedPath + fileName)) {
          // Main.log("exists");
+         // trace('${rootPath + namespacedPath + fileName} exists');
          return rootPath + namespacedPath + fileName;
-      } else
+      } else {
+         // trace('${rootPath + namespacedPath + fileName} doesnt exist');
          return null;
+      }
       #else
       return null;
       #end
    }
+}
+
+typedef AnimationCombinerThing = {
+   var bitmap:BitmapData;
+   var frames:Int;
+   var startIndex:Int;
+   var name:String;
 }

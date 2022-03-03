@@ -14,6 +14,7 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.typeLimit.OneOfTwo;
+import inputManager.Coordinates;
 import inputManager.CursorRotation;
 import inputManager.GenericInput;
 import inputManager.InputDevice;
@@ -22,7 +23,6 @@ import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.KeyboardHandler;
 import inputManager.MouseHandler;
-import inputManager.Position;
 import inputManager.controllers.GenericController;
 import inputManager.controllers.SwitchProController;
 import match.Match;
@@ -363,7 +363,6 @@ class PlayerSlot {
             OFFSET_DOWN_LEFT;
          case DOWN_RIGHT:
             OFFSET_DOWN_RIGHT;
-         case _:
          default:
             OFFSET_RIGHT;
       };
@@ -390,25 +389,24 @@ class PlayerSlot {
             COIN_OFFSET_DOWN_LEFT;
          case DOWN_RIGHT:
             COIN_OFFSET_DOWN_RIGHT;
-         case _:
          default:
             COIN_OFFSET_RIGHT;
       };
       /*if (angle == LEFT) {
-         return {x: -30, y: 15};
-      } else if (angle == RIGHT) {
-         return {x: 60, y: 15};
-      } else if (angle == UP_LEFT) {
-         return {x: -7, y: -23};
-      } else if (angle == UP_RIGHT) {
-         return {x: 38, y: -23};
-      } else if (angle == DOWN_LEFT) {
-         return {x: -7, y: 50};
-      } else if (angle == DOWN_RIGHT) {
-         return {x: 36, y: 50};
-      }
+            return {x: -30, y: 15};
+         } else if (angle == RIGHT) {
+            return {x: 60, y: 15};
+         } else if (angle == UP_LEFT) {
+            return {x: -7, y: -23};
+         } else if (angle == UP_RIGHT) {
+            return {x: 38, y: -23};
+         } else if (angle == DOWN_LEFT) {
+            return {x: -7, y: 50};
+         } else if (angle == DOWN_RIGHT) {
+            return {x: 36, y: 50};
+         }
 
-      return {x: 16, y: 16};*/
+         return {x: 16, y: 16}; */
    }
 
    public var type:PlayerType = NONE;
@@ -419,7 +417,7 @@ class PlayerSlot {
    public var input:GenericInput;
    public var debugSprite:FlxSprite;
    public var cursorSprite:FlxSprite;
-   public final cursorPosition:Coordinates = new Coordinates({Math.round(FlxG.width / 2), Math.round(FlxG.height / 2));
+   public final cursorPosition:Coordinates = new Coordinates(Math.round(FlxG.width / 2), Math.round(FlxG.height / 2));
    public var cursorAngle:CursorRotation = RIGHT;
    public var coinSprite:FlxSprite;
    public final cursorSpriteOffset:Coordinates = new Coordinates(30, 15);
@@ -466,7 +464,7 @@ class PlayerSlot {
 
    public function setNewInput(type:InputType, ?inputDevice:OneOfTwo<FlxGamepad, InputDevice>, ?profile:String) {
       if (this.input.getCursorPosition() != null) {
-         this.cursorPosition = this.input.getCursorPosition();
+         this.cursorPosition.clone(this.input.getCursorPosition());
       }
       if (type == KeyboardInput || (inputDevice == Keyboard && type != KeyboardAndMouseInput)) {
          this.setType(PLAYER);
@@ -499,7 +497,7 @@ class PlayerSlot {
          return;
       var stick = this.input.getCursorStick();
 
-      this.cursorPosition.move(Math.round(stick.x * 500 * elapsed), Math.round(stick.y * 500 * elapsed))
+      this.cursorPosition.move(Math.round(stick.x * 500 * elapsed), Math.round(stick.y * 500 * elapsed));
 
       this.cursorPosition.x = Std.int(Math.min(this.cursorPosition.x, FlxG.width));
       this.cursorPosition.x = Std.int(Math.max(this.cursorPosition.x, 0));
@@ -612,8 +610,8 @@ class PlayerSlot {
          this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerDownRightBitmap));
       }
       // Main.log('setting offset');
-      this.cursorSpriteOffset = PlayerSlot.getOffset(this.cursorAngle);
-      this.coinSpriteOffset = PlayerSlot.getCoinOffset(this.cursorAngle);
+      this.cursorSpriteOffset.clone(PlayerSlot.getOffset(this.cursorAngle));
+      this.coinSpriteOffset.clone(PlayerSlot.getCoinOffset(this.cursorAngle));
 
       this.cursorSprite.graphic.persist = true;
       // Main.log('set offset to ${this.spriteOffset}');

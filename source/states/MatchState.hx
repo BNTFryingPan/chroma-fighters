@@ -33,6 +33,13 @@ class MatchState extends BaseState {
       }
    }
 
+   override public function destroy() {
+      GameState.isInMatch = false;
+      GameState.shouldDrawCursors = true;
+      GameState.isUIOpen = true;
+      super.destroy();
+   }
+
    // @:access(flixel.FlxObject)
    // override public function update(elapsed:Float) {
    // super.update(elapsed);

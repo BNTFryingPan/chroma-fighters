@@ -1,16 +1,7 @@
 package inputManager;
 
 import PlayerSlot.PlayerSlotIdentifier;
-import flixel.FlxBasic;
-import flixel.FlxG;
-import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
-import inputManager.InputHelper;
 import inputManager.InputState;
-import inputManager.Position;
-import openfl.display.BitmapData;
-import openfl.geom.ColorTransform;
-import openfl.geom.Rectangle;
 
 /**
    A basic input handler, used as a base for all other input types.
@@ -26,6 +17,7 @@ class GenericInput {
    public var cursorStick:StickVector = new StickVector();
    public var directionStick:StickVector = new StickVector();
    public var rawDirectionStick:StickVector = new StickVector();
+
    private final cursorPosition:Coordinates = new Coordinates(0, 0);
 
    public function get_inputEnabled() {

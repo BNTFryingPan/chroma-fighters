@@ -2,10 +2,8 @@ package inputManager;
 
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
-import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
-import inputManager.Position;
 
 class MouseHandler extends KeyboardHandler {
    override public function get_inputType() {
@@ -17,8 +15,7 @@ class MouseHandler extends KeyboardHandler {
    }
 
    override public function getCursorPosition():Coordinates {
-      this.cursorPosition.update(FlxG.mouse.screenX, FlxG.mouse.screenY);
-      return super.getCursorPosition();
+      return Coordinates.weak(FlxG.mouse.screenX, FlxG.mouse.screenY);
    }
 
    override function getConfirm():InputState {
