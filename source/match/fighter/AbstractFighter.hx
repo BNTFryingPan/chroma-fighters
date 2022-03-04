@@ -373,6 +373,12 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.activeHitboxes.resize(0);
    }
 
+   public function getChildren():Array<IMatchObject> {
+      return [];
+   }
+
+   public function reloadTextures():Void {}
+
    public function isInBlastzone(stage:Stage):Bool {
       if (this.y < stage.blastzone.topBlastzone * -1)
          return this.hitstunTime > 0;

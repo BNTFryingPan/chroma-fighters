@@ -1,6 +1,7 @@
 package match.fighter;
 
 import AssetHelper;
+import GameManager.GameState;
 import GameManager.ScreenSprite;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
@@ -36,14 +37,17 @@ class MagicFighterTaunt extends FighterMove {
          FlxTween.color((cast this.fighter).sprite, 1, FlxColor.PINK, FlxColor.WHITE);
       }
 
-      if (InputHelper.isPressed(state))
+      if (InputHelper.isPressed(state)) {
+         (cast this.fighter).forceAnim = 'taunt2';
          return SUCCESS(null);
+      }
       return REJECTED(null);
    }
 }
 
 class MagicFighterSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'neutral_special';
       this.fighter.launch((Math.atan2(-input.getStick().y, -input.getStick().x) * FlxAngle.TO_DEG) - 90, 5, true);
       this.fighter.hitstunTime = 1;
       this.fighter.airState = PRATFALL;
@@ -59,6 +63,7 @@ class MagicFighterSpecial extends FighterMove {
 
 class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'jab';
       this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 80, 0.2, 1);
       return SUCCESS(null);
    }
@@ -85,6 +90,7 @@ class MagicFighterAerialMove extends FighterMove {
 
 class MagicFighterDownAirMove extends MagicFighterAerialMove {
    override public function attack() {
+      (cast this.fighter).forceAnim = 'down_air';
       this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, 0.2, 1);
    }
 }
@@ -133,18 +139,31 @@ class MagicFighter extends AbstractFighter {
       this.hitbox = new SquareHitbox(this.x, this.y, this.width, this.height);
    }
 
+   override public function reloadTextures() {
+      this.sprite.animation.destroyAnimations();
+      AssetHelper.generateCombinedSpriteSheetForFighter(new NamespacedKey('cf_magic_fighter', 'sprites'), this.sprite, 112, this.sprite.animation.name);
+   }
+
+   public var forceAnim:Null<String> = null;
+
    public function updateAnim(?prev:String) {
       if (prev == null)
          prev = this.sprite.animation.name;
+      var fin = this.sprite.animation.finished;
+
+      if (this.forceAnim != null) {
+         if (!fin) {
+            return this.play(this.forceAnim);
+         }
+         this.forceAnim = null;
+      }
+
       if (prev.endsWith('_air') && this.airState != GROUNDED) {
          return this.play('idle_air');
       }
 
       if (this.airState == GROUNDED) {
-         /*if (Math.abs(this.velocity.x) > 100) {
-            return this.play('dash');
-         } else*/
-         if (Math.abs(this.velocity.x) > 10) {
+         if (prev == 'dash') {} else if (Math.abs(this.velocity.x) > 10) {
             return this.play('walk');
          } else if (this.isCrouching) {
             if (prev == 'crouch_start' || prev == 'crouch_idle') {
@@ -157,7 +176,7 @@ class MagicFighter extends AbstractFighter {
       }
 
       if (this.airState != GROUNDED) {
-         if (this.velocity.y < 0) {
+         if (this.velocity.y < 0 && (!fin || prev == 'idle')) {
             return this.play('jumping');
          } else {
             return this.play('idle_air');
@@ -167,7 +186,8 @@ class MagicFighter extends AbstractFighter {
       this.play('idle');
    };
 
-   public function play(name:String) {
+   public function play(name:String, force:Bool = false) {
+      if (force) {}
       return this.sprite.animation.play(name);
    }
 
@@ -208,6 +228,9 @@ class MagicFighter extends AbstractFighter {
          if ((stick.x > 0 && this.velocity.x < (-200 * Math.abs(stick.x)))
             || (stick.x < 0 && this.velocity.x > (200 * Math.abs(stick.x)))) {
             this.velocity.x += stick.x * 4000 * elapsed;
+            if (this.sprite.animation.name == 'idle') {
+               this.play('dash');
+            }
          } else if (Math.abs(this.velocity.x) > (200 * Math.abs(stick.x))) {
             // max velocity. might do something later idk
          } else {
@@ -282,7 +305,15 @@ class MagicFighter extends AbstractFighter {
 
    override public function update(elapsed:Float) {
       super.update(elapsed);
-      this.sprite.animation.update(elapsed);
+      #if debug
+      if (!GameState.animationDebugMode || GameState.animationDebugTick) {
+         if (GameState.animationDebugTick)
+            this.sprite.animation.curAnim.curFrame += this.sprite.animation.curAnim.reversed ? -1 : 1;
+      #end
+         this.sprite.animation.update(elapsed);
+      #if debug
+      }
+      #end
       this.sprite.setPosition(this.x - 20, this.y - 7);
       this.sprite.flipX = this.facing == RIGHT;
    }
@@ -298,6 +329,6 @@ class MagicFighter extends AbstractFighter {
 
    override public function getDebugString():String {
       return
-         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)}';
+         '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name}.${this.sprite.animation.curAnim.curFrame}/${this.sprite.animation.curAnim.numFrames} ${this.sprite.animation.frameIndex} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)}';
    }
 }

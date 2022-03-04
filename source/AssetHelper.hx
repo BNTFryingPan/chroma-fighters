@@ -229,7 +229,7 @@ class AssetHelper {
       // PlayerSlot.getPlayer(0).fighter.sprite.animation.play('crouch_idle')
       for (animation in animations) {
          trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
-         sprite.animation.add(animation.name, getFramesArray(animation.startIndex, animation.frames), 5, false);
+         sprite.animation.add(animation.name, getFramesArray(animation.startIndex, animation.frames), 12, false);
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;

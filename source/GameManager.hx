@@ -13,6 +13,7 @@ import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
 import match.AbstractHitbox;
+import match.MatchObject;
 import states.MatchState;
 
 enum PlayerBoxState {
@@ -31,6 +32,10 @@ class GameState { // this might be jank
    public static var isTrainingMode = false;
    public static var showTrainingHitboxes = #if debug true #else false #end;
    public static var showTrainingLaunchLines = #if debug true #else false #end;
+   #if debug
+   public static var animationDebugMode:Bool = false;
+   public static var animationDebugTick:Bool = false;
+   #end
 
    // public static function getShouldDrawCursors():Bool {
    //    return isUIOpen && s
@@ -147,6 +152,10 @@ class GameManager {
          }
       }
 
+      #if debug
+      GameState.animationDebugTick = false;
+      #end
+
       Main.debugDisplay.update(elapsed);
    }
 
@@ -173,6 +182,8 @@ class GameManager {
          ret.push(player.playerBox.text);
          ret.push(player.playerBox.swapButton);
          ret.push(player.playerBox.disconnectButton);
+         ret.push(player.fighter);
+         // ret.push(player.fighter.getBasicChildren());
       }
 
       return ret;
@@ -185,5 +196,10 @@ class GameManager {
          return FlxG.collide(obj, state.stage.mainGround);
       }
       return false;
+   }
+
+   public static function reloadTextures() {
+      for (object in GameManager.getAllObjects().filter(o -> o is IMatchObject))
+         (cast object).reloadTextures();
    }
 }

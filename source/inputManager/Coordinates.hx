@@ -129,13 +129,13 @@ class Coordinates implements IFlxPooled {
    public static function xInScreenSpace(x:Float = 0, ?camera:FlxCamera):Float {
       if (camera == null)
          camera = Main.screenSprite.camera;
-      return camera.x + x;
+      return camera.scroll.x - x;
    }
 
    public static function yInScreenSpace(y:Float = 0, ?camera:FlxCamera):Float {
       if (camera == null)
          camera = Main.screenSprite.camera;
-      return camera.y + y;
+      return camera.scroll.y - y;
    }
 
    public function get_sx():Float {

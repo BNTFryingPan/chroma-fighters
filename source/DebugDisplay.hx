@@ -6,6 +6,7 @@ import exception.DebugException;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import inputManager.Action;
@@ -103,6 +104,7 @@ class DebugDisplay extends FlxBasic {
          if (FlxG.keys.anyJustReleased([C])) {
             this.crashHeldDuration = 0.0;
          }
+
          if (FlxG.keys.anyPressed([C])) {
             this.crashHeldDuration += elapsed;
             this.notify('Crashing in ${10 - Math.floor(this.crashHeldDuration)} seconds...');
@@ -111,6 +113,40 @@ class DebugDisplay extends FlxBasic {
                throw new DebugException('Debug Crash');
             }
          }
+
+         if (FlxG.keys.anyJustPressed([ONE])) {
+            this.hasTriggeredDebugAction = true;
+            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+               FlxG.timeScale = Math.max(0.1, FlxG.timeScale - 0.1);
+               this.notify('Time scale lowered to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (-0.1)');
+            } else {
+               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+               );
+            }
+         }
+
+         if (FlxG.keys.anyJustPressed([TWO])) {
+            this.hasTriggeredDebugAction = true;
+            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+               FlxG.timeScale = 1;
+               this.notify('Time scale reset to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (=1)');
+            } else {
+               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+               );
+            }
+         }
+
+         if (FlxG.keys.anyJustPressed([THREE])) {
+            this.hasTriggeredDebugAction = true;
+            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+               FlxG.timeScale = Math.min(2, FlxG.timeScale + 0.1);
+               this.notify('Time scale increased to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (+0.1)');
+            } else {
+               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+               );
+            }
+         }
+
          if (FlxG.keys.anyJustPressed([Y])) {
             this.hasTriggeredDebugAction = true;
             #if hl
@@ -180,6 +216,16 @@ class DebugDisplay extends FlxBasic {
                FlxG.switchState(new MatchState());
             }
          }
+
+         if (FlxG.keys.anyJustPressed([W])) {
+            this.hasTriggeredDebugAction = true;
+            #if debug
+            GameState.animationDebugMode = !GameState.animationDebugMode;
+            this.notify('Animation debugger ${GameState.showTrainingHitboxes ? 'en' : 'dis'}abled.');
+            #else
+            this.notify('Animation debugger not available in non-debug builds');
+            #end
+         }
       }
 
       if (FlxG.keys.anyJustReleased([F3])) {
@@ -189,6 +235,15 @@ class DebugDisplay extends FlxBasic {
 
          this.hasTriggeredDebugAction = false;
       }
+
+      #if debug
+      if (GameState.animationDebugMode && FlxG.keys.anyPressed([F4])) {
+         if (FlxG.keys.anyJustPressed([ONE])) {
+            GameState.animationDebugTick = true;
+            this.notify('AnimDebugger: Next frame');
+         }
+      }
+      #end
 
       #if hl
       var memStatsRaw = Gc.stats();
