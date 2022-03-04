@@ -1,7 +1,6 @@
 package match;
 
 import inputManager.Coordinates;
-import inputManager.Position;
 import match.AbstractHitbox;
 
 typedef CompoundHitbox = TypedCompoundHitbox<AbstractHitbox>;
