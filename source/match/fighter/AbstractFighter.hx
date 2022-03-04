@@ -9,6 +9,7 @@ import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
 import match.MatchObject;
+import match.stage.AbstractStage;
 
 typedef MoveResultData = {
    public var ?success:Bool;
@@ -167,7 +168,7 @@ interface IFighter extends IMatchObjectWithHitbox {
 
    public function die():Void;
 
-   public function isInBlastzone(stage:Stage):Bool;
+   public function isInBlastzone(stage:AbstractStage):Bool;
    public function getDebugString():String;
    public var activeHitboxes:Array<AbstractHitbox>;
    public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45,
@@ -379,7 +380,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    public function reloadTextures():Void {}
 
-   public function isInBlastzone(stage:Stage):Bool {
+   public function isInBlastzone(stage:AbstractStage):Bool {
       if (this.y < stage.blastzone.topBlastzone * -1)
          return this.hitstunTime > 0;
       if (this.y > stage.blastzone.bottomBlastzone)

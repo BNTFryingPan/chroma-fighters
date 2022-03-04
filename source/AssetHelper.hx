@@ -234,7 +234,7 @@ class AssetHelper {
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
-      key = parseSpecialNamespaces(key);
+      key.parseSpecialNamespaces();
       #if mobile
       return null;
       #elseif (sys)

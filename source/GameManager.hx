@@ -32,6 +32,8 @@ class GameState { // this might be jank
    public static var isTrainingMode = false;
    public static var showTrainingHitboxes = #if debug true #else false #end;
    public static var showTrainingLaunchLines = #if debug true #else false #end;
+   public static var trainingFrameStepMode:Bool = false;
+   public static var trainingFrameStepTick:Bool = false;
    #if debug
    public static var animationDebugMode:Bool = false;
    public static var animationDebugTick:Bool = false;
@@ -78,8 +80,8 @@ class ScreenSprite extends FlxSprite {
    public static function rect(p1:Coordinates, p2:Coordinates, ?opts:LineStyle) {
       var x = Math.min(p1.sx, p2.sx);
       var y = Math.min(p1.sy, p2.sy);
-      var w = Math.max(p1.x, p2.x) - x;
-      var h = Math.max(p1.y, p2.y) - y;
+      var w = Math.max(p1.sx, p2.sx) - x;
+      var h = Math.max(p1.sy, p2.sy) - y;
       FlxSpriteUtil.drawRect(Main.screenSprite, x, y, w, h, 0x2200ff00, opts);
       p1.putWeak();
       p2.putWeak();
@@ -101,7 +103,7 @@ class GameManager {
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
       GameState.isInMatch = (FlxG.state is MatchState);
 
-      if (GameState.isInMatch) {
+      if (GameState.isInMatch && (!GameState.trainingFrameStepMode || GameState.trainingFrameStepTick)) {
          for (p in PlayerSlot.getPlayerArray()) {
             if (p.fighter != null)
                p.fighter.update(elapsed);
@@ -109,7 +111,9 @@ class GameManager {
       }
 
       PlayerSlot.updateAll(elapsed);
-      if (GameState.isInMatch && (GameState.isPlayingOnline || !GameState.isUIOpen)) {
+      if (GameState.isInMatch
+         && (GameState.isPlayingOnline || !GameState.isUIOpen)
+         && (!GameState.trainingFrameStepMode || GameState.trainingFrameStepTick)) {
          for (player in PlayerSlot.getPlayerArray(true)) {
             if (player.fighter != null && player.fighter.alive) {
                player.fighter.handleInput(elapsed, player.input);
@@ -155,6 +159,7 @@ class GameManager {
       #if debug
       GameState.animationDebugTick = false;
       #end
+      GameState.trainingFrameStepTick = false;
 
       Main.debugDisplay.update(elapsed);
    }

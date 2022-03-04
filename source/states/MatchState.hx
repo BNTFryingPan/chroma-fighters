@@ -3,12 +3,12 @@ package states;
 import GameManager;
 import flixel.FlxG;
 import flixel.FlxObject;
-import match.Stage;
 import match.fighter.MagicFighter;
+import match.stage.AbstractStage;
 
 class MatchState extends BaseState {
    public var paused:Bool = false;
-   public var stage:Stage;
+   public var stage:AbstractStage;
 
    override public function create() {
       super.create();

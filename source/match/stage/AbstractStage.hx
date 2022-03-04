@@ -4,6 +4,7 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import match.MatchObject;
 
 typedef Blastzone = {
    public var topBlastzone:Int; // the distance above `MainGround.groundHeight` the top blastzone is
@@ -23,7 +24,7 @@ abstract class AbstractStage extends MatchObject implements IStage {
 
    public final options:Map<String, String>;
 
-   //public static final STAGE_KEYS:M = []
+   // public static final STAGE_KEYS:M = []
 
    public function new(?opts:Map<String, String>) {
       super();
@@ -36,15 +37,17 @@ abstract class AbstractStage extends MatchObject implements IStage {
    }
 
    public static function load(key:NamespacedKey, ?opts:Map<String, String>):AbstractStage {
-      //key.parseSpecialNamespaces();
+      key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
-         return switch (key.key) {
-            case 'chroma_fracture':
-               new WebComicStage(opts);
+         return cast switch (key.key) {
+            // case 'chroma_fracture':
             default:
-               new DebugStage(opts);
+               new WebComicStage(opts);
+               // default:
+               // new DebugStage(opts);
          }
       }
+      return new ScriptedStage(key, opts);
    }
 
    override public function draw() {

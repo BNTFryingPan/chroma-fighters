@@ -2,6 +2,8 @@ package;
 
 import openfl.errors.TypeError;
 
+using StringTools;
+
 @:forward
 abstract class AbstractNamespacedKey {
    public var key:String;
@@ -17,7 +19,7 @@ abstract class AbstractNamespacedKey {
       var splitKey = str.split(":");
       if (splitKey.length == 1)
          return NamespacedKey.ofDefaultNamespace(str);
-      
+
       var _namespace = splitKey[0];
       if (splitKey.length > 2) {
          splitKey.shift();
@@ -38,7 +40,7 @@ class NamespacedKey extends AbstractNamespacedKey {
       'cf_magic_fighter' => 'chromafighters:fighters/magic_fighter/{key}',
       'cf_stages' => 'chromafighters:stages/{key}',
       'cf_chroma_fracture_stage' => 'cf_stages:chroma_fracture/{key}'
-      ];
+   ];
 
    public function new(namespace:String, key:String) {
       if (namespace == null)
@@ -60,12 +62,12 @@ class NamespacedKey extends AbstractNamespacedKey {
    public function parseSpecialNamespaces():NamespacedKey {
       if (NamespacedKey.SPECIAL_NAMESPACES.exists(this.namespace)) {
          var newFormat = NamespacedKey.SPECIAL_NAMESPACES.get(this.namespace).split(':');
-         this.namespace = newFormat.split(':')[0];
+         this.namespace = newFormat[0];
          if (newFormat.length > 2) {
             newFormat.shift();
             newFormat = ['', newFormat.join(':')];
          }
-         this.key = newFormat[1].replace('{key}', this.key)
+         this.key = newFormat[1].replace('{key}', this.key);
          return this.parseSpecialNamespaces();
       }
       return this;

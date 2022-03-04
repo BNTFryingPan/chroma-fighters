@@ -13,7 +13,6 @@ import inputManager.InputManager;
 import inputManager.Profile;
 import lime.app.Application;
 import match.Match;
-import match.Stage;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import states.TitleScreenState;
@@ -88,7 +87,7 @@ class Main extends Sprite {
       FlxG.game.debugger.console.registerClass(PlayerSlot);
       FlxG.game.debugger.console.registerClass(InputHelper);
       FlxG.game.debugger.console.registerClass(InputManager);
-      FlxG.game.debugger.console.registerClass(Stage);
+      // FlxG.game.debugger.console.registerClass(Stage);
       FlxG.game.debugger.console.registerClass(Match);
       FlxG.game.debugger.console.registerClass(PlayerBox);
       FlxG.game.debugger.console.registerEnum(PlayerBoxState);

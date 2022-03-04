@@ -23,5 +23,7 @@ typedef StageModJson = {
 }
 
 class ScriptedStage extends AbstractStage {
-   
+   public function new(key, opts) {
+      super(opts);
+   }
 }

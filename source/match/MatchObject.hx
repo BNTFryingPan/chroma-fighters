@@ -22,9 +22,10 @@ interface IGroundObject extends IMatchObjectWithHitbox {
    public var groundType:GroundType;
 }
 
-/**
-   i didnt want to do this, but i think i have to
-**/
+//**
+// i didnt want to do this, but i think i have to
+//**/
+
 /*class Physics {
    public static function collide(obj1:IMatchObjectWithHitbox, obj2:IMatchObjectWithHitbox) {
       if ()

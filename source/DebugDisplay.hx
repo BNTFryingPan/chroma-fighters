@@ -147,6 +147,12 @@ class DebugDisplay extends FlxBasic {
             }
          }
 
+         if (GameState.trainingFrameStepMode && FlxG.keys.anyJustPressed([FOUR])) {
+            this.hasTriggeredDebugAction = true;
+            GameState.trainingFrameStepTick = true;
+            this.notify('Next frame');
+         }
+
          if (FlxG.keys.anyJustPressed([Y])) {
             this.hasTriggeredDebugAction = true;
             #if hl
@@ -225,6 +231,16 @@ class DebugDisplay extends FlxBasic {
             #else
             this.notify('Animation debugger not available in non-debug builds');
             #end
+         }
+
+         if (FlxG.keys.anyJustPressed([E])) {
+            this.hasTriggeredDebugAction = true;
+            if (GameState.isInMatch && (#if !debug GameState.isTrainingMode && #end!GameState.isPlayingOnline)) {
+               GameState.trainingFrameStepMode = !GameState.trainingFrameStepMode;
+               this.notify('Frame step ${GameState.trainingFrameStepMode ? 'en' : 'dis'}abled.');
+            } else {
+               this.notify('Frame step only allowed offline in training');
+            }
          }
       }
 
