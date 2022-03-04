@@ -21,7 +21,7 @@ class MatchState extends BaseState {
       FlxG.camera.scroll.x = FlxG.width * -.5;
       FlxG.camera.scroll.y = FlxG.height * -.5;
 
-      this.stage = new Stage();
+      this.stage = AbstractStage.load(new NamespacedKey('cf_stages', 'chroma_fracture'));
       add(this.stage);
 
       for (player in PlayerSlot.getPlayerArray(true)) {

@@ -16,16 +16,14 @@ abstract class AbstractNamespacedKey {
    public static function fromString(str:String) {
       var splitKey = str.split(":");
       if (splitKey.length == 1)
-         return new NamespacedKey(NamespacedKey.DEFAULT_NAMESPACE, str);
-      else {
-         var _namespace = splitKey[0];
-         var _key = splitKey[1];
-         if (splitKey.length > 2) {
-            splitKey.shift();
-            _key = splitKey.join(":");
-         }
-         return new NamespacedKey(_namespace, _key);
+         return NamespacedKey.ofDefaultNamespace(str);
+      
+      var _namespace = splitKey[0];
+      if (splitKey.length > 2) {
+         splitKey.shift();
+         return new NamespacedKey(_namespace, splitKey.join(":"));
       }
+      return new NamespacedKey(_namespace, splitKey[1]);
    }
 
    @:op(A == B)
@@ -36,6 +34,11 @@ abstract class AbstractNamespacedKey {
 
 class NamespacedKey extends AbstractNamespacedKey {
    public static final DEFAULT_NAMESPACE = "chromafighters";
+   public static final SPECIAL_NAMESPACES:Map<String, String> = [
+      'cf_magic_fighter' => 'chromafighters:fighters/magic_fighter/{key}',
+      'cf_stages' => 'chromafighters:stages/{key}',
+      'cf_chroma_fracture_stage' => 'cf_stages:chroma_fracture/{key}'
+      ];
 
    public function new(namespace:String, key:String) {
       if (namespace == null)
@@ -52,6 +55,20 @@ class NamespacedKey extends AbstractNamespacedKey {
       } else {
          throw new TypeError("Invalid object passed to default namespace function.");
       }
+   }
+
+   public function parseSpecialNamespaces():NamespacedKey {
+      if (NamespacedKey.SPECIAL_NAMESPACES.exists(this.namespace)) {
+         var newFormat = NamespacedKey.SPECIAL_NAMESPACES.get(this.namespace).split(':');
+         this.namespace = newFormat.split(':')[0];
+         if (newFormat.length > 2) {
+            newFormat.shift();
+            newFormat = ['', newFormat.join(':')];
+         }
+         this.key = newFormat[1].replace('{key}', this.key)
+         return this.parseSpecialNamespaces();
+      }
+      return this;
    }
 
    public function withKey(key:String):NamespacedKey {

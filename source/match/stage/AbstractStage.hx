@@ -5,17 +5,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 
-class MainGround extends FlxSprite {
-   public var groundHeight:Int;
-
-   public function new(groundH:Int) {
-      super((250 / 2) * -1, groundH);
-      this.groundHeight = groundH;
-      this.makeGraphic(250, 50, FlxColor.MAGENTA);
-      this.immovable = true;
-   }
-}
-
 typedef Blastzone = {
    public var topBlastzone:Int; // the distance above `MainGround.groundHeight` the top blastzone is
    public var bottomBlastzone:Int; // the distance below `MainGround.groundHeight` the bottom blastzone is
@@ -23,25 +12,43 @@ typedef Blastzone = {
 }
 
 interface IStage extends IMatchObject {
-
+   public var mainGround:StageGround;
+   public var blastzone:Blastzone;
 }
 
-class Stage extends MatchObject implements IStage {
+abstract class AbstractStage extends MatchObject implements IStage {
    // public var groundType = GroundType.SOLID_GROUND;
-   public var mainGround:MainGround;
-   public var blastzone:Blastzone;
+   public var mainGround:StageGround;
+   public var blastzone:Blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
 
-   public function new() {
+   public final options:Map<String, String>;
+
+   //public static final STAGE_KEYS:M = []
+
+   public function new(?opts:Map<String, String>) {
       super();
-      this.blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
-      this.mainGround = new MainGround(0);
+      this.options = opts;
+   }
+
+   public function afterNew() {
       FlxG.worldBounds.set(this.blastzone.sideBlastzone * -1, this.blastzone.topBlastzone * -1, this.blastzone.sideBlastzone * 2,
          this.blastzone.topBlastzone + this.blastzone.bottomBlastzone);
    }
 
-   public function load(key:NamespacedKey, opts:Map<String, String>) {}
+   public static function load(key:NamespacedKey, ?opts:Map<String, String>):AbstractStage {
+      //key.parseSpecialNamespaces();
+      if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
+         return switch (key.key) {
+            case 'chroma_fracture':
+               new WebComicStage(opts);
+            default:
+               new DebugStage(opts);
+         }
+      }
+   }
 
    override public function draw() {
+      super.draw();
       this.mainGround.draw();
    }
 }

@@ -60,8 +60,6 @@ class ModScript {
 class AssetHelper {
    public static final instance = new AssetHelper();
 
-   public static final SpecialNamespaces:Map<String, String> = ['cf_magic_fighter' => 'chromafighters:fighters/magic_fighter/{key}'];
-
    public static final saveDirectory:String = "./save/";
    static inline final saveNamespace:String = "chromasave";
 
@@ -233,14 +231,6 @@ class AssetHelper {
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;
-   }
-
-   public static function parseSpecialNamespaces(key:NamespacedKey):NamespacedKey {
-      if (AssetHelper.SpecialNamespaces.exists(key.namespace)) {
-         // trace('${key} parsed to ${AssetHelper.SpecialNamespaces.get(key.namespace)}: ${AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key)} -> ${AbstractNamespacedKey.fromString(AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key))}');
-         return AbstractNamespacedKey.fromString(AssetHelper.SpecialNamespaces.get(key.namespace).replace('{key}', key.key));
-      }
-      return key;
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
