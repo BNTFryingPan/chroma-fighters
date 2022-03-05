@@ -214,10 +214,11 @@ class AssetHelper {
       for (asset in spritesToLoad) {
          var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
          var frames = Math.floor(bitmap.width / bitmap.height);
+         trace('asset ${frames} ${bitmap.width / bitmap.height}');
          animations.push({
             bitmap: bitmap,
             frames: frames,
-            startIndex: curFrame - 1,
+            startIndex: curFrame,
             name: asset.substr(0, -4)
          });
          curFrame += frames;
