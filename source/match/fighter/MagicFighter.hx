@@ -27,6 +27,7 @@ class MagicFighterMoves extends FighterMoves {
       this.moves.set('special', new MagicFighterSpecial(fighter));
       this.moves.set('dair', new MagicFighterDownAirMove(fighter));
       this.moves.set('jab', new MagicFighterJab(fighter));
+      this.moves.set('fstrong', new MagicFighterForwardStrong(fighter));
    }
 }
 
@@ -39,6 +40,21 @@ class MagicFighterTaunt extends FighterMove {
 
       if (InputHelper.isPressed(state)) {
          (cast this.fighter).forceAnim = 'taunt2';
+         return SUCCESS(null);
+      }
+      return REJECTED(null);
+   }
+}
+
+class MagicFighterForwardStrong extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      if (state == JUST_PRESSED) {
+         Main.debugDisplay.notify('magic taunt!');
+         FlxTween.color((cast this.fighter).sprite, 1, FlxColor.PINK, FlxColor.WHITE);
+      }
+
+      if (InputHelper.isPressed(state)) {
+         (cast this.fighter).forceAnim = 'forward_strong_charging';
          return SUCCESS(null);
       }
       return REJECTED(null);
@@ -291,6 +307,8 @@ class MagicFighter extends AbstractFighter {
             this.moveset.attempt('dair', input.getAttack(), input);
          if (this.airState == GROUNDED)
             this.moveset.attempt('jab', input.getAttack(), input);
+         if (this.airState == GROUNDED)
+            this.moveset.attempt('fstrong', input.getStrong(), input);
       }
 
       if (this.airState == GROUNDED) {

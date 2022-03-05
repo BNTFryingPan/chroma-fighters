@@ -223,7 +223,7 @@ class AssetHelper {
          curFrame += frames;
       }
       sprite.loadGraphic(FlxTileFrames.combineTileSets(animations.map(a -> a.bitmap), FlxPoint.weak(size, size)).parent, true, size, size);
-      // FlxG.bitmapLog.add(sprite.graphic.bitmap, 'combined');
+      FlxG.bitmapLog.add(sprite.graphic.bitmap, 'combined');
       // PlayerSlot.getPlayer(0).fighter.sprite.animation.play('crouch_idle')
       for (animation in animations) {
          trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
