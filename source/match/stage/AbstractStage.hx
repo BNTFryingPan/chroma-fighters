@@ -54,4 +54,8 @@ abstract class AbstractStage extends MatchObject implements IStage {
       super.draw();
       this.mainGround.draw();
    }
+
+   override public function reloadTextures() {
+      this.mainGround.reloadTextures();
+   }
 }

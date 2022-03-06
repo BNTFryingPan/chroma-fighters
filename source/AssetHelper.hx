@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.animation.FlxAnimationController;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.extern.Rest;
 import haxe.io.Bytes;
@@ -13,6 +14,7 @@ import hscript.Expr;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.display.BitmapData;
+import openfl.media.Sound;
 
 using StringTools;
 
@@ -129,6 +131,18 @@ class AssetHelper {
       #end
 
       return getNullBitmap();
+   }
+
+   public static function getSoundAsset(key:NamespacedKey, loop:Bool = false):FlxSound {
+      #if !sys
+      return null
+      #else
+      var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
+      if (assetDir == null) {
+         return null;
+      }
+      return FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
+      #end
    }
 
    public static function getTextAsset(key:NamespacedKey):Array<String> {

@@ -118,6 +118,10 @@ class TitleScreenState extends BaseState {
          TitleScreenState.shouldShowTitleScreenAnyways = false;
          TitleScreenState.pastStartScreen = false;
       }
+
+      if (!TitleScreenState.hasEverPassedStartScreenThisSession) {
+         MenuMusicManager.load();
+      }
    }
 
    private function movedOn() {

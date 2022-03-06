@@ -56,6 +56,7 @@ class Coordinates implements IFlxPooled {
 
    public function new(x:Float = 0, y:Float = 0, readOnly:Bool = false) {
       this.set(x, y);
+      trace('new coordinates');
       this.readOnly = readOnly;
    }
 
@@ -135,7 +136,7 @@ class Coordinates implements IFlxPooled {
    public static function yInScreenSpace(y:Float = 0, ?camera:FlxCamera):Float {
       if (camera == null)
          camera = Main.screenSprite.camera;
-      return y + camera.scroll.y;
+      return y - camera.scroll.y;
    }
 
    public function get_sx():Float {
