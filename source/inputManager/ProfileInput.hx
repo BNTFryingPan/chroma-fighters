@@ -69,6 +69,7 @@ class ProfileInput {
    public var value:Null<Float> = 1;
 
    public function new(options:ProfileInputOptions) {
+      trace('new profile input');
       this.rawOptions = options;
       this.type = options.type;
       this.source = options.source;

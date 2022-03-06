@@ -57,6 +57,7 @@ abstract class AbstractHitbox implements IHitbox {
    public var type:HitboxType;
 
    public function new(x:Float, y:Float) {
+      trace('new hitbox');
       this.x = x;
       this.y = y;
    }

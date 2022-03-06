@@ -1,8 +1,10 @@
 package states;
 
+import CustomButton.CustomButtonAsset;
 import GameManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -29,6 +31,8 @@ enum MenuScreen {
 
 class TitleScreenState extends BaseState {
    var pressStartText:FlxText;
+
+   var logoSprite:FlxSprite;
 
    var main_localButton:CustomButton;
    var main_onlineButton:CustomButton;
@@ -64,53 +68,61 @@ class TitleScreenState extends BaseState {
       PlayerSlot.PlayerBox.STATE = PlayerBoxState.HIDDEN;
       GameState.shouldDrawCursors = true;
 
+      this.logoSprite = new FlxSprite(0, 40);
+      this.logoSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace('images/ui/logo_full')));
+      this.logoSprite.screenCenter(X);
+
       this.pressStartText = new FlxText(0, 400, 0, "Press A+S or LB+RB");
       this.pressStartText.screenCenter(X);
 
-      this.main_localButton = new CustomButton(0, -50, "Local", function(player:PlayerSlotIdentifier) {
+      this.main_localButton = new CustomButton(0, -50, null, function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
          this.isFading = true;
          FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
             FlxG.switchState(new LocalMenu());
          });
-      });
+      }, CustomButtonAsset.Main_Local);
       this.main_localButton.screenCenter(X);
 
-      this.main_onlineButton = new CustomButton(0, -100, "Online (coming soon?)", function(player:PlayerSlotIdentifier) {
+      this.main_onlineButton = new CustomButton(0, -100, null, function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
          Main.log(player + ": online button");
-      });
+      }, CustomButtonAsset.Main_Online);
       this.main_onlineButton.screenCenter(X);
+      this.main_onlineButton.x -= 40;
 
-      this.main_settingsButton = new CustomButton(0, -150, "Settings", function(player:PlayerSlotIdentifier) {
+      this.main_settingsButton = new CustomButton(0, -150, null, function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
          Main.log(player + ": settings button");
-      });
+      }, CustomButtonAsset.Main_Settings);
       this.main_settingsButton.screenCenter(X);
+      this.main_settingsButton.x += 104;
 
-      this.main_exitButton = new CustomButton(0, -200, "Quit", function(player:PlayerSlotIdentifier) {
+      this.main_exitButton = new CustomButton(0, -200, null, function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
          // clean up any save data first.
          // might want to call a global exit function that does that
          System.exit(0);
-      });
+      }, CustomButtonAsset.Main_Exit);
       this.main_exitButton.screenCenter(X);
+      this.main_exitButton.x += 80;
 
       add(this.pressStartText);
+      add(this.logoSprite);
       add(this.main_localButton);
       add(this.main_onlineButton);
       add(this.main_settingsButton);
       add(this.main_exitButton);
 
       if (TitleScreenState.hasEverPassedStartScreenThisSession && !TitleScreenState.shouldShowTitleScreenAnyways) {
-         this.main_localButton.y = 100;
-         this.main_onlineButton.y = 150;
-         this.main_settingsButton.y = 200;
-         this.main_exitButton.y = 250;
+         this.main_localButton.y = 220;
+         this.main_onlineButton.y = 295;
+         this.main_settingsButton.y = 295;
+         this.main_exitButton.y = 370;
          this.pressStartText.y = 500;
       }
 
@@ -132,14 +144,14 @@ class TitleScreenState extends BaseState {
 
    private function moveOn() {
       this.hasPressedButtons = true;
-      FlxTween.tween(this.main_localButton, {y: 100}, 1, {
+      FlxTween.tween(this.main_localButton, {y: 220}, 1, {
          onComplete: (t) -> {
             this.movedOn();
          }
       });
-      FlxTween.tween(this.main_onlineButton, {y: 150}, 1);
-      FlxTween.tween(this.main_settingsButton, {y: 200}, 1);
-      FlxTween.tween(this.main_exitButton, {y: 250}, 1);
+      FlxTween.tween(this.main_onlineButton, {y: 295}, 1);
+      FlxTween.tween(this.main_settingsButton, {y: 295}, 1);
+      FlxTween.tween(this.main_exitButton, {y: 370}, 1);
       FlxTween.tween(this.pressStartText, {y: 500}, 1);
    }
 
@@ -166,10 +178,10 @@ class TitleScreenState extends BaseState {
                this.moveOn();
             }
          } else if (!TitleScreenState.pastStartScreen && this.hasPressedButtons) {
-            this.main_localButton.y = 100;
-            this.main_onlineButton.y = 150;
-            this.main_settingsButton.y = 200;
-            this.main_exitButton.y = 250;
+            this.main_localButton.y = 220;
+            this.main_onlineButton.y = 295;
+            this.main_settingsButton.y = 295;
+            this.main_exitButton.y = 370;
             this.pressStartText.y = 500;
             this.movedOn();
          } else if (TitleScreenState.pastStartScreen) {

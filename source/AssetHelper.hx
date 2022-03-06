@@ -133,7 +133,7 @@ class AssetHelper {
       return getNullBitmap();
    }
 
-   public static function getSoundAsset(key:NamespacedKey, loop:Bool = false):FlxSound {
+   public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
       return null
       #else
@@ -141,7 +141,9 @@ class AssetHelper {
       if (assetDir == null) {
          return null;
       }
-      return FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
+      var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
+      sound.persist = persist;
+      return sound;
       #end
    }
 

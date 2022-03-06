@@ -91,6 +91,13 @@ class CustomButton extends FlxButton {
 
       if (sprite == null) {
          this.loadDefaultGraphic();
+      } else {
+         if (!(sprite is NamespacedKey))
+            sprite = NamespacedKey.ofDefaultNamespace(sprite);
+
+         var asset = AssetHelper.getImageAsset(sprite);
+         this.loadGraphic(asset, true, asset.width, Math.ceil(asset.height / 3), false, (cast sprite).toString());
+         this.graphic.persist = true;
       }
    }
 

@@ -1,0 +1,29 @@
+`: toggle flixel debugger
+F3: toggles debug display
+F3+C for 10 seconds: crash game
+F3+H: memory dump (on supported targets)
+F3+T: clear bitmapdata cache
+F3+Shift+T: clear all assethelper caches
+F3+R: clear script cache
+F3+B: toggle hitbox rendering
+F3+Shift+B: toggle flixel debug drawing
+F3+H: run garbage collector (on supported targets)
+F3+H: run minor garbage collector (on gc targets with minor/major collectors)
+F3+Shift+H: run major garbage collector (on gc targets with minor/major collectors)
+
+in game:
+F3+1: timescale -= 0.1
+F3+2: timescale = 1
+F3+3: timescale += 0.1
+F3+W: enable animation debugger (only in debug builds)
+F3+E: enable frame step mode
+
+animation debugger:
+F3+1: next frame on all animated objects (frame duration independant)
+
+in menu:
+F3+1: TITLE music state
+F3+2: FIGHTER music state
+F3+3: STAGE music stage
+F3+Q: set player 2 to cpu and quickly enter game
+

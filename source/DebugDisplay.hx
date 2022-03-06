@@ -116,34 +116,46 @@ class DebugDisplay extends FlxBasic {
 
          if (FlxG.keys.anyJustPressed([ONE])) {
             this.hasTriggeredDebugAction = true;
-            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
-               FlxG.timeScale = Math.max(0.1, FlxG.timeScale - 0.1);
-               this.notify('Time scale lowered to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (-0.1)');
+            if (GameState.isInMatch) {
+               if (!GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+                  FlxG.timeScale = Math.max(0.1, FlxG.timeScale - 0.1);
+                  this.notify('Time scale lowered to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (-0.1)');
+               } else {
+                  this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+                  );
+               }
             } else {
-               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
-               );
+               MenuMusicManager.musicState = TITLE;
             }
          }
 
          if (FlxG.keys.anyJustPressed([TWO])) {
             this.hasTriggeredDebugAction = true;
-            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
-               FlxG.timeScale = 1;
-               this.notify('Time scale reset to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (=1)');
+            if (GameState.isInMatch) {
+               if (!GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+                  FlxG.timeScale = 1;
+                  this.notify('Time scale reset to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (=1)');
+               } else {
+                  this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+                  );
+               }
             } else {
-               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
-               );
+               MenuMusicManager.musicState = FIGHTER_SELECT;
             }
          }
 
          if (FlxG.keys.anyJustPressed([THREE])) {
             this.hasTriggeredDebugAction = true;
-            if (GameState.isInMatch && !GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
-               FlxG.timeScale = Math.min(2, FlxG.timeScale + 0.1);
-               this.notify('Time scale increased to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (+0.1)');
+            if (GameState.isInMatch) {
+               if (!GameState.isPlayingOnline #if !debug && GameState.isTrainingMode #end) {
+                  FlxG.timeScale = Math.min(2, FlxG.timeScale + 0.1);
+                  this.notify('Time scale increased to ${FlxMath.roundDecimal(FlxG.timeScale, 1)} (+0.1)');
+               } else {
+                  this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
+                  );
+               }
             } else {
-               this.notify(#if debug 'Time scale only allowed offline' #else 'Time scale only allowed in offline training' #end
-               );
+               MenuMusicManager.musicState = STAGE_SELECT;
             }
          }
 
@@ -227,7 +239,7 @@ class DebugDisplay extends FlxBasic {
             this.hasTriggeredDebugAction = true;
             #if debug
             GameState.animationDebugMode = !GameState.animationDebugMode;
-            this.notify('Animation debugger ${GameState.showTrainingHitboxes ? 'en' : 'dis'}abled.');
+            this.notify('Animation debugger ${GameState.animationDebugMode ? 'en' : 'dis'}abled.');
             #else
             this.notify('Animation debugger not available in non-debug builds');
             #end
@@ -248,10 +260,8 @@ class DebugDisplay extends FlxBasic {
          if (!this.hasTriggeredDebugAction) {
             this.visible = !this.visible;
          }
-
          this.hasTriggeredDebugAction = false;
       }
-
       #if debug
       if (GameState.animationDebugMode && FlxG.keys.anyPressed([F4])) {
          if (FlxG.keys.anyJustPressed([ONE])) {
@@ -260,7 +270,6 @@ class DebugDisplay extends FlxBasic {
          }
       }
       #end
-
       #if hl
       var memStatsRaw = Gc.stats();
       var memStats = {
@@ -288,36 +297,31 @@ class DebugDisplay extends FlxBasic {
          this.leftText.text = this.leftPrepend;
          if (this.leftPrepend != "" && !StringTools.endsWith(this.leftText.text, "\n"))
             this.leftText.text += "\n";
-
          // this.leftText.text += 'Game ${Version.getVersionString()} (${#if debug 'debug' #else 'release' #end})\n';
          var stateId = 'Unknown';
          // if (Std.isOfType(FlxG.state, BaseState)) {
          if ((FlxG.state is BaseState)) {
             var state:BaseState = cast FlxG.state;
+
             stateId = state.stateId();
          }
          this.leftText.text += 'FPS: ${Main.fpsCounter.currentFPS}\nState: ${stateId}\n';
-
          this.leftText.text += this.leftAppend;
-
          this.rightText.text = this.rightPrepend;
          if (this.rightPrepend != "" && !StringTools.endsWith(this.rightText.text, "\n"))
             this.rightText.text += "\n";
-
          this.rightText.text += 'Haxe: ${haxe.macro.Compiler.getDefine("haxe")}\n';
          this.rightText.text += 'Flixel: ${FlxG.VERSION.toString()}\n';
          // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
          this.rightText.text += 'Mem: ${round(memStats.currentMemory)} / ${round(maxMemory)}MB\n';
          this.rightText.text += 'Alloc: ${round(memStats.allocationCount)} / ${round(memStats.totalAllocated)}\n';
          this.rightText.text += 'System: ${FlCap.manufacturer} ${DebugDisplay.os} (${FlCap.cpuArchitecture})\n';
-         this.rightText.text += 'SysRaw: ${FlCap.version}';
+         this.rightText.text += 'SysRaw: ${FlCap.version}\n';
          // this.rightText.text += 'Elapsed: ${}';
          // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
          // this.rightText.text += 'CPU: \n';
-         var gp = FlxG.gamepads.getFirstActiveGamepad();
-         this.rightText.text += 'gp: ${gp == null ? 'none' : gp.name}';
-
-         this.rightText.text += '\n${this.rightAppend}';
+         this.rightText.text += MenuMusicManager.debugText();
+         this.rightText.text += '${this.rightAppend}';
       }
       this.rightPrepend = "";
       this.rightAppend = "";

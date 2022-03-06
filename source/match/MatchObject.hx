@@ -35,11 +35,10 @@ interface IGroundObject extends IMatchObjectWithHitbox {
    represents an object that exists on a stage during a match.
 **/
 abstract class MatchObject extends FlxObject implements IMatchObject {
-   private final rand:MatchRandom;
-
+   // private final rand:MatchRandom;
    public function new() {
       super();
-      this.rand = new MatchRandom();
+      // this.rand = new MatchRandom();
    }
 
    public function reloadTextures() {
