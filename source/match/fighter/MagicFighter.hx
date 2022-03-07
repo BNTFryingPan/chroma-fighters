@@ -20,12 +20,14 @@ import match.fighter.AbstractFighter;
 using StringTools;
 
 class MagicFighterMoves extends FighterMoves {
-   // private final taunt:MagicFighterTaunt;
    public function new(fighter:MagicFighter) {
       super(fighter);
       this.moves.set('jab', new MagicFighterJab(fighter));
       this.moves.set('taunt', new MagicFighterTaunt(fighter));
-      this.moves.set('special', new MagicFighterSpecial(fighter));
+      this.moves.set('nspecial', new MagicFighterNeutralSpecial(fighter));
+      this.moves.set('uspecial', new MagicFighterUpwardSpecial(fighter));
+      this.moves.set('dspecial', new MagicFighterDownwardSpecial(fighter));
+      this.moves.set('fspecial', new MagicFighterForwardSpecial(fighter));
       this.moves.set('uair', new MagicFighterUpwardAirMove(fighter));
       this.moves.set('nair', new MagicFighterNeutralAirMove(fighter));
       this.moves.set('fair', new MagicFighterForwardAirMove(fighter));
@@ -91,12 +93,81 @@ class MagicFighterForwardStrong extends MagicFighterStrongMove {
    }
 }
 
-class MagicFighterSpecial extends FighterMove {
+class MagicFighterUpwardStrong extends MagicFighterStrongMove {
+   function maxChargeTime():Float {
+      return 1;
+   }
+
+   public function playChargeAnimation() {
+      (cast this.fighter).forceAnim = 'up_strong_charging';
+   }
+
+   public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
+      //this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
+      return SUCCESS(null)
+   }
+}
+
+class MagicFighterDownwardStrong extends MagicFighterStrongMove {
+   function maxChargeTime():Float {
+      return 1;
+   }
+
+   public function playChargeAnimation() {
+      (cast this.fighter).forceAnim = 'down_strong_charging';
+   }
+
+   public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
+      //this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
+      return SUCCESS(null)
+   }
+}
+
+class MagicFighterNeutralSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).forceAnim = 'neutral_special';
+      return SUCCESS(null);
+   }
+
+   override public function canPerform() {
+      if (this.fighter.airState == PRATFALL)
+         return REJECTED(null);
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterUpwardSpecial extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'up_special';
       this.fighter.launch((Math.atan2(-input.getStick().y, -input.getStick().x) * FlxAngle.TO_DEG) - 90, 5, true);
       this.fighter.hitstunTime = 1;
       this.fighter.airState = PRATFALL;
+      return SUCCESS(null);
+   }
+
+   override public function canPerform() {
+      if (this.fighter.airState == PRATFALL)
+         return REJECTED(null);
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterForwardSpecial extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'forward_special';
+      return SUCCESS(null);
+   }
+
+   override public function canPerform() {
+      if (this.fighter.airState == PRATFALL)
+         return REJECTED(null);
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterDownwardSpecial extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'down_special';
       return SUCCESS(null);
    }
 
@@ -111,6 +182,27 @@ class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).forceAnim = 'jab';
       this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 65, 0.2, 0.5);
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterUpwardTilt extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'up_tilt';
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterForwardTilt extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'forward_tilt';
+      return SUCCESS(null);
+   }
+}
+
+class MagicFighterDownwardTilt extends FighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      (cast this.fighter).forceAnim = 'down_tilt';
       return SUCCESS(null);
    }
 }
@@ -134,7 +226,31 @@ class MagicFighterAerialMove extends FighterMove {
    }
 }
 
-class MagicFighterDownAirMove extends MagicFighterAerialMove {
+class MagicFighterNeutralAirMove extends MagicFighterAerialMove {
+   override public function attack() {
+      (cast this.fighter).forceAnim = 'neutral_air';
+   }
+}
+
+class MagicFighterUpwardAirMove extends MagicFighterAerialMove {
+   override public function attack() {
+      (cast this.fighter).forceAnim = 'up_air';
+   }
+}
+
+class MagicFighterForwardAirMove extends MagicFighterAerialMove {
+   override public function attack() {
+      (cast this.fighter).forceAnim = 'forward_air';
+   }
+}
+
+class MagicFighterBackwardAirMove extends MagicFighterAerialMove {
+   override public function attack() {
+      (cast this.fighter).forceAnim = 'back_air';
+   }
+}
+
+class MagicFighterDownwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).forceAnim = 'down_air';
       this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, -1, 1);
@@ -331,18 +447,47 @@ class MagicFighter extends AbstractFighter {
          this.hasBufferedFastFall = false;
       }
 
+      function attemptMove(name, action, ...params:Any) {
+         this.moveset.attempt(name, input.getAction(action), input, ...params);
+      }
+
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');
       // todo : fastfall
       if (this.airState != PRATFALL) {
-         if (this.airState == GROUNDED)
-            this.moveset.attempt('taunt', input.getTaunt(), input);
-         this.moveset.attempt('special', input.getSpecial(), input);
-         if (this.airState != GROUNDED)
-            this.moveset.attempt('dair', input.getAttack(), input);
-         if (this.airState == GROUNDED)
-            this.moveset.attempt('jab', input.getAttack(), input);
-         if (this.airState == GROUNDED)
-            this.moveset.attempt('fstrong', input.getStrong(), input, elapsed);
+         attemptMove('taunt', input.getTaunt(), input);
+         
+         switch (this.getAttackDirection()) {
+            case UP:
+               attemptMove('utilt', ATTACK);
+               attemptMove('uspecial', SPECIAL);
+               attemptMove('uair', ATTACK);
+               attemptMove('ustrong', STRONG, elapsed);
+            case DOWN:
+               attemptMove('dtilt', ATTACK);
+               attemptMove('dspecial', SPECIAL);
+               attemptMove('dair', ATTACK);
+               attemptMove('dstrong', STRONG, elapsed);
+            case LEFT:
+               attemptMove('ftilt', ATTACK, this.facing);
+               attemptMove('fstrong', STRONG, this.facing, elapsed);
+               attemptMove('fspecial', SPECIAL, this.facing);
+               if (this.facing == LEFT) 
+                  attemptMove('fair', ATTACK, this.facing);
+               else
+                  attemptMove('bair', ATTACK, this.facing);
+            case RIGHT:
+               attemptMove('ftilt', ATTACK, this.facing);
+               attemptMove('fstrong', STRONG, this.facing, elapsed);
+               attemptMove('fspecial', SPECIAL, this.facing);
+               if (this.facing == LEFT) 
+                  attemptMove('bair', ATTACK, this.facing);
+               else
+                  attemptMove('fair', ATTACK, this.facing);
+            case NEUTRAL:
+               attemptMove('jab', ATTACK, input);
+               attemptMove('nair', ATTACK, input);
+               attemptMove('nspecial', SPECIAL, input);
+         }
       }
 
       if (this.airState == GROUNDED) {
