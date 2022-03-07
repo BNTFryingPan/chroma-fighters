@@ -38,10 +38,24 @@ jobs:
         haxelib install openfl --always --quiet
         haxelib install flixel --always --quiet
         echo "y" \| haxelib run openfl setup
-    - name: Build app (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
+    - name: Build app (chroma-fighters_${{ matrix.target }})
       run: |
         cd .
         haxelib run openfl build ${{ matrix.target }}
+    - name: Archive Windows Release
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'zip'
+        filename: './zipped/windows.zip'
+        path: './export/windows/bin/*'
+    - name: Archive Linux Release
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'tar'
+        filename: './zipped/linux.tar.gz'
+        path: './export/linux/bin/*'
     - name: release on github
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -50,4 +64,4 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-          ./export/
+          ./zipped/
