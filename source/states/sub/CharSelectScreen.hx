@@ -38,16 +38,17 @@ class CharSelectScreen extends BaseState {
          });
       });
 
-      this.readyTestButton = new CustomButton(0, 0, 'debug ready', function(player:PlayerSlotIdentifier) {
+      this.readyTestButton = new CustomButton(0, 0, 'Martha', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
 
          var p = PlayerSlot.getPlayer(player);
+         p.coinDropped = true;
          p.fighterSelection.ready = !p.fighterSelection.ready;
       });
       this.readyTestButton.screenCenter(XY);
 
-      this.continueButton = new CustomButton(0, 0, "fight", function(player:PlayerSlotIdentifier) {
+      this.continueButton = new CustomButton(0, 0, "Fight!", function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
 
@@ -56,11 +57,11 @@ class CharSelectScreen extends BaseState {
 
          this.isFading = true;
          FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
-            this.onlineMenu ? FlxG.switchState(new TitleScreenState()) : FlxG.switchState(new MatchState());
+            this.onlineMenu ? FlxG.switchState(new TitleScreenState()) : FlxG.switchState(new MatchState(new NamespacedKey('cf_stages', 'chroma_fracture')));
          });
       });
       this.continueButton.screenCenter(XY);
-      this.continueButton.y += 60;
+      this.continueButton.y += 50;
 
       add(this.readyTestButton);
       add(this.continueButton);

@@ -23,11 +23,20 @@ class MagicFighterMoves extends FighterMoves {
    // private final taunt:MagicFighterTaunt;
    public function new(fighter:MagicFighter) {
       super(fighter);
+      this.moves.set('jab', new MagicFighterJab(fighter));
       this.moves.set('taunt', new MagicFighterTaunt(fighter));
       this.moves.set('special', new MagicFighterSpecial(fighter));
-      this.moves.set('dair', new MagicFighterDownAirMove(fighter));
-      this.moves.set('jab', new MagicFighterJab(fighter));
+      this.moves.set('uair', new MagicFighterUpwardAirMove(fighter));
+      this.moves.set('nair', new MagicFighterNeutralAirMove(fighter));
+      this.moves.set('fair', new MagicFighterForwardAirMove(fighter));
+      this.moves.set('dair', new MagicFighterDownwardAirMove(fighter));
+      this.moves.set('bair', new MagicFighterBackwardAirMove(fighter));
+      this.moves.set('ustrong', new MagicFighterUpwardStrong(fighter));
       this.moves.set('fstrong', new MagicFighterForwardStrong(fighter));
+      this.moves.set('dstrong', new MagicFighterDownwardStrong(fighter));
+      this.moves.set('utilt', new MagicFighterUpwardTilt(fighter));
+      this.moves.set('ftilt', new MagicFighterForwardTilt(fighter));
+      this.moves.set('dtilt', new MagicFighterDownwardTilt(fighter));
    }
 }
 
@@ -46,18 +55,39 @@ class MagicFighterTaunt extends FighterMove {
    }
 }
 
-class MagicFighterForwardStrong extends FighterMove {
-   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      if (state == JUST_PRESSED) {
-         Main.debugDisplay.notify('magic taunt!');
-         FlxTween.color((cast this.fighter).sprite, 1, FlxColor.PINK, FlxColor.WHITE);
-      }
+abstract class MagicFighterStrongMove extends FighterMove {
+   private var _isCharging = true;
+   private var chargeTime:Float;
 
-      if (InputHelper.isPressed(state)) {
-         (cast this.fighter).forceAnim = 'forward_strong_charging';
-         return SUCCESS(null);
+   public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      var elapsed:Float = params[0];
+      if (state == JUST_PRESSED) {
+         this._isCharging = true;
+         this.fighter.moveFreeze(this.maxChargeTime());
+         this.playChargeAnimation();
+      } else if (state == JUST_RELEASED || elapsed >= this.maxChargeTime()) {
+         this._isCharging = false;
+         return this.releaseChargedAttack();
       }
-      return REJECTED(null);
+   }
+
+   abstract function maxChargeTime():Float;
+   abstract function playChargeAnimation():Void;
+   abstract function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult;
+}
+
+class MagicFighterForwardStrong extends MagicFighterStrongMove {
+   function maxChargeTime():Float {
+      return 1;
+   }
+
+   public function playChargeAnimation() {
+      (cast this.fighter).forceAnim = 'forward_strong_charging';
+   }
+
+   public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
+      this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
+      return SUCCESS(null)
    }
 }
 
@@ -107,7 +137,7 @@ class MagicFighterAerialMove extends FighterMove {
 class MagicFighterDownAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).forceAnim = 'down_air';
-      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, 0.2, 1);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, -1, 1);
    }
 }
 
@@ -168,6 +198,8 @@ class MagicFighter extends AbstractFighter {
       if (prev == null)
          prev = this.sprite.animation.name;
       var fin = this.sprite.animation.finished;
+
+      if (this.moveFreezeTime > 0 && fin && this.forceAnim != null) return;
 
       if (this.forceAnim != null) {
          if (!fin) {
@@ -310,7 +342,7 @@ class MagicFighter extends AbstractFighter {
          if (this.airState == GROUNDED)
             this.moveset.attempt('jab', input.getAttack(), input);
          if (this.airState == GROUNDED)
-            this.moveset.attempt('fstrong', input.getStrong(), input);
+            this.moveset.attempt('fstrong', input.getStrong(), input, elapsed);
       }
 
       if (this.airState == GROUNDED) {

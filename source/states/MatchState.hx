@@ -9,6 +9,12 @@ import match.stage.AbstractStage;
 class MatchState extends BaseState {
    public var paused:Bool = false;
    public var stage:AbstractStage;
+   public final stageToLoad:NamespacedKey;
+
+   public function new(stageToLoad:NamespacedKey) {
+      super();
+      this.stageToLoad = stageToLoad;
+   }
 
    override public function create() {
       super.create();
@@ -21,7 +27,7 @@ class MatchState extends BaseState {
       FlxG.camera.scroll.x = FlxG.width * -.5;
       FlxG.camera.scroll.y = FlxG.height * -.5;
 
-      this.stage = AbstractStage.load(new NamespacedKey('cf_stages', 'chroma_fracture'));
+      this.stage = AbstractStage.load(this.stageToLoad);
       add(this.stage);
 
       for (player in PlayerSlot.getPlayerArray(true)) {

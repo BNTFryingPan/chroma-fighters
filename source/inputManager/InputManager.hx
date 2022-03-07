@@ -126,7 +126,7 @@ class InputManager {
                if (InputHelper.isPressed(p.getJump()))
                   return true;
             case SHORT_JUMP:
-               if (InputHelper.isPressed(p.getJump()))
+               if (InputHelper.isPressed(p.getShortJump()))
                   return true;
             case ATTACK:
                if (InputHelper.isPressed(p.getAttack()))

@@ -418,7 +418,17 @@ class PlayerSlot {
    public var coinSprite:FlxSprite;
    public final cursorSpriteOffset:Coordinates = new Coordinates(30, 15);
    public final coinSpriteOffset:Coordinates = new Coordinates(16, 16);
+   public final coinDroppedPosition:Coordinates = new Coordinates(0, 0);
+   public var coinDropped(default, set):Bool = false;
    public var visible(get, default):Bool = false;
+
+   function set_coinDropped(value:Bool):Bool {
+      if (value == false) 
+         return this.coinDropped = false;
+
+      this.coinDroppedPosition.clone(this.cursorPosition);
+      return this.coinDropped = true;
+   }
 
    private function set_slot(v:PlayerSlotIdentifier) {
       if (this.playerBox != null)
@@ -722,8 +732,13 @@ class PlayerSlot {
       this.cursorSprite.x = cursorPos.x - this.cursorSpriteOffset.x;
       this.cursorSprite.y = cursorPos.y - this.cursorSpriteOffset.y;
 
-      this.coinSprite.x = cursorPos.x - this.coinSpriteOffset.x;
-      this.coinSprite.y = cursorPos.y - this.coinSpriteOffset.y;
+      if (this.coinDropped) {
+         this.coinSprite.x = this.coinDroppedPosition.x;
+         this.coinSprite.y = this.coinDroppedPosition.y;
+      } else {
+         this.coinSprite.x = cursorPos.x - this.coinSpriteOffset.x;
+         this.coinSprite.y = cursorPos.y - this.coinSpriteOffset.y;
+      }
 
       this.debugSprite.x = cursorPos.x;
       this.debugSprite.y = cursorPos.y;

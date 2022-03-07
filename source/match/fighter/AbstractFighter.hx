@@ -31,6 +31,15 @@ enum FighterAirState {
    RESPAWN; // on the respawn platform. is a weird state where your technically not on the ground, but can do some things that normally require being on the ground
 }
 
+// used to make nair, fair, bair, dair, etc different
+enum DirectionalAttack {
+   NEUTRAL;
+   UP;
+   DOWN;
+   LEFT; // uses left/right instead of forwards/backwards because input doesnt know fighter direction
+   RIGHT;
+}
+
 class FighterMoves {
    private final fighter:AbstractFighter;
 
@@ -206,19 +215,42 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    public var gravity:Float = 500;
    public var aliveTime:Float = 0;
 
-   public function new(slot:PlayerSlotIdentifier, x:Float, y:Float) {
+   public function new(slot:PlayerSlotIdentifier, x:Float, y:Float, ?ruleset:Ruleset) {
       super(x, y);
+      if (ruleset == null)
+         ruleset = Ruleset.DefaultRuleset;
+
       this.width = 10;
       this.height = 10;
       this.slot = slot;
       this.drag.x = 400;
       this.acceleration.y = this.gravity;
 
+      this.remainingStocks = ruleset.stocks;
+
       // this.debugSprite = new FlxSprite(0, 0);
 
       // this.debugSprite.makeGraphic(40, 64, 0x22ffffff);
 
       this.createFighterMoves();
+   }
+
+   public function getAttackDirection(stick:StickVector):DirectionalAttack {
+      if (stick.y > 0.5)
+         return DirectionalAttack.UP;
+      if (stick.y < -0.5)
+         return DirectionalAttack.DOWN;
+      if (stick.x > 0.4)
+         return DirectionalAttack.LEFT;
+      if (stick.y < -0.4)
+         return DirectionalAttack.RIGHT;
+      return DirectionalAttack.NEUTRAL;
+   }
+
+   public var moveFreezeTime:Float = 0;
+
+   public function moveFreeze(time:Float) {
+      this.moveFreezeTime = time;
    }
 
    public var hitstunElasticity = 0.5;
@@ -276,6 +308,14 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       // this.handleInput(PlayerSlot.getPlayer(this.slot).input);
    }
 
+   public function shouldHandleInput(elapsed:Float):Bool {
+      if (this.moveFreezeTime > 0) {
+         this.moveFreezeTime = Math.max(this.moveFreezeTime - elapsed, 0);
+         return false;
+      }
+      return true;
+   }
+
    // abstract public function handleInput(elapsed:Float, input:GenericInput):Void;
    public function handleInput(elapsed:Float, input:GenericInput):Void {
       if (this.airState == RESPAWN
@@ -324,7 +364,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    public static function calculateKnockback(percent:Float, knockback:Float, damage:Float = 0, /*weight:Float = 100,*/ growth:Float = 1,
          multiplier:Float = 1):Float {
       // return knockback + (growth * percent * multiplier * * 0.12)
-      return ((knockback * 10) + damage * growth * /*0.12*/ 1.2 * percent) * multiplier;
+      return (((knockback * 10) + damage * growth * /*0.12*/ 1.2 * percent) * multiplier) * GameManager.getKnockbackMultiplier();
    }
 
    public function launch(angle:Float = 50, knockback:Float = 1.0, ?ignorePercent = false) {
@@ -414,6 +454,10 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       newHitBox.offsetX = offsetX;
       newHitBox.offsetY = offsetY;
       this.activeHitboxes.push(newHitBox);
+   }
+
+   public function destroyAnimationHitboxes() {
+      
    }
 
    function set_airState(value:FighterAirState):FighterAirState {

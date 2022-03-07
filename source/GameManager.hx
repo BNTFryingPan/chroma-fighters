@@ -98,6 +98,8 @@ class Physics {
 }
 
 class GameManager {
+   public static var ruleset:Ruleset = new Ruleset(3, 7, 1);
+
    public static function update(elapsed:Float) {
       Main.screenSprite.update(elapsed);
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
@@ -206,5 +208,9 @@ class GameManager {
    public static function reloadTextures() {
       for (object in GameManager.getAllObjects().filter(o -> o is IMatchObject))
          (cast object).reloadTextures();
+   }
+
+   public static function getKnockbackMultiplier():Float {
+      return GameManager.ruleset.knockback;
    }
 }
