@@ -255,26 +255,26 @@ class AssetHelper {
       #if mobile
       return null;
       #elseif (sys)
-      #if (debug)
+      // #if (debug)
       // Main.log('debug paths');
-      var rootPath = "./../../../mods/";
-      var namespacedPath = "mods/";
-      #else
+      // var rootPath = "./../../../mods/";
+      // var namespacedPath = "mods/";
+      // #else
       // Main.log('normal paths');
       var rootPath = "./mods/";
       var namespacedPath = "mods/";
-      #end
+      // #end
 
       var fileName = key.key;
       if (ext != "" && !fileName.endsWith(ext))
          fileName += ext;
 
       if (key.namespace == saveNamespace) {
-         #if debug
-         rootPath = "./../../../debugSave/";
-         #else
+         /*#if debug
+            rootPath = "./../../../debugSave/";
+            #else */
          rootPath = "./save/";
-         #end
+         // #end
          namespacedPath = '';
       } else if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
          namespacedPath = "basegame/";

@@ -3,12 +3,16 @@ package states;
 import flixel.FlxG;
 import flixel.FlxState;
 
+interface ChromaFightersState {
+   public function stateId():String;
+}
+
 /**
    a base for other states in the game
 
    contains core functionality that allows the input manager to work
 **/
-class BaseState extends FlxState {
+class BaseState extends FlxState implements ChromaFightersState {
    override public function create() {
       super.create();
 

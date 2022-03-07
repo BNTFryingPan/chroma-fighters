@@ -146,12 +146,7 @@ class PlayerSlot {
    public static var PointerP7Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p7"));
    public static var PointerP8Bitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p8"));
    public static var PointerCPUBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/cpu"));
-   public static var PointerLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_left"));
-   public static var PointerRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_right"));
-   public static var PointerUpLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_left"));
-   public static var PointerUpRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_up_right"));
-   public static var PointerDownLeftBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_left"));
-   public static var PointerDownRightBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer_down_right"));
+   public static var PointerCursorBitmap(get, default) = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"));
 
    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
    public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
@@ -409,6 +404,7 @@ class PlayerSlot {
          return {x: 16, y: 16}; */
    }
 
+   // public final pointer_up_left =;
    public var type:PlayerType = NONE;
    public var color:PlayerColor;
    public var slot(default, set):PlayerSlotIdentifier;
@@ -435,8 +431,10 @@ class PlayerSlot {
       if (this.coinSprite != null)
          this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(v)));
 
-      if (this.cursorSprite != null)
+      if (this.cursorSprite != null) {
+         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap), true, 32, 32, true, '${this.slot}-pointer');
          this.setCursorAngle(SAME);
+      }
 
       return v;
    }
@@ -562,58 +560,39 @@ class PlayerSlot {
       return PointerCPUBitmap.clone();
    }
 
-   public static function get_PointerLeftBitmap():BitmapData {
-      return PointerLeftBitmap.clone();
-   }
-
-   public static function get_PointerRightBitmap():BitmapData {
-      return PointerRightBitmap.clone();
-   }
-
-   public static function get_PointerUpLeftBitmap():BitmapData {
-      return PointerUpLeftBitmap.clone();
-   }
-
-   public static function get_PointerUpRightBitmap():BitmapData {
-      return PointerUpRightBitmap.clone();
-   }
-
-   public static function get_PointerDownLeftBitmap():BitmapData {
-      return PointerDownLeftBitmap.clone();
-   }
-
-   public static function get_PointerDownRightBitmap():BitmapData {
-      return PointerDownRightBitmap.clone();
+   public static function get_PointerCursorBitmap():BitmapData {
+      return PointerCursorBitmap.clone();
    }
 
    public function setCursorAngle(angle:CursorRotation) {
+      // return;
       if (this.cursorAngle == angle && angle != SAME)
          return;
       if (angle != SAME)
          this.cursorAngle = angle;
-      if (this.cursorSprite.graphic != null) {
-         this.cursorSprite.graphic.destroy();
-      }
-      this.cursorSprite.graphic = null;
+      // if (this.cursorSprite.graphic != null) {
+      // this.cursorSprite.graphic.destroy();
+      // }
+      // this.cursorSprite.graphic = null;
       // Main.log('setting cursor angle ${angle} on ${slot}');
       if (this.cursorAngle == LEFT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerLeftBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(5);
       } else if (this.cursorAngle == RIGHT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerRightBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(2);
       } else if (this.cursorAngle == UP_LEFT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerUpLeftBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(0);
       } else if (this.cursorAngle == UP_RIGHT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerUpRightBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(1);
       } else if (this.cursorAngle == DOWN_LEFT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerDownLeftBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(3);
       } else if (this.cursorAngle == DOWN_RIGHT) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerDownRightBitmap));
+         this.cursorSprite.frame = this.cursorSprite.frames.getByIndex(4);
       }
       // Main.log('setting offset');
       this.cursorSpriteOffset.clone(PlayerSlot.getOffset(this.cursorAngle));
       this.coinSpriteOffset.clone(PlayerSlot.getCoinOffset(this.cursorAngle));
 
-      this.cursorSprite.graphic.persist = true;
+      // this.cursorSprite.graphic.persist = true;
       // Main.log('set offset to ${this.spriteOffset}');
    }
 
@@ -621,6 +600,9 @@ class PlayerSlot {
 
    public var playerBox:PlayerBox;
    public var cpuSettings:CpuSettings = new CpuSettings();
+
+   // public function initGraphic() {
+   // }
 
    public function init() {
       if (this.ready)
@@ -630,6 +612,7 @@ class PlayerSlot {
 
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();
+      this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap), true, 32, 32, true, '${this.slot}-pointer');
       this.playerBox = new PlayerBox(this.slot);
       this.debugSprite = new FlxSprite();
       this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(this.slot)));
@@ -704,6 +687,7 @@ class PlayerSlot {
       var isAlreadyLeft = (cursorAngle == LEFT || cursorAngle == UP_LEFT || cursorAngle == DOWN_LEFT);
 
       if (this.visible) {
+         this.cursorSprite.update(elapsed);
          // Main.debugDisplay.leftAppend += '\n${(cursorAngle == RIGHT || cursorAngle == UP_RIGHT || cursorAngle == DOWN_RIGHT)}';
 
          if (setToLeft) {

@@ -80,7 +80,7 @@ class MagicFighterSpecial extends FighterMove {
 class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).forceAnim = 'jab';
-      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 80, 0.2, 1);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 65, 0.2, 0.5);
       return SUCCESS(null);
    }
 }
@@ -147,6 +147,7 @@ class MagicFighter extends AbstractFighter {
       this.height = 64;
       this.sprite = new FlxSprite();
       AssetHelper.generateCombinedSpriteSheetForFighter(new NamespacedKey('cf_magic_fighter', 'sprites'), this.sprite, 112, "idle");
+      this.sprite.graphic.persist = true;
 
       // this.sprite.angularVelocity = 100;
 
@@ -158,6 +159,7 @@ class MagicFighter extends AbstractFighter {
    override public function reloadTextures() {
       this.sprite.animation.destroyAnimations();
       AssetHelper.generateCombinedSpriteSheetForFighter(new NamespacedKey('cf_magic_fighter', 'sprites'), this.sprite, 112, this.sprite.animation.name);
+      this.sprite.graphic.persist = true;
    }
 
    public var forceAnim:Null<String> = null;

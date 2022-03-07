@@ -324,7 +324,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    public static function calculateKnockback(percent:Float, knockback:Float, damage:Float = 0, /*weight:Float = 100,*/ growth:Float = 1,
          multiplier:Float = 1):Float {
       // return knockback + (growth * percent * multiplier * * 0.12)
-      return (knockback + damage * growth * 0.12 * percent) * multiplier;
+      return ((knockback * 10) + damage * growth * /*0.12*/ 1.2 * percent) * multiplier;
    }
 
    public function launch(angle:Float = 50, knockback:Float = 1.0, ?ignorePercent = false) {

@@ -70,6 +70,7 @@ class TitleScreenState extends BaseState {
 
       this.logoSprite = new FlxSprite(0, 40);
       this.logoSprite.loadGraphic(AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace('images/ui/logo_full')));
+      this.logoSprite.graphic.persist = true;
       this.logoSprite.screenCenter(X);
 
       this.pressStartText = new FlxText(0, 400, 0, "Press A+S or LB+RB");
