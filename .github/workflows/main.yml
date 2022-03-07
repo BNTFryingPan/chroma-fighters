@@ -33,6 +33,7 @@ jobs:
         haxelib install hxcpp --always --quiet
         haxelib install hscript --always --quiet
         haxelib install actuate --always --quiet
+        haxelib install lime --always --quiet
         haxelib install openfl --always --quiet
         haxelib install flixel --always --quiet
         echo "y" \| haxelib run openfl setup
