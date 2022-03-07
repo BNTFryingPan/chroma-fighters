@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
+import inputManager.StickVector;
 import match.MatchObject;
 import match.stage.AbstractStage;
 
@@ -456,9 +457,7 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.activeHitboxes.push(newHitBox);
    }
 
-   public function destroyAnimationHitboxes() {
-      
-   }
+   public function destroyAnimationHitboxes() {}
 
    function set_airState(value:FighterAirState):FighterAirState {
       if (this.airState != value)

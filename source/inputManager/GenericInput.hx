@@ -167,4 +167,8 @@ class GenericInput {
    public function getRawDirection():StickVector {
       return this.rawDirectionStick.update(0, 0);
    }
+
+   public function getAction(action):InputState {
+      throw new haxe.exceptions.NotImplementedException();
+   }
 }

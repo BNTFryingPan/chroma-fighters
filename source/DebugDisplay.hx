@@ -231,7 +231,7 @@ class DebugDisplay extends FlxBasic {
                PlayerSlot.getPlayer(P2).setNewInput(CPUInput);
                PlayerSlot.getPlayer(P2).fighterSelection.ready = true;
                PlayerSlot.getPlayer(P1).fighterSelection.ready = true;
-               FlxG.switchState(new MatchState());
+               FlxG.switchState(new MatchState(new NamespacedKey('cf_stages', 'chroma_fracture')));
             }
          }
 

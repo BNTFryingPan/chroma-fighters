@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import inputManager.Action;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
@@ -69,12 +70,15 @@ abstract class MagicFighterStrongMove extends FighterMove {
          this.playChargeAnimation();
       } else if (state == JUST_RELEASED || elapsed >= this.maxChargeTime()) {
          this._isCharging = false;
-         return this.releaseChargedAttack();
+         return this.releaseChargedAttack(input, this.chargeTime, ...params);
       }
+      return SUCCESS(null);
    }
 
    abstract function maxChargeTime():Float;
+
    abstract function playChargeAnimation():Void;
+
    abstract function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult;
 }
 
@@ -89,7 +93,7 @@ class MagicFighterForwardStrong extends MagicFighterStrongMove {
 
    public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
       this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
-      return SUCCESS(null)
+      return SUCCESS(null);
    }
 }
 
@@ -103,8 +107,8 @@ class MagicFighterUpwardStrong extends MagicFighterStrongMove {
    }
 
    public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
-      //this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
-      return SUCCESS(null)
+      // this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
+      return SUCCESS(null);
    }
 }
 
@@ -118,8 +122,8 @@ class MagicFighterDownwardStrong extends MagicFighterStrongMove {
    }
 
    public function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult {
-      //this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
-      return SUCCESS(null)
+      // this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
+      return SUCCESS(null);
    }
 }
 
@@ -315,7 +319,8 @@ class MagicFighter extends AbstractFighter {
          prev = this.sprite.animation.name;
       var fin = this.sprite.animation.finished;
 
-      if (this.moveFreezeTime > 0 && fin && this.forceAnim != null) return;
+      if (this.moveFreezeTime > 0 && fin && this.forceAnim != null)
+         return;
 
       if (this.forceAnim != null) {
          if (!fin) {
@@ -447,16 +452,16 @@ class MagicFighter extends AbstractFighter {
          this.hasBufferedFastFall = false;
       }
 
-      function attemptMove(name, action, ...params:Any) {
-         this.moveset.attempt(name, input.getAction(action), input, ...params);
+      function attemptMove(name, action:Action, ...params:Any) {
+         // this.moveset.attempt(name, input.getAction(action), input, ...params);
       }
 
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');
       // todo : fastfall
       if (this.airState != PRATFALL) {
-         attemptMove('taunt', input.getTaunt(), input);
-         
-         switch (this.getAttackDirection()) {
+         attemptMove('taunt', TAUNT);
+
+         switch (this.getAttackDirection(stick)) {
             case UP:
                attemptMove('utilt', ATTACK);
                attemptMove('uspecial', SPECIAL);
@@ -471,7 +476,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('ftilt', ATTACK, this.facing);
                attemptMove('fstrong', STRONG, this.facing, elapsed);
                attemptMove('fspecial', SPECIAL, this.facing);
-               if (this.facing == LEFT) 
+               if (this.facing == LEFT)
                   attemptMove('fair', ATTACK, this.facing);
                else
                   attemptMove('bair', ATTACK, this.facing);
@@ -479,7 +484,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('ftilt', ATTACK, this.facing);
                attemptMove('fstrong', STRONG, this.facing, elapsed);
                attemptMove('fspecial', SPECIAL, this.facing);
-               if (this.facing == LEFT) 
+               if (this.facing == LEFT)
                   attemptMove('bair', ATTACK, this.facing);
                else
                   attemptMove('fair', ATTACK, this.facing);
