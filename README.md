@@ -1,3 +1,5 @@
+[![Build](https://github.com/LeotomasMC/chroma-fighters/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/LeotomasMC/chroma-fighters/actions/workflows/main.yml)
+
 # Chroma Fighters
 ^ working title lol
 
