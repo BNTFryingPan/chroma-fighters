@@ -49,6 +49,7 @@ jobs:
         echo "y" | haxelib run openfl setup
     - name: Build app (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
       run: |
+        cd .
         haxelib run openfl build ${{ matrix.target }}
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -57,4 +58,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            ./export/*
+            ./export/
