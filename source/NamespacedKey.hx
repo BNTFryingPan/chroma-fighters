@@ -85,4 +85,8 @@ class NamespacedKey extends AbstractNamespacedKey {
    private static function oDN_key(key:NamespacedKey) {
       return new NamespacedKey(NamespacedKey.DEFAULT_NAMESPACE, key.key);
    }
+
+   public function asFileReference():String {
+      return this.key.split("-").join("_").split(".").join("__");
+   }
 }

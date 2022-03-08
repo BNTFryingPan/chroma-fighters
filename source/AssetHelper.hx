@@ -136,6 +136,7 @@ class AssetHelper {
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
       return null;
+      //return FlxG.sound.load(Sound.loadFromFile());
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       if (assetDir == null) {
@@ -222,6 +223,7 @@ class AssetHelper {
    }
 
    public static function generateCombinedSpriteSheetForFighter(folderKey:NamespacedKey, sprite:FlxSprite, size:Int, play:String) {
+      #if sys
       var folderPath = AssetHelper.getAssetDirectory(folderKey);
 
       var spritesToLoad = FileSystem.readDirectory(folderPath).filter(name -> name.endsWith('.png'));
@@ -248,6 +250,9 @@ class AssetHelper {
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;
+      #else
+      return;
+      #end
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
@@ -296,6 +301,17 @@ class AssetHelper {
       return null;
       #end
    }
+
+   #if !sys
+   private function getAsset(key:NamespacedKey):Dynamic {
+      key.parseSpecialNamespaces();
+      if (Reflect.hasField(AssetPaths, key.asFileReference())) {
+         return Reflect.field(AssetPaths, key.asFileReference());
+      } else {
+         return null;
+      }
+   }
+   #end
 }
 
 typedef AnimationCombinerThing = {
@@ -305,5 +321,7 @@ typedef AnimationCombinerThing = {
    var name:String;
 }
 
-@:build(flixel.system.FlxAssets.buildFileReferences("mods", true))
+#if !sys
+@:build(WeirdPlatformAssets.buildFileReferences("mods", true))
 class AssetPaths {}
+#end
