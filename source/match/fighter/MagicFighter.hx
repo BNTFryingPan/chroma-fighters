@@ -358,7 +358,7 @@ class MagicFighter extends AbstractFighter {
    };
 
    public function play(name:String, force:Bool = false) {
-      if (force) {}
+      if (this.sprite.animation.get(name) == null)) return; // missing animation!
       return this.sprite.animation.play(name);
    }
 
@@ -453,7 +453,7 @@ class MagicFighter extends AbstractFighter {
       }
 
       function attemptMove(name, action:Action, ...params:Any) {
-         // this.moveset.attempt(name, input.getAction(action), input, ...params);
+         this.moveset.attempt(name, input.getAction(action), input, ...params);
       }
 
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');

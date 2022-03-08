@@ -168,7 +168,53 @@ class GenericInput {
       return this.rawDirectionStick.update(0, 0);
    }
 
-   public function getAction(action):InputState {
-      throw new haxe.exceptions.NotImplementedException();
+   public function getAction(action:Action):InputState {
+      return switch (action) {
+         case NULL; // never true
+            NOT_PRESSED;
+         case MENU_CONFIRM:
+            this.getConfirm();
+         case MENU_CANCEL:
+            this.getCancel();
+         case MENU_ACTION:
+            this.getMenuAction();
+         case MENU_LEFT:
+            this.getMenuLeft();
+         case MENU_RIGHT:
+            this.getMenuRight();
+         case MENU_BUTTON:
+            this.getMenuButton();
+         case JUMP:
+            this.getJump();
+         case SHORT_JUMP:
+            this.getShortJump();
+         case ATTACK:
+            this.getAttack();
+         case SPECIAL:
+            this.getSpecial();
+         case STRONG:
+            this.getStrong();
+         case TAUNT:
+            this.getTaunt();
+         case SHIELD:
+            this.getShield(); // might only do parries, not sure yet
+         case DODGE:
+            this.getDodge();
+         case WALK:
+            this.getWalk();
+         case DIRECTION_X:
+            NOT_PRESSED;
+         case DIRECTION_Y:
+            NOT_PRESSED;
+         case MOVE_X:
+            NOT_PRESSED;
+         case MOVE_Y:
+            NOT_PRESSED;
+
+         case MODIFIER_X:
+            NOT_PRESSED;
+         case MODIFIER_Y:
+            NOT_PRESSED;
+      }
    }
 }
