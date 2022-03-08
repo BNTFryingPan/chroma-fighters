@@ -304,3 +304,6 @@ typedef AnimationCombinerThing = {
    var startIndex:Int;
    var name:String;
 }
+
+@:build(flixel.system.FlxAssets.buildFileReferences("mods", true))
+class AssetPaths {}
