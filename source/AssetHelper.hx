@@ -135,7 +135,7 @@ class AssetHelper {
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
-      return null
+      return null;
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       if (assetDir == null) {
