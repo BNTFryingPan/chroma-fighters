@@ -74,6 +74,24 @@ class MenuMusicManager {
       sound_intro.play();
    }
 
+   public static function pause():Void {
+      sound_base.pause();
+      sound_sub_fighter.pause();
+      sound_sub_stage.pause();
+      sound_sub_base.pause();
+      sound_sub_extra_a.pause();
+      sound_sub_extra_b.pause();
+   }
+
+   public static function resume():Void {
+      sound_base.play();
+      sound_sub_fighter.play();
+      sound_sub_stage.play();
+      sound_sub_base.play();
+      sound_sub_extra_a.play();
+      sound_sub_extra_b.play();
+   }
+
    public static function debugText():String {
       if (GameState.isInMatch)
          return '';

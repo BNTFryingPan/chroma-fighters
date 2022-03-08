@@ -115,7 +115,7 @@ class TitleScreenState extends BaseState {
       add(this.pressStartText);
       add(this.logoSprite);
       add(this.main_localButton);
-      add(this.main_onlineButton);
+      // add(this.main_onlineButton);
       add(this.main_settingsButton);
       add(this.main_exitButton);
 

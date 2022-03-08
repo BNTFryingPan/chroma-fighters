@@ -254,6 +254,12 @@ class DebugDisplay extends FlxBasic {
                this.notify('Frame step only allowed offline in training');
             }
          }
+
+         if (FlxG.keys.anyJustPressed([M])) {
+            this.hasTriggeredDebugAction = true;
+            MenuMusicManager.pause();
+            AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/amogus3')).play().onComplete = MenuMusicManager.resume;
+         }
       }
 
       if (FlxG.keys.anyJustReleased([F3])) {

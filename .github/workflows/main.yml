@@ -42,7 +42,7 @@ jobs:
     - name: Build app (chroma-fighters_${{ matrix.target }})
       run: |
         cd .
-        haxelib run openfl build ${{ matrix.target }}
+        haxelib run openfl build ${{ matrix.target }} -debug
     - name: Archive Windows Release
       if: ${{ matrix.os == 'windows-latest' }}
       uses: thedoctor0/zip-release@master
@@ -56,12 +56,29 @@ jobs:
       with:
         type: 'tar'
         filename: './zipped/linux.tar.gz'
-        path: './export/linux/bin/*'
+        directory: './export/linux/bin/'
+        path: '.'
+    #- name: publish windows artifact
+    #  if: ${{ matrix.os == 'windows-latest' }}
+    #  uses: 'actions/upload-artifact@v3'
+    #  with:
+    #    name: 'windows-build'
+    #    path: |
+    #      ./zipped/windows.zip
+    #- name: publish linux artifact
+    #  if: ${{ matrix.os == 'ubuntu-latest' }}
+    #  uses: 'actions/upload-artifact@v3'
+    #  with:
+    #    name: 'linux-build'
+    #    path: |
+    #      ./zipped/linux.tar.gz
     - name: release on github
+      #uses: 'ncipollo/release-action@v1'
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
+        #allowUpdates: true
+        automatic_release_tag: "latest-${{ matrix.target }}"
         prerelease: true
         title: "Development Build"
         files: |
