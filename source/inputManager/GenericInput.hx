@@ -170,7 +170,7 @@ class GenericInput {
 
    public function getAction(action:Action):InputState {
       return switch (action) {
-         case NULL; // never true
+         case NULL: // never true
             NOT_PRESSED;
          case MENU_CONFIRM:
             this.getConfirm();
