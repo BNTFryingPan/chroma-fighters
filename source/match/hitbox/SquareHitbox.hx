@@ -1,4 +1,4 @@
-package match;
+package match.hitbox;
 
 import GameManager.ScreenSprite;
 import inputManager.Coordinates;
