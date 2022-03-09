@@ -17,6 +17,7 @@ import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
 import match.fighter.AbstractFighter;
+import match.hitbox.SquareHitbox;
 
 using StringTools;
 

@@ -2,6 +2,7 @@ package match;
 
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
+import match.hitbox.AbstractHitbox;
 import match.Match;
 
 interface IMatchObject {

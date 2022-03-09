@@ -10,6 +10,8 @@ import inputManager.InputHelper;
 import inputManager.InputState;
 import inputManager.StickVector;
 import match.MatchObject;
+import match.hitbox.AbstractHitbox;
+import match.hitbox.CircleHitbox;
 import match.stage.AbstractStage;
 
 typedef MoveResultData = {

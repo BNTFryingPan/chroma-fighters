@@ -9,7 +9,7 @@ import sys.FileSystem;
 using flixel.util.FlxArrayUtil;
 using StringTools;
 
-class FlxAssetPaths
+class WeirdPlatformAssets
 {
 	public static function buildFileReferences(directory:String = "assets/", subDirectories:Bool = false, ?filterExtensions:Array<String>,
 			?rename:String->String):Array<Field>

@@ -6,6 +6,7 @@ import inputManager.Coordinates;
 import match.hitbox.AbstractHitbox;
 import match.Match.GroundType;
 import match.MatchObject;
+import match.hitbox.SquareHitbox;
 import openfl.display.BitmapData;
 
 class StageGround extends FlxSprite implements IGroundObject {
