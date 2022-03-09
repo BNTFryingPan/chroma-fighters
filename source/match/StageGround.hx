@@ -3,7 +3,7 @@ package match;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import inputManager.Coordinates;
-import match.AbstractHitbox;
+import match.hitbox.AbstractHitbox;
 import match.Match.GroundType;
 import match.MatchObject;
 import openfl.display.BitmapData;

@@ -12,7 +12,7 @@ import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
-import match.AbstractHitbox;
+import match.hitbox.AbstractHitbox;
 import match.MatchObject;
 import match.Ruleset;
 import states.MatchState;

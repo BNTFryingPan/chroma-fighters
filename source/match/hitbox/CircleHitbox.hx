@@ -1,8 +1,8 @@
-package match;
+package match.hitbox;
 
 import GameManager.ScreenSprite;
 import inputManager.Coordinates;
-import match.AbstractHitbox;
+import match.hitbox.AbstractHitbox;
 import match.MatchObject;
 import match.fighter.AbstractFighter;
 

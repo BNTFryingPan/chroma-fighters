@@ -1,7 +1,7 @@
-package match;
+package match.hitbox;
 
 import inputManager.Coordinates;
-import match.AbstractHitbox;
+import match.hitbox.AbstractHitbox;
 
 typedef CompoundHitbox = TypedCompoundHitbox<AbstractHitbox>;
 

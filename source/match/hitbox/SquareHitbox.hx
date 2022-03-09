@@ -2,7 +2,7 @@ package match;
 
 import GameManager.ScreenSprite;
 import inputManager.Coordinates;
-import match.AbstractHitbox.IHitbox;
+import match.hitbox.AbstractHitbox;
 
 class SquareHitbox extends AbstractHitbox {
    public var width:Float;

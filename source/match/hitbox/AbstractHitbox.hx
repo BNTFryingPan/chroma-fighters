@@ -1,4 +1,4 @@
-package match;
+package match.hitbox;
 
 import PlayerSlot.PlayerSlotIdentifier;
 import inputManager.Coordinates;
