@@ -1,6 +1,6 @@
 package;
 
-#if !sys
+#if html5
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
