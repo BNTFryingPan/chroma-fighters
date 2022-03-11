@@ -1,0 +1,19 @@
+{
+    "author": "team-prism",
+    "type": "fighter", // fighter, stage, gameplay
+    "version": "0.0.1", // *must* be semver
+    "modFormat": "0", // the format version of this mod. used for compatability detection or workarounds if there are breaking changes to the way mods work
+    "description": "An example fighter mod for mod developers to learn from",
+    "name": "Example Fighter Mod",
+    "id": "cf-example",//either automatically generated,or created like java namespaces or whatever(com.domain.author.name)
+    "tags": ["list", "of", "mod", "tags"], // will automatically have mod.type and mod.author as tags at runtime
+    "options": { }, // not on stages
+    "primaryOption": "", // not on stages, can be empty
+    "secondaryOption": "", // not on stages, can be empty
+    "script": "script.cfs",  // main script file
+    "include": { // extra script files to load and use functions from
+        
+    },
+    "isInBaseGame": true
+}
+    

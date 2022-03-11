@@ -1,0 +1,9 @@
+function draw() {
+    trace("draw");
+
+    drawBitmap(getSprite())
+}
+
+function getFighterName() {
+    return "Example Fighter";
+}

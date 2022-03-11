@@ -1,0 +1,15 @@
+this file will go over tools that may be useful for creating your mods
+
+Scripting:
+programs that are good for writing your actual scripts
+
+VSCode - free, cross-platform, and open source* text editor with ide features. used while making the actual game!
+Notepad++ - free text editor, but not as featured as VSCode, but still better than notepad
+
+Art:
+programs for creating your fighter sprites
+
+Aseprite - cross-platform, open source pixel art program. costs money on steam, but if you are able to, you can build it from the source code yourself for free. recommended if you can afford it or can build it yourself
+Paint.net - windows only, but basically just mspaint but way better. not quite photoshop, but still has lots of features, and is more than enough for making pixel art. recommended if you cant get aseprite
+gimp - cross-platform, open source image editor. closer to photoshop than pdn, but far more complicated.
+

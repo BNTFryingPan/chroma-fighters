@@ -1,0 +1,78 @@
+{
+    "options": {
+        "stick_jump": false,
+        "flick_strongs": true,
+        "ab_strongs": true,
+        "flick_sensitivity": 0.2
+    },
+    "keyboard": {
+        "buttons": {
+            "confirm": ["Z"],
+            "cancel": ["X"],
+            "action": ["C"],
+            "context_left": ["A"],
+            "context_right": ["S"]
+        },
+        "axes": {
+            "cursor_x": {
+                "positive": "arrow_left",
+                "negative": "arrow_right",
+                "deadzone": 0,
+                "digital_threshold": 0.5
+            },
+            "cursor_y": {
+                "positive": "arrow_up",
+                "negative": "arrow_down",
+                "deadzone": 0,
+                "digital_threshold": 0.5
+            },
+            "move_x": {
+                "positive": "arrow_left",
+                "negative": "arrow_right",
+                "deadzone": 0,
+                "digital_threshold": 0.5
+            },
+            "move_y": {
+                "positive": "arrow_up",
+                "negative": "arrow_down",
+                "deadzone": 0,
+                "digital_threshold": 0.5
+            }
+        }
+    },
+    "controller": {
+        "buttons": {
+            "confirm": ["A"],
+            "cancel": ["B"],
+            "action": ["X", "Y"],
+            "context_left": ["LB", "LT"],
+            "context_right": ["RB", "RT"]
+        },
+        "axes": {
+            "cursor_x": {
+                "positive": "LEFT_STICK_X_POS",
+                "negative": "LEFT_STICK_X_NEG",
+                "deadzone": 0.05,
+                "digital_threshold": 0.25
+            },
+            "cursor_y": {
+                "positive": "LEFT_STICK_Y_POS",
+                "negative": "LEFT_STICK_Y_NEG",
+                "deadzone": 0.05,
+                "digital_threshold": 0.25
+            },
+            "move_x": {
+                "positive": "LEFT_STICK_X_POS",
+                "negative": "LEFT_STICK_X_NEG",
+                "deadzone": 0.05,
+                "digital_threshold": 0.25
+            },
+            "move_y": {
+                "positive": "LEFT_STICK_Y_POS",
+                "negative": "LEFT_STICK_Y_NEG",
+                "deadzone": 0.05,
+                "digital_threshold": 0.25
+            }
+        }
+    }
+}

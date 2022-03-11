@@ -1,0 +1,186 @@
+chroma-fighters mod scripting documentation
+
+this documentation will probably be really bad lmao
+
+check the test fighter info.jsonc for a guide on how that file works for fighters
+
+script files use the .cfs file extension, but are just plain text files you can create with notepad or any other text editor
+the game uses hscript (https://github.com/HaxeFoundation/hscript) to interpret haxe code from your script files, but you dont need to care about that if you just want to make something for chroma-fighters
+if you are familiar with haxe or hscript you should know how this works and can just use the api documentation
+
+when one of your scripts is called, all of the code inside the file is run from top to bottom.
+
+i need to add more to this lol
+
+misc things you should probably know:
+- you cannot create classes or types in scripts due to a limitation with hscript.
+- all event functions must accept an `Array<Dynamic>`, instead of each argument listed, and cast each argument.
+for example, to add a listener for update(), you must declare a function in your script as
+function update(args:Array<Dynamic>) { logDynamic(1/(cast args[0])) }
+instead of 
+function update(elapsed:Float) { logDynamic(1/args[0]) }
+this is due to a limitation of function types, but may be changed in the future
+functions that you only intend to call from your own script do not need to be defined this way
+
+basic tutorial:
+
+to get started creating your first fighter mod, copy the template mod from the mods folder. this mod is hidden in game as you arent meant to play as this fighter, but it is a fully functional fighter.
+to get the fighter to show up in the custom fightr selection, change the value of the "modFormat" property in the `info.jsonc` file from -1 to the number shown after "Format:" in the top right of the main menu after pressing F3.
+once you do that, press F3 + R on the main menu to reload mods, and then go to the custom character selection and you should see it listed.
+now its time to make it your own fighter. open the `info.jsonc` file again, and change the author, name, id, description, and tags properties to whatever you want.
+if you reload the mods again (F3 + R on the main menu), you should see the changes you made in the character selector.
+i wont go into creating art for the character here now as this guide is focused on the scripting of the mod
+
+moves:
+
+the game technically has no idea what moves your fighter has, it only does whatever you tell it to do given what information the game gives your fighter
+in order to stale moves or do other things that require knowing what a move is you have to tell the game to stale a move by its id. the id is just an arbitrary string that doesnt really matter what it is as long as its always used to refer to the same move.
+if you want multiple moves to stale as one, use the staleing functions with the same id for each move, but for other things you should use unique ids.
+you may choose to include a function that allows other fighters to perform one of your fighters (like kirby copy), they can. this should allow passing an id and a position and direction to perform the attack from.
+
+API Documentation:
+
+events:
+events are functions that you define in your script that will get called by the game when certain things happen
+eventName(eventArgument:ArgumentType)
+
+available for all mods:
+update(elapsed:Float)
+onModLoad()
+onModUnload()
+onModInit()
+onMatchStart()
+onMatchEnd()
+onTriggerZoneActivate(id:String)
+
+availale for fighter mods:
+onCommandInput(id:String)
+
+
+built-in vars documentation:
+
+available for all mods:
+matchStarted:Bool - if the match has started, and the countdown is completed
+
+available for fighter mods:
+percent:Float - fighter %
+airstate:? - idk how this will work yet. the air state of the fighter
+
+
+built-in functions documentation:
+functionName(argumentName:ArgumentType, ?optionalArgument:ArgumentType=defaultValue)
+
+available for all mods:
+log(text:String)
+logDynamic(...args:Dynamic) // you can log almost any type with this, but how useful that is may vary
+createSquareTriggerZone(x:Float, y:Float, width:Float, height:Float, id:String)
+createSquareDamageBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, knockback:Float, damage:Float)
+createSquareWindBox(x:Float, y:Float, width:Float, height:Float, id:String, angle:Float, speed:Float)
+createCircleTriggerZone(x:Float, y:Float, radius:Float, id:String)
+createCircleDamageBox(x:Float, y:Float, radius:Float, id:String, angle:Float, knockback:Float, damage:Float)
+createCircleWindBox(x:Float, y:Float, radius:Float, id:String, angle:Float, speed:Float)
+getClosestFighter(x:Float, y:Float, ?range:Float=-1.0):Null<Fighter>
+hasMatchStarted():Bool
+hasMatchEnded():Bool
+getFighter(slot:Int):Null<Fighter>
+getModOptions():Map<String -> Dynamic>
+getModOption(key:String):Dynamic
+getSprite(key:NamespacedKey, ?frame:Int=0, ?tag:String):BitmapData
+drawBitmap(bitmap:BitmapData, x:Float, y:Float)
+
+
+available for fighter mods, or on the `Fighter` class when refrenced by another mod if $:
+registerCommandInput(inputs:Array<CommandInputDirection>, id:String) // must be called during load, if called at any other time, nothing will happen. id is the id of the event that will be sent to your onCommandInput handler
+$getPercent():Float
+$getSlot():Int
+$getFighterName():String
+$getPlayerName():String
+$damage(amount:Float, ?attacker:Int)
+stale(id:String)
+getStaledDamage(id:String, amount:Float)
+$launch(?angle:Float=50, ?knockback:Float=1.0, ?flip:Bool=true) // angle is -360 to 360, 0 is straight up, flip will automatically multiply by -1 if fighter is facing right
+$getHeldItem():Null<HoldableItem>
+
+fighter input functions (fighter.input.<function>):
+these return the input state of the button they refer to
+JUST_PRESSED = the button was pressed this frame
+PRESSED = the button is currently being pressed
+JUST_RELEASED = the button was released this frame
+NOT_PRESSED = the button is not being pressed
+
+getCursorPosition():Coordinates - the x,y position of the cursor on menus
+getConfirm(): the button used to confirm in menus, usually con-A or kb-Z
+getCancel(): the button used to cancel or go back in menus, usually con-B or kb-X;
+getMenuAction(): action button in menus, usually con-X and con-Y or kb-C;
+getMenuLeft(): left modifier in menus, usually for selecting alts, usually con-LB/L or kb-A;
+getMenuRight(): right modifier in menus, usually for selecting alts, usually con-RB/R or kb-S;
+
+getAttack(): button used to attack
+getJump():
+getSpecial():
+getStrong():
+getShield():
+getDodge():
+getWalk():
+
+input helper (InputHelper.<function>):
+these functions accept 1 or more input states and can return a new input state or boolean that may be easier to work with
+the 'argument' shown is actually just the number of input states they accept
+isPressed(1):Bool
+isNotPressed(1):Bool
+justChanged(1):Bool
+notChanged(1):Bool
+or(any):InputState - used to OR input states. if any are PRESSED, returns PRESSED
+asInt(1):Int
+
+currently only for internal use, but may work in scripts anyways, not sure. probably not, but might add support for something like these in the future
+getFromFlixel(justPressed:Bool, justReleased:Bool, pressed:Bool)
+getFromFlxInput(input:FlxInput<Int>)
+getFromFlxKey(key:FlxKey)
+
+
+classes:
+Fighter // see above
+HoldableItem
+Stage
+NamespacedKey
+
+enums:
+
+CommandInputDirection: // used for command inputs like ryu/ken in smash
+UP
+UPLEFT
+LEFT
+DOWNLEFT
+DOWN
+DOWNRIGHT
+RIGHT
+UPRIGHT
+NEUTRAL
+NOT_UP // NOT directions are used to disallow certain directions. Note that if you just want to disallow pressing the other direction in a sequece, this is done for you
+NOT_UPLEFT
+NOT_LEFT
+NOT_DOWNLEFT
+NOT_DOWN
+NOT_DOWNRIGHT
+NOT_RIGHT
+NOT_UPRIGHT
+NOT_NEUTRAL
+
+FighterAirState:
+GROUNDED
+FULL_CONTROL
+NO_JUMPS
+PRATFALL
+DODGE_PRATFALL
+SPECIAL_FALL
+
+PlayerSlotIdentifier -> Int: // 
+P1 -> 0
+P2 -> 1
+P3 -> 2
+P4 -> 3
+P5 -> 4
+P6 -> 5
+P7 -> 6
+P8 -> 7
