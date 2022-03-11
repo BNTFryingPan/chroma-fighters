@@ -131,7 +131,7 @@ class AssetHelper {
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
-      var assetDir = AssetHelper.getAssetPath(key, 'ogg');
+      var assetDir = AssetHelper.getAssetPath(key);
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       #end
@@ -302,12 +302,12 @@ class AssetHelper {
    }
 
    #if !sys
-   private static function getAssetPath(key:NamespacedKey, ext:String):String {
+   private static function getAssetPath(key:NamespacedKey, ?ext:String):String {
       key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE)
          //return 'mods/basegame/${key.asFileReference()}';
-         if (Reflect.hasField(AssetPaths, 'mods_basegame_${key.asFileReference()}__${ext}'))
-            return Reflect.field(AssetPaths, 'mods_basegame_${key.asFileReference()}.${ext}');
+         if (Reflect.hasField(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}'))
+            return Reflect.field(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}');
       return null;
    }
    #end
