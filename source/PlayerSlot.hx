@@ -88,6 +88,7 @@ class PlayerBox extends FlxSpriteGroup {
    public var slot:PlayerSlotIdentifier;
 
    public function new(slot:PlayerSlotIdentifier) {
+      trace('new player box');
       super(0, FlxG.height - 80);
       this.background = new FlxSprite();
       this.text = new FlxText(0, 0, 0, "0/8\nInput");
@@ -162,7 +163,7 @@ class PlayerSlot {
    ];
    public static final cpuPlayerColor:PlayerColor = {red: 0.4, green: 0.4, blue: 0.4};
 
-   public static var players:Map<PlayerSlotIdentifier, Null<PlayerSlot>> = [
+   public static var players:Map<PlayerSlotIdentifier, PlayerSlot> = [
       P1 => new PlayerSlot(P1),
       P2 => new PlayerSlot(P2),
       P3 => new PlayerSlot(P3),
@@ -173,7 +174,7 @@ class PlayerSlot {
       P8 => new PlayerSlot(P8),
    ];
 
-   public static function getPlayer(slot:PlayerSlotIdentifier) {
+   public static function getPlayer(slot:PlayerSlotIdentifier):PlayerSlot {
       return PlayerSlot.players[slot];
    }
 
@@ -423,7 +424,7 @@ class PlayerSlot {
    public var visible(get, default):Bool = false;
 
    function set_coinDropped(value:Bool):Bool {
-      if (value == false) 
+      if (value == false)
          return this.coinDropped = false;
 
       this.coinDroppedPosition.clone(this.cursorPosition);
@@ -461,8 +462,10 @@ class PlayerSlot {
 
       this.input = switch (inputDevice.model) {
          case SWITCH_PRO:
+            trace('new pro controller');
             new SwitchProController(this.slot, profile);
          default:
+            trace('new generic controller');
             new GenericController(this.slot, profile);
       };
 
@@ -494,6 +497,7 @@ class PlayerSlot {
 
    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
       // return bitmap;
+      trace('new colortrans + rect');
       var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
       var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
       bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
@@ -526,6 +530,7 @@ class PlayerSlot {
          case P8: PointerP8Bitmap;
       }
 
+      trace('new rect+point');
       baseCoin.copyPixels(icon, new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
       return baseCoin;
    }
@@ -620,6 +625,8 @@ class PlayerSlot {
 
       this.ready = true;
 
+      trace('player slot init');
+
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();
       this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap), true, 32, 32, true, '${this.slot}-pointer');
@@ -644,7 +651,7 @@ class PlayerSlot {
    private function new(slot:PlayerSlotIdentifier) {
       this.slot = slot;
       this.type = NONE;
-
+      trace('new player slot');
       this.input = new GenericInput(slot);
       this.fighterSelection = new FighterSelection(slot);
    }
@@ -748,7 +755,8 @@ class PlayerSlot {
             // if (Std.isOfType(mem, CustomButton)) {
             if ((mem is CustomButton) && GameState.isUIOpen) {
                var button:CustomButton = cast mem;
-               if (button.overlapsPoint(FlxPoint.get(cursorPos.x, cursorPos.y))) {
+               var point = FlxPoint.get(cursorPos.x, cursorPos.y);
+               if (button.overlapsPoint(point)) {
                   button.overHandler(this.slot);
                   if (InputHelper.isPressed(this.input.getConfirm()))
                      button.downHandler(this.slot);
@@ -756,19 +764,23 @@ class PlayerSlot {
                      button.upHandler(this.slot);
                } else
                   button.outHandler(this.slot);
+               point.put();
             }
          }
-         Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
-         if (GameState.shouldDrawCursors) {
-            Main.debugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
-            Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
-         }
-         if (GameState.isInMatch) {
-            Main.debugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
-            Main.debugDisplay.leftAppend += '${this.fighter.getDebugString()}';
+         if (Main.debugDisplay.visible) {
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
+            if (GameState.shouldDrawCursors) {
+               Main.debugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
+               Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
+            }
+            if (GameState.isInMatch) {
+               Main.debugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
+               Main.debugDisplay.leftAppend += '${this.fighter.getDebugString()}';
+            }
          }
       } else {
-         Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
+         if (Main.debugDisplay.visible)
+            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
    }
 

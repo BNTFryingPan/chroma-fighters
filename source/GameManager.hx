@@ -12,9 +12,9 @@ import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputType;
 import inputManager.MouseHandler;
-import match.hitbox.AbstractHitbox;
 import match.MatchObject;
 import match.Ruleset;
+import match.hitbox.AbstractHitbox;
 import states.MatchState;
 
 enum PlayerBoxState {
@@ -107,7 +107,7 @@ class GameManager {
       GameState.isInMatch = (FlxG.state is MatchState);
 
       if (GameState.isInMatch && (!GameState.trainingFrameStepMode || GameState.trainingFrameStepTick)) {
-         for (p in PlayerSlot.getPlayerArray()) {
+         for (p in PlayerSlot.players) {
             if (p.fighter != null)
                p.fighter.update(elapsed);
          }

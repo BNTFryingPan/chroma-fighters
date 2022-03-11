@@ -4,8 +4,8 @@ import GameManager;
 import PlayerSlot;
 import flixel.FlxG;
 import flixel.util.FlxColor;
-import inputManager.InputManager;
 import inputManager.Action;
+import inputManager.InputManager;
 
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;
@@ -69,7 +69,7 @@ class CharSelectScreen extends BaseState {
    }
 
    public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
-      for (player in PlayerSlot.getPlayerArray()) {
+      for (player in PlayerSlot.players) {
          if (!player.isReady())
             return false;
       }

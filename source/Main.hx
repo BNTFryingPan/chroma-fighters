@@ -43,11 +43,12 @@ class Main extends Sprite {
       // TODO : load fps setting from settings file (i dont think it can be changed without a restart)
       // Main.targetFps = 60;
 
-      Main.fpsCounter = new FPS(10, 10, 0xFFFFFF);
-      addChild(Main.fpsCounter);
-      Main.fpsCounter.alpha = 0;
+      Main.fpsCounter = new FPS(10, 10, 0xFF00FF);
+
+      Main.fpsCounter.alpha = 1;
 
       addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
+      addChild(Main.fpsCounter);
 
       FlxG.fixedTimestep = true;
 

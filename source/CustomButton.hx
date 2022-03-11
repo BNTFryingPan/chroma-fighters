@@ -93,7 +93,7 @@ class CustomButton extends FlxButton {
          this.loadDefaultGraphic();
       } else {
          if (!(sprite is NamespacedKey))
-            sprite = NamespacedKey.ofDefaultNamespace(sprite);
+            sprite = NamespacedKey.ofDefaultNamespace(cast sprite);
 
          var asset = AssetHelper.getImageAsset(sprite);
          this.loadGraphic(asset, true, asset.width, Math.ceil(asset.height / 3), false, (cast sprite).toString());
@@ -101,34 +101,36 @@ class CustomButton extends FlxButton {
       }
    }
 
+   function isOverlapping(p:PlayerSlot) {
+      if (!p.visible)
+         return false;
+      var c = p.getCursorPosition();
+      var point = FlxPoint.get(c.x, c.y);
+      var overlaps = overlapsPoint(point);
+      point.put();
+      return overlaps;
+   }
+
    function checkCursorOverlap():Array<PlayerSlotIdentifier> {
-      var overlappingCursors = PlayerSlot.getPlayerArray().map(function(p) {
-         if (!p.visible)
-            return false;
-         var c = p.getCursorPosition();
-         var point = FlxPoint.get(c.x, c.y);
-         var overlaps = overlapsPoint(point);
-         point.put();
-         return overlaps;
-      });
-      var output:Array<PlayerSlotIdentifier> = [];
-      if (overlappingCursors[0])
-         output.push(P1);
-      if (overlappingCursors[1])
-         output.push(P2);
-      if (overlappingCursors[2])
-         output.push(P3);
-      if (overlappingCursors[3])
-         output.push(P4);
-      if (overlappingCursors[4])
-         output.push(P5);
-      if (overlappingCursors[5])
-         output.push(P6);
-      if (overlappingCursors[6])
-         output.push(P7);
-      if (overlappingCursors[7])
-         output.push(P8);
-      return output;
+      return [for (player in PlayerSlot.players) if (isOverlapping(player)) player.slot];
+      /*var output:Array<PlayerSlotIdentifier> = [];
+         if (overlappingCursors[0])
+            output.push(P1);
+         if (overlappingCursors[1])
+            output.push(P2);
+         if (overlappingCursors[2])
+            output.push(P3);
+         if (overlappingCursors[3])
+            output.push(P4);
+         if (overlappingCursors[4])
+            output.push(P5);
+         if (overlappingCursors[5])
+            output.push(P6);
+         if (overlappingCursors[6])
+            output.push(P7);
+         if (overlappingCursors[7])
+            output.push(P8);
+         return output; */
    }
 
    function updateState() {

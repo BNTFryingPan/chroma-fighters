@@ -4,7 +4,7 @@
 		{
 			"name": "Build + Debug",
 			"type": "lime",
-			"request": "launch"
+			"request": "launch",
 		},
 		{
 			"name": "Debug",

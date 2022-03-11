@@ -45,7 +45,7 @@ abstract class AbstractHitbox implements IHitbox {
       if (!this.active)
          return;
 
-      for (player in PlayerSlot.getPlayerArray()) {
+      for (player in PlayerSlot.players) {
          if (player.fighter != null) {
             if (player.fighter.hitbox.intersectsHitbox(this)) {
                this.onEnter(player.fighter);

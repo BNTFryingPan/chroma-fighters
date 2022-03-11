@@ -63,6 +63,7 @@
 	<haxedef name="debug" if="d4" />
 	
 	<section if="cpp debug">
+		<haxelib name='hxtelemetry' if="telemetry"/>
 		<haxedef name="debug" value="true" />
 		<haxedef name="HXCPP_STACK_LINE" />
 		<haxedef name="HXCPP_STACK_TRACE" />

@@ -47,36 +47,34 @@ class InputManager {
       }
    }*/
    public static function getUsedGamepads():Array<FlxGamepad> {
-      return InputManager.getPlayerArray().filter(input -> {
-         return Std.isOfType(input, GenericController);
-      }).map(input -> {
-         var c:GenericController = cast input;
-         return c._flixelGamepad;
-      });
+      return [
+         for (player in PlayerSlot.players)
+            if (Std.isOfType(player.input, GenericController)) (cast player.input)._flixelGamepad
+      ];
+      /*return InputManager.getPlayerArray().filter(input -> {
+            return Std.isOfType(input, GenericController);
+         }).map(input -> {
+            var c:GenericController = cast input;
+            return c._flixelGamepad;
+      });*/
    }
 
    public static function getPlayerSlotByInput(input:OneOfTwo<FlxGamepad, InputType>):Null<PlayerSlotIdentifier> {
       if (Std.isOfType(input, InputType)) {
          var type:InputType = cast input;
-         if (type == KeyboardInput || type == KeyboardAndMouseInput) {
-            var matchingInputs = PlayerSlot.getPlayerArray().filter(thisInput -> {
-               return Std.isOfType(thisInput, KeyboardHandler);
-            });
-            if (matchingInputs.length > 0) {
-               return matchingInputs[0].slot;
-            }
-         }
+         if (type == KeyboardInput || type == KeyboardAndMouseInput)
+            for (player in PlayerSlot.players)
+               if (Std.isOfType(player.input, KeyboardHandler))
+                  return player.slot;
          return null;
       }
       var gamepad:FlxGamepad = cast input;
-      for (slot => input in PlayerSlot.players) {
-         if (Std.isOfType(input, GenericController)) {
-            var c:GenericController = cast input;
-            if (c._flixelGamepad == gamepad) {
-               return cast slot;
-            }
+      for (player in PlayerSlot.players)
+         if (Std.isOfType(player.input, GenericController)) {
+            var c:GenericController = cast player.input;
+            if (c._flixelGamepad == gamepad)
+               return player.slot;
          }
-      }
 
       return null;
    }
@@ -94,9 +92,7 @@ class InputManager {
    }
 
    public static function getCursors():Array<Coordinates> {
-      return PlayerSlot.getPlayerArray().map(function(p) {
-         return p.getCursorPosition();
-      });
+      return [for (player in PlayerSlot.players) player.getCursorPosition()];
    }
 
    public static function anyPlayerPressingAction(act:Action):Bool {

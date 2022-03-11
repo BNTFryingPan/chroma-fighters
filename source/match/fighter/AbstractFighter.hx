@@ -239,13 +239,13 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    }
 
    public function getAttackDirection(stick:StickVector):DirectionalAttack {
-      if (stick.y > 0.5)
-         return DirectionalAttack.UP;
       if (stick.y < -0.5)
+         return DirectionalAttack.UP;
+      if (stick.y > 0.5)
          return DirectionalAttack.DOWN;
       if (stick.x > 0.4)
          return DirectionalAttack.LEFT;
-      if (stick.y < -0.4)
+      if (stick.x < -0.4)
          return DirectionalAttack.RIGHT;
       return DirectionalAttack.NEUTRAL;
    }

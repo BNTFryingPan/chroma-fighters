@@ -157,7 +157,8 @@ class TitleScreenState extends BaseState {
    }
 
    override public function update(elapsed:Float) {
-      Main.debugDisplay.rightAppend += '\n${TitleScreenState.pastStartScreen ? 'P' : 'p'}${TitleScreenState.hasEverPassedStartScreenThisSession ? 'S' : 's'}${this.hasPressedButtons ? 'B' : 'b'}';
+      if (Main.debugDisplay.visible)
+         Main.debugDisplay.rightAppend += '\n${TitleScreenState.pastStartScreen ? 'P' : 'p'}${TitleScreenState.hasEverPassedStartScreenThisSession ? 'S' : 's'}${this.hasPressedButtons ? 'B' : 'b'}';
 
       if (!this.isFading) {
          if (!TitleScreenState.pastStartScreen && !this.hasPressedButtons) {

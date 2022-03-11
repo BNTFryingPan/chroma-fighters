@@ -11,7 +11,9 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import inputManager.Action;
 import inputManager.InputManager;
+import lime.app.Application;
 import lime.system.System as LimeSys;
+import openfl.display.Window;
 import openfl.system.Capabilities as FlCap;
 import states.BaseState;
 import states.MatchState;
@@ -22,6 +24,10 @@ import cpp.vm.Gc;
 #end
 
 class DebugDisplay extends FlxBasic {
+   public static final _systemText = '${FlCap.manufacturer} ${DebugDisplay.os}(${FlCap.cpuArchitecture})';
+   public static final _rawSystemText = '${FlCap.version}';
+   public static final _haxeVersion = '${haxe.macro.Compiler.getDefine("haxe")}';
+
    public var leftText:FlxText;
    public var leftPrepend:String = "";
    public var leftAppend:String = "";
@@ -45,8 +51,11 @@ class DebugDisplay extends FlxBasic {
    private static final os:String = 'windows lmao';
    #end
 
+   private final _renderer:String = Application.current.window.context.type;
+
    public function new() {
       super();
+      trace('new debug display');
 
       this.active = true;
       this.visible = true;
@@ -312,17 +321,22 @@ class DebugDisplay extends FlxBasic {
             stateId = state.stateId();
          }
          this.leftText.text += 'FPS: ${Main.fpsCounter.currentFPS}\nState: ${stateId}\n';
+         #if telemetry
+         this.leftText.text += '[Telemetry Build]\n';
+         #end
          this.leftText.text += this.leftAppend;
+
          this.rightText.text = this.rightPrepend;
          if (this.rightPrepend != "" && !StringTools.endsWith(this.rightText.text, "\n"))
             this.rightText.text += "\n";
-         this.rightText.text += 'Haxe: ${haxe.macro.Compiler.getDefine("haxe")}\n';
+         this.rightText.text += 'Haxe: ${DebugDisplay._haxeVersion}\n';
          this.rightText.text += 'Flixel: ${FlxG.VERSION.toString()}\n';
+         this.rightText.text += 'Renderer: ${this._renderer}\n';
          // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
          this.rightText.text += 'Mem: ${round(memStats.currentMemory)} / ${round(maxMemory)}MB\n';
          this.rightText.text += 'Alloc: ${round(memStats.allocationCount)} / ${round(memStats.totalAllocated)}\n';
-         this.rightText.text += 'System: ${FlCap.manufacturer} ${DebugDisplay.os} (${FlCap.cpuArchitecture})\n';
-         this.rightText.text += 'SysRaw: ${FlCap.version}\n';
+         this.rightText.text += 'System: ${DebugDisplay._systemText}\n';
+         this.rightText.text += 'SysRaw: ${DebugDisplay._rawSystemText}\n';
          // this.rightText.text += 'Elapsed: ${}';
          // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
          // this.rightText.text += 'CPU: \n';

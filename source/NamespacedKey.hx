@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.typeLimit.OneOfTwo;
 import openfl.errors.TypeError;
 
 using StringTools;
@@ -50,14 +51,11 @@ class NamespacedKey extends AbstractNamespacedKey {
       this.key = key;
    }
 
-   public static function ofDefaultNamespace(obj:Dynamic) {
-      if ((obj is String)) {
-         return oDN_string(cast obj);
-      } else if ((obj is NamespacedKey)) {
+   public static function ofDefaultNamespace(obj:OneOfTwo<String, NamespacedKey>) {
+      if (obj is NamespacedKey) {
          return oDN_key(cast obj);
-      } else {
-         throw new TypeError("Invalid object passed to default namespace function.");
       }
+      return oDN_string(cast obj);
    }
 
    public function parseSpecialNamespaces():NamespacedKey {

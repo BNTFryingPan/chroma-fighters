@@ -60,20 +60,20 @@ class ModScript {
 }
 
 class AssetHelper {
-   public static final instance = new AssetHelper();
-
+   // public static final instance = new AssetHelper();
    public static final saveDirectory:String = "./save/";
    static inline final saveNamespace:String = "chromasave";
 
-   public static var scriptCache:Map<String, Expr> = new Map<String, Expr>();
-   public static var imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
-   public static var aseCache:Map<String, Bytes> = new Map<String, Bytes>();
+   public static final scriptCache:Map<String, Expr> = new Map<String, Expr>();
+   public static final imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
+   public static final aseCache:Map<String, Bytes> = new Map<String, Bytes>();
 
    private static var parser:Parser = new Parser();
 
-   private function new() {}
+   // private function new() {}
 
    private static function getNullBitmap():BitmapData {
+      trace('new null bitmap');
       return new BitmapData(1, 1, true, 0xFF00FFFF);
    }
 
@@ -136,7 +136,7 @@ class AssetHelper {
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
       return null;
-      //return FlxG.sound.load(Sound.loadFromFile());
+      // return FlxG.sound.load(Sound.loadFromFile());
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       if (assetDir == null) {
