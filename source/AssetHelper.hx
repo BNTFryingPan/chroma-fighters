@@ -141,7 +141,7 @@ class AssetHelper {
       #if sys
       var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
       #else
-      var sound = FlxG.sound.load(FlxAssets.getSound(asserDir), 1, loop);
+      var sound = FlxG.sound.load(FlxAssets.getSound(assetDir), 1, loop);
       #end
       sound.persist = persist;
       return sound;
