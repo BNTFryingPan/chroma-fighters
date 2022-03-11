@@ -296,7 +296,7 @@ class AssetHelper {
    private static function getAssetPath(key:NamespacedKey):String {
       key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE)
-         return 'mods/basegame/${key.key}';
+         return 'basegame/${key.key}';
          //if (Reflect.hasField(AssetPaths, key.asFileReference()))
             //return Reflect.field(AssetPaths, key.asFileReference())
       return null;
