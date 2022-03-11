@@ -15,6 +15,7 @@ import hscript.Interp;
 import hscript.Parser;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
+import flixel.system.FlxAssets;
 
 using StringTools;
 
@@ -114,7 +115,11 @@ class AssetHelper {
       var assetDir = AssetHelper.getAssetDirectory(key, ".png");
       #end
       if (assetDir != null) {
+         #if sys
          var bitmap = BitmapData.fromFile(assetDir);
+         #else
+         var bitmap = FlxAssets.getBitmapData(assetDir);
+         #end
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
       }
@@ -133,7 +138,11 @@ class AssetHelper {
       if (assetDir == null) {
          return null;
       }
+      #if sys
       var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
+      #else
+      var sound = FlxG.sound.load(FlxAssets.getSound(asserDir), 1, loop);
+      #end
       sound.persist = persist;
       return sound;
    }
@@ -296,7 +305,7 @@ class AssetHelper {
    private static function getAssetPath(key:NamespacedKey):String {
       key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE)
-         return 'basegame/${key.key}';
+         return 'mods/basegame/${key.asFileReference()}';
          //if (Reflect.hasField(AssetPaths, key.asFileReference()))
             //return Reflect.field(AssetPaths, key.asFileReference())
       return null;
