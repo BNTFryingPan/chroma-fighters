@@ -104,48 +104,38 @@ class AssetHelper {
    }
 
    public static function getImageAsset(key:NamespacedKey):BitmapData {
-      // return getNullBitmap();
-      #if mobile
-      return getNullBitmap();
-      // return AssetPaths
-      #elseif (sys)
-      // Main.log('loading ${key.toString()}');
-      // if (FlxG.bitmap.checkCache(key.toString())) {
-      // return FlxG.bitmap.get(key.toString()).bitmap;
-      // }
-
       if (AssetHelper.imageCache.exists(key.toString())) {
          return AssetHelper.imageCache.get(key.toString());
       }
+
+      #if !sys
+      var assetDir = getAssetPath(key);
+      #else
       var assetDir = AssetHelper.getAssetDirectory(key, ".png");
+      #end
       if (assetDir != null) {
          var bitmap = BitmapData.fromFile(assetDir);
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
-         // Main.log('found');
-         // var graphic = FlxG.bitmap.add(BitmapData.fromFile(assetDir), false, key.toString());
-         // graphic.persist = true;
-         // return graphic.bitmap;
       }
-      // Main.log('not found');
-      #end
 
       return getNullBitmap();
+
+      //return getAsset(key);
    }
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if !sys
-      return null;
-      // return FlxG.sound.load(Sound.loadFromFile());
+      var assetDir = getAssetPath(key);
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
+      #end
       if (assetDir == null) {
          return null;
       }
       var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
       sound.persist = persist;
       return sound;
-      #end
    }
 
    public static function getTextAsset(key:NamespacedKey):Array<String> {
@@ -303,13 +293,13 @@ class AssetHelper {
    }
 
    #if !sys
-   private function getAsset(key:NamespacedKey):Dynamic {
+   private function getAssetPath(key:NamespacedKey):String {
       key.parseSpecialNamespaces();
-      if (Reflect.hasField(AssetPaths, key.asFileReference())) {
-         return Reflect.field(AssetPaths, key.asFileReference());
-      } else {
-         return null;
-      }
+      if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE)
+         return 'mods/basegame/${key.key}';
+         //if (Reflect.hasField(AssetPaths, key.asFileReference()))
+            //return Reflect.field(AssetPaths, key.asFileReference())
+      return null;
    }
    #end
 }
