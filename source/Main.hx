@@ -16,6 +16,8 @@ import match.Match;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import states.TitleScreenState;
+import lime.utils.Log;
+import lime.utils.LogLevel;
 
 class Main extends Sprite {
    public static var fpsCounter:FPS;
@@ -39,6 +41,12 @@ class Main extends Sprite {
       super();
       // FlxGraphic.defaultPersist = true;
       FlxG.autoPause = false;
+      #if debug
+      Log.level = LogLevel.VERBOSE;
+      #else
+      Log.level = LogLevel.ERROR;
+      #end
+
 
       // TODO : load fps setting from settings file (i dont think it can be changed without a restart)
       // Main.targetFps = 60;
