@@ -85,6 +85,6 @@ class NamespacedKey extends AbstractNamespacedKey {
    }
 
    public function asFileReference():String {
-      return this.key.split("-").join("_").split(".").join("__");
+      return this.key.split('/').join('_').split("-").join("_").split(".").join("__");
    }
 }
