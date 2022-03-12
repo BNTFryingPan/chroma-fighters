@@ -12,15 +12,15 @@ import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.Profile;
 import lime.app.Application;
+import lime.utils.Log;
+import lime.utils.LogLevel;
 import match.Match;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import states.TitleScreenState;
-import lime.utils.Log;
-import lime.utils.LogLevel;
 
 class Main extends Sprite {
-   public static var fpsCounter:FPS;
+   public static var fpsCounter:DebugDisplayV2;
    public static var debugDisplay:DebugDisplay;
    public static var targetFps:Int = 60;
    public static var screenSprite:ScreenSprite;
@@ -47,11 +47,10 @@ class Main extends Sprite {
       Log.level = LogLevel.ERROR;
       #end
 
-
       // TODO : load fps setting from settings file (i dont think it can be changed without a restart)
       // Main.targetFps = 60;
 
-      Main.fpsCounter = new FPS(10, 10, 0xFF00FF);
+      Main.fpsCounter = new DebugDisplayV2();
 
       Main.fpsCounter.alpha = 1;
 

@@ -359,8 +359,8 @@ class MagicFighter extends AbstractFighter {
    };
 
    public function play(name:String, force:Bool = false) {
-      //if (this.sprite.animation.get(name) == null)
-         //return; // missing animation!
+      // if (this.sprite.animation.get(name) == null)
+      // return; // missing animation!
       return this.sprite.animation.play(name);
    }
 
@@ -518,7 +518,7 @@ class MagicFighter extends AbstractFighter {
       #if debug
       }
       #end
-      this.sprite.setPosition(this.x - 20, this.y - 7);
+      this.sprite.setPosition(this.x - 36, this.y - 23);
       this.sprite.flipX = this.facing == RIGHT;
    }
 

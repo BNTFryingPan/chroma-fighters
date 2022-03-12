@@ -168,6 +168,34 @@ class DebugDisplay extends FlxBasic {
             }
          }
 
+         if (FlxG.keys.anyJustPressed([FOUR])) {
+            if (!GameState.isInMatch) {
+               this.hasTriggeredDebugAction = true;
+               MenuMusicManager.musicState = SUB_PURE;
+            }
+         }
+
+         if (FlxG.keys.anyJustPressed([FIVE])) {
+            if (!GameState.isInMatch) {
+               this.hasTriggeredDebugAction = true;
+               MenuMusicManager.musicState = SUB_A;
+            }
+         }
+
+         if (FlxG.keys.anyJustPressed([SIX])) {
+            if (!GameState.isInMatch) {
+               this.hasTriggeredDebugAction = true;
+               MenuMusicManager.musicState = SUB_B;
+            }
+         }
+
+         if (FlxG.keys.anyJustPressed([SEVEN])) {
+            if (!GameState.isInMatch) {
+               this.hasTriggeredDebugAction = true;
+               MenuMusicManager.musicState = WACKY;
+            }
+         }
+
          if (GameState.trainingFrameStepMode && FlxG.keys.anyJustPressed([FOUR])) {
             this.hasTriggeredDebugAction = true;
             GameState.trainingFrameStepTick = true;

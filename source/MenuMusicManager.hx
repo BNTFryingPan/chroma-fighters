@@ -9,8 +9,10 @@ enum MenuMusicState {
    TITLE;
    FIGHTER_SELECT;
    STAGE_SELECT;
+   SUB_PURE;
    SUB_A;
    SUB_B;
+   WACKY;
 }
 
 enum MenuMusicLayer {
@@ -41,8 +43,10 @@ class MenuMusicManager {
       TITLE => [BASE],
       FIGHTER_SELECT => [BASE, SUB_FIGHTER],
       STAGE_SELECT => [BASE, SUB_FIGHTER, SUB_STAGE],
+      SUB_PURE => [BASE, SUB_BASE],
       SUB_A => [BASE, SUB_BASE, SUB_EXTRA_A],
-      SUB_B => [BASE, SUB_BASE, SUB_EXTRA_B]
+      SUB_B => [BASE, SUB_BASE, SUB_EXTRA_B],
+      WACKY => [SUB_STAGE, SUB_EXTRA_B],
    ];
 
    public static final allMusicLayers:Array<MenuMusicLayer> = [BASE, SUB_FIGHTER, SUB_STAGE, SUB_BASE, SUB_EXTRA_A, SUB_EXTRA_B];
@@ -100,6 +104,9 @@ class MenuMusicManager {
       ret += 'base: ${sound_base.time}/${sound_base.length} ${sound_base.volume}\n';
       ret += 'figh: ${sound_sub_fighter.time}/${sound_sub_fighter.length} ${sound_sub_fighter.volume}\n';
       ret += 'stag: ${sound_sub_stage.time}/${sound_sub_stage.length} ${sound_sub_stage.volume}\n';
+      ret += 'sub_: ${sound_sub_base.time}/${sound_sub_base.length} ${sound_sub_base.volume}\n';
+      ret += 'suba: ${sound_sub_extra_a.time}/${sound_sub_extra_a.length} ${sound_sub_extra_a.volume}\n';
+      ret += 'subb: ${sound_sub_extra_b.time}/${sound_sub_extra_b.length} ${sound_sub_extra_b.volume}\n';
       return ret;
    }
 
