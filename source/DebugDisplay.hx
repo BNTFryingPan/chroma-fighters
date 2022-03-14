@@ -29,12 +29,12 @@ class DebugDisplay extends FlxBasic {
    public static final _haxeVersion = '${haxe.macro.Compiler.getDefine("haxe")}';
 
    public var leftText:FlxText;
-   public var leftPrepend:String = "";
-   public var leftAppend:String = "";
+   public var leftPrepend(get, set):String;
+   public var leftAppend(get, set):String;
 
    public var rightText:FlxText;
-   public var rightPrepend:String = "";
-   public var rightAppend:String = "";
+   public var rightPrepend(get, set):String;
+   public var rightAppend(get, set):String;
 
    private var finalLeftText:String = "";
    private var finalRightText:String = "";
@@ -60,7 +60,7 @@ class DebugDisplay extends FlxBasic {
       this.active = true;
       this.visible = true;
 
-      this.leftText = new FlxText(10, 10, 0, "debug-left", DebugDisplay.fontSize);
+      this.leftText = new FlxText(10, 10, FlxG.width - 20, "debug-left", DebugDisplay.fontSize);
 
       this.rightText = new FlxText(10, 10, FlxG.width - 20, "debug-right", DebugDisplay.fontSize);
       this.rightText.alignment = RIGHT;
@@ -215,15 +215,15 @@ class DebugDisplay extends FlxBasic {
          if (FlxG.keys.anyJustPressed([T])) {
             this.hasTriggeredDebugAction = true;
             // TODO: reload textures
+            AssetHelper.imageCache.clear();
             if (FlxG.keys.anyPressed([SHIFT])) {
                AssetHelper.aseCache.clear();
-               AssetHelper.imageCache.clear();
                AssetHelper.scriptCache.clear();
                this.notify('Cleared all AssetHelper caches');
             } else {
-               AssetHelper.imageCache.clear();
                this.notify('Cleared AssetHelper BitmapData cache');
             }
+            GameManager.reloadTextures();
          }
 
          if (FlxG.keys.anyJustPressed([R])) {
@@ -313,71 +313,80 @@ class DebugDisplay extends FlxBasic {
          }
       }
       #end
-      #if hl
-      var memStatsRaw = Gc.stats();
-      var memStats = {
-         totalAllocated: Math.round(memStatsRaw.totalAllocated / 1024 / 1024 * 100) / 10,
-         currentMemory: Math.round(memStatsRaw.currentMemory / 1024 / 1024 * 100) / 10,
-         allocationCount: Math.round(memStatsRaw.allocationCount / 1024 / 1024 * 100) / 10,
-      };
-      #elseif cpp
-      var memStats = {
-         totalAllocated: (Gc.memInfo(Gc.MEM_INFO_RESERVED) / 1024) / 1000,
-         currentMemory: (Gc.memInfo(Gc.MEM_INFO_CURRENT) / 1024) / 1000,
-         allocationCount: 0,
-      };
-      #else
-      var memStats = {
-         totalAllocated: 0,
-         currentMemory: 0,
-         allocationCount: 0,
-      };
-      #end
+      /*
+            #if hl
+            var memStatsRaw = Gc.stats();
+            var memStats = {
+               totalAllocated: Math.round(memStatsRaw.totalAllocated / 1024 / 1024 * 100) / 10,
+               currentMemory: Math.round(memStatsRaw.currentMemory / 1024 / 1024 * 100) / 10,
+               allocationCount: Math.round(memStatsRaw.allocationCount / 1024 / 1024 * 100) / 10,
+            };
+            #elseif cpp
+            var memStats = {
+               totalAllocated: (Gc.memInfo(Gc.MEM_INFO_RESERVED) / 1024) / 1000,
+               currentMemory: (Gc.memInfo(Gc.MEM_INFO_CURRENT) / 1024) / 1000,
+               allocationCount: 0,
+            };
+            #else
+            var memStats = {
+               totalAllocated: 0,
+               currentMemory: 0,
+               allocationCount: 0,
+            };
+            #end
 
-      if (memStats.currentMemory > maxMemory)
-         maxMemory = memStats.currentMemory;
-      if (this.visible) {
-         this.leftText.text = this.leftPrepend;
-         if (this.leftPrepend != "" && !StringTools.endsWith(this.leftText.text, "\n"))
-            this.leftText.text += "\n";
-         // this.leftText.text += 'Game ${Version.getVersionString()} (${#if debug 'debug' #else 'release' #end})\n';
-         var stateId = 'Unknown';
-         // if (Std.isOfType(FlxG.state, BaseState)) {
-         if ((FlxG.state is BaseState)) {
-            var state:BaseState = cast FlxG.state;
+            if (memStats.currentMemory > maxMemory)
+               maxMemory = memStats.currentMemory;
+            if (this.visible) {
+               var lText = this.leftPrepend;
+               if (this.leftPrepend != "" && !StringTools.endsWith(lText, "\n"))
+                  lText += "\n";
+               // this.leftText.text += 'Game ${Version.getVersionString()} (${#if debug 'debug' #else 'release' #end})\n';
+               var stateId = 'Unknown';
+               // if (Std.isOfType(FlxG.state, BaseState)) {
+               if ((FlxG.state is BaseState)) {
+                  var state:BaseState = cast FlxG.state;
 
-            stateId = state.stateId();
+                  stateId = state.stateId();
+               }
+               lText += 'FPS: ${Main.fpsCounter.currentFPS}\nState: ${stateId}\n';
+               #if telemetry
+               lText += '[Telemetry Build]\n';
+               #end
+               lText += this.leftAppend;
+
+               var rText = this.rightPrepend;
+               if (this.rightPrepend != "" && !StringTools.endsWith(rText, "\n"))
+                  rText += "\n";
+               rText += 'Haxe: ${DebugDisplay._haxeVersion}\n';
+               rText += 'Flixel: ${FlxG.VERSION.toString()}\n';
+               rText += 'Renderer: ${this._renderer}\n';
+               // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
+               rText += 'Mem: ${round(memStats.currentMemory)} / ${round(maxMemory)}MB\n';
+               rText += 'Alloc: ${round(memStats.allocationCount)} / ${round(memStats.totalAllocated)}\n';
+               rText += 'System: ${DebugDisplay._systemText}\n';
+               rText += 'SysRaw: ${DebugDisplay._rawSystemText}\n';
+               // this.rightText.text += 'Elapsed: ${}';
+               // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
+               // this.rightText.text += 'CPU: \n';
+               rText += MenuMusicManager.debugText();
+               rText += '${this.rightAppend}';
+
+               this.leftText.text = lText;
+               this.rightText.text = rText;
+               // this.leftText = new FlxText(10, 10, FlxG.width - 20, lText, DebugDisplay.fontSize);
+               // this.rightText = new FlxText(10, 10, FlxG.width - 20, rText, DebugDisplay.fontSize);
+               // this.rightText.alignment = RIGHT;
          }
-         this.leftText.text += 'FPS: ${Main.fpsCounter.currentFPS}\nState: ${stateId}\n';
-         #if telemetry
-         this.leftText.text += '[Telemetry Build]\n';
-         #end
-         this.leftText.text += this.leftAppend;
 
-         this.rightText.text = this.rightPrepend;
-         if (this.rightPrepend != "" && !StringTools.endsWith(this.rightText.text, "\n"))
-            this.rightText.text += "\n";
-         this.rightText.text += 'Haxe: ${DebugDisplay._haxeVersion}\n';
-         this.rightText.text += 'Flixel: ${FlxG.VERSION.toString()}\n';
-         this.rightText.text += 'Renderer: ${this._renderer}\n';
-         // this.rightText.text += 'Build: ${Build.getBuildNumber()}\n';
-         this.rightText.text += 'Mem: ${round(memStats.currentMemory)} / ${round(maxMemory)}MB\n';
-         this.rightText.text += 'Alloc: ${round(memStats.allocationCount)} / ${round(memStats.totalAllocated)}\n';
-         this.rightText.text += 'System: ${DebugDisplay._systemText}\n';
-         this.rightText.text += 'SysRaw: ${DebugDisplay._rawSystemText}\n';
-         // this.rightText.text += 'Elapsed: ${}';
-         // this.rightText.text += 'Platform: ${LimeSys.platformName} (${LimeSys.platformVersion})\n\n';
-         // this.rightText.text += 'CPU: \n';
-         this.rightText.text += MenuMusicManager.debugText();
-         this.rightText.text += '${this.rightAppend}';
-      }
-      this.rightPrepend = "";
-      this.rightAppend = "";
-      this.leftPrepend = "";
-      this.leftAppend = "";
+         this.rightPrepend = "";
+         this.rightAppend = "";
+         this.leftPrepend = "";
+            this.leftAppend = ""; */
    }
 
    public override function draw():Void {
+      return this.notif.draw();
       if (this.visible) {
          this.leftText.draw();
          this.rightText.draw();
@@ -402,5 +411,37 @@ class DebugDisplay extends FlxBasic {
       this.notif.cameras = Value;
 
       return super.set_cameras(Value);
+   }
+
+   function get_leftPrepend():String {
+      return DebugDisplayV2.leftPrepend;
+   }
+
+   function set_leftPrepend(value:String):String {
+      return DebugDisplayV2.leftPrepend = value;
+   }
+
+   function get_leftAppend():String {
+      return DebugDisplayV2.leftAppend;
+   }
+
+   function set_leftAppend(value:String):String {
+      return DebugDisplayV2.leftAppend = value;
+   }
+
+   function get_rightPrepend():String {
+      return DebugDisplayV2.rightPrepend;
+   }
+
+   function set_rightPrepend(value:String):String {
+      return DebugDisplayV2.rightPrepend = value;
+   }
+
+   function get_rightAppend():String {
+      return DebugDisplayV2.rightAppend;
+   }
+
+   function set_rightAppend(value:String):String {
+      return DebugDisplayV2.rightAppend = value;
    }
 }

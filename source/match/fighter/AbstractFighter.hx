@@ -461,9 +461,14 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    public function destroyAnimationHitboxes() {}
 
+   private function airStateChange(newState:FighterAirState, oldState:FighterAirState) {
+      // event listener
+   }
+
    function set_airState(value:FighterAirState):FighterAirState {
       if (this.airState != value)
          this.airStateTime = 0;
+      this.airStateChange(value, this.airState);
       return this.airState = value;
    }
 }

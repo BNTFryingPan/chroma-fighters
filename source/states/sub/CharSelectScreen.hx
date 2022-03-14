@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 import inputManager.Action;
 import inputManager.InputManager;
+import inputManager.InputState;
 
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;
@@ -78,14 +79,28 @@ class CharSelectScreen extends BaseState {
 
    override public function update(elapsed:Float) {
       super.update(elapsed);
-      if (InputManager.anyPlayerPressingAction(MENU_CANCEL)) {
+      for (player in InputManager.playersPressingAction(MENU_CANCEL)) {
+         if (player.isReady() && player.input.getCancel() == JUST_PRESSED) {
+            player.fighterSelection.ready = false;
+            player.coinDropped = false;
+         } else if (!this.isFading) {
+            if (player.cancelHoldTime >= 3) {
+               this.isFading = true;
+               return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
+                  FlxG.switchState(new TitleScreenState());
+               });
+            }
+         }
+      }
+
+      /*if (InputManager.anyPlayerPressingAction(MENU_CANCEL)) {
          if (this.isFading)
             return;
          this.isFading = true;
          return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
             FlxG.switchState(new TitleScreenState());
          });
-      }
+      }*/
 
       if (InputManager.anyPlayerPressingAction(Action.MENU_BUTTON) && this.areAllPlayersReady()) {
          if (this.isFading)

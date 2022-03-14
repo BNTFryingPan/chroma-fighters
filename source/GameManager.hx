@@ -4,6 +4,7 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.plugin.screengrab.FlxScreenGrab;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import inputManager.Coordinates;
@@ -102,6 +103,7 @@ class GameManager {
    public static var ruleset:Ruleset = new Ruleset(3, 7, 1);
 
    public static function update(elapsed:Float) {
+      Main.fpsCounter.update();
       Main.screenSprite.update(elapsed);
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
       GameState.isInMatch = (FlxG.state is MatchState);
@@ -165,6 +167,10 @@ class GameManager {
       GameState.trainingFrameStepTick = false;
 
       Main.debugDisplay.update(elapsed);
+
+      if (FlxG.keys.anyJustPressed([F2])) {
+         FlxScreenGrab.grab(null, true, true);
+      }
    }
 
    public static function draw() {

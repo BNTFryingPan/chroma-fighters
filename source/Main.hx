@@ -20,6 +20,8 @@ import openfl.display.Sprite;
 import states.TitleScreenState;
 
 class Main extends Sprite {
+   public static var instance:Main;
+
    public static var fpsCounter:DebugDisplayV2;
    public static var debugDisplay:DebugDisplay;
    public static var targetFps:Int = 60;
@@ -39,6 +41,7 @@ class Main extends Sprite {
 
    public function new() {
       super();
+      Main.instance = this;
       // FlxGraphic.defaultPersist = true;
       FlxG.autoPause = false;
       #if debug

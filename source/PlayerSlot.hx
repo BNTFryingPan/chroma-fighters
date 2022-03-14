@@ -137,17 +137,17 @@ class PlayerBox extends FlxSpriteGroup {
 }
 
 class PlayerSlot {
-   public static var PointerCoinBitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"));
-   public static var PointerP1Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p1"));
-   public static var PointerP2Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p2"));
-   public static var PointerP3Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p3"));
-   public static var PointerP4Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p4"));
-   public static var PointerP5Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p5"));
-   public static var PointerP6Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p6"));
-   public static var PointerP7Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p7"));
-   public static var PointerP8Bitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p8"));
-   public static var PointerCPUBitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/cpu"));
-   public static var PointerCursorBitmap(get, default):BitmapData;// = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"));
+   public static var PointerCoinBitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin"));
+   public static var PointerP1Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p1"));
+   public static var PointerP2Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p2"));
+   public static var PointerP3Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p3"));
+   public static var PointerP4Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p4"));
+   public static var PointerP5Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p5"));
+   public static var PointerP6Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p6"));
+   public static var PointerP7Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p7"));
+   public static var PointerP8Bitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p8"));
+   public static var PointerCPUBitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/cpu"));
+   public static var PointerCursorBitmap(get, default):BitmapData; // = AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"));
 
    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
    public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
@@ -616,6 +616,8 @@ class PlayerSlot {
    public var playerBox:PlayerBox;
    public var cpuSettings:CpuSettings = new CpuSettings();
 
+   public var cancelHoldTime:Float = 0;
+
    // public function initGraphic() {
    // }
 
@@ -771,7 +773,7 @@ class PlayerSlot {
             Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
             if (GameState.shouldDrawCursors) {
                Main.debugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
-               Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'}\n';
+               Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'} [${FlxMath.roundDecimal(this.cancelHoldTime, 2)}\n';
             }
             if (GameState.isInMatch) {
                Main.debugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
