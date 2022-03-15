@@ -36,6 +36,7 @@ jobs:
         haxelib install lime --always --quiet
         haxelib install openfl --always --quiet
         haxelib install flixel --always --quiet
+        haxelib install flixel-addons --always --quiet
         echo "y" \| haxelib run openfl setup
     - name: Build app (chroma-fighters_${{ matrix.target }})
       run: |
@@ -100,6 +101,7 @@ jobs:
         haxelib install lime --always --quiet
         haxelib install openfl --always --quiet
         haxelib install flixel --always --quiet
+        haxelib install flixel-addons --always --quiet
         echo "y" \| haxelib run openfl setup
     - name: Build app (chroma-fighters_web)
       run: |
