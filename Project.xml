@@ -70,7 +70,7 @@
 		<haxedef name="HXCPP_CHECK_POINTER" />
 	</section>
 
-	<haxedef name="wackyassets" if="html5" />
+	<define name="wackyassets" if="html5" />
 	<echo value="using wackyassets" if="wackyassets" />
 	<echo value="mobile || html5" if="mobile || html5" />
 
