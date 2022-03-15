@@ -17,12 +17,13 @@ import lime.utils.LogLevel;
 import match.Match;
 import openfl.display.FPS;
 import openfl.display.Sprite;
+import openfl.events.Event;
 import states.TitleScreenState;
 
 class Main extends Sprite {
    public static var instance:Main;
 
-   public static var fpsCounter:DebugDisplayV2;
+   // public static var fpsCounter:DebugDisplayV2;
    public static var debugDisplay:DebugDisplay;
    public static var targetFps:Int = 60;
    public static var screenSprite:ScreenSprite;
@@ -53,12 +54,12 @@ class Main extends Sprite {
       // TODO : load fps setting from settings file (i dont think it can be changed without a restart)
       // Main.targetFps = 60;
 
-      Main.fpsCounter = new DebugDisplayV2();
+      Main.debugDisplay = new DebugDisplay();
 
-      Main.fpsCounter.alpha = 1;
+      // Main.fpsCounter.alpha = 1;
 
       addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
-      addChild(Main.fpsCounter);
+      addChild(Main.debugDisplay);
 
       FlxG.fixedTimestep = true;
 
@@ -78,7 +79,7 @@ class Main extends Sprite {
          }
       });
 
-      Main.debugDisplay = new DebugDisplay();
+      // Main.debugDisplay = new DebugDisplay();
       Main.screenSprite = new ScreenSprite();
 
       Application.current.window.title = 'chroma-fighters';
@@ -88,7 +89,13 @@ class Main extends Sprite {
 
       PlayerSlot.initAll();
 
+      stage.addEventListener(Event.RESIZE, __resize);
+
       trace(Profile.defaultBindings[MENU_CONFIRM].map(b -> b.source));
+   }
+
+   function __resize(event:Event):Void {
+      Main.debugDisplay.handleResize();
    }
 
    public static function registerClassesWithFlxDebuggerConsole():Void {

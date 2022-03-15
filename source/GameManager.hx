@@ -103,7 +103,7 @@ class GameManager {
    public static var ruleset:Ruleset = new Ruleset(3, 7, 1);
 
    public static function update(elapsed:Float) {
-      Main.fpsCounter.update();
+      // Main.fpsCounter.update();
       Main.screenSprite.update(elapsed);
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
       GameState.isInMatch = (FlxG.state is MatchState);
@@ -166,7 +166,7 @@ class GameManager {
       #end
       GameState.trainingFrameStepTick = false;
 
-      Main.debugDisplay.update(elapsed);
+      Main.debugDisplay.update();
 
       if (FlxG.keys.anyJustPressed([F2])) {
          FlxScreenGrab.grab(null, true, true);
@@ -181,7 +181,7 @@ class GameManager {
          for (p in PlayerSlot.getPlayerArray().filter(p -> p.fighter != null))
             p.fighter.draw();
 
-      Main.debugDisplay.draw();
+      // Main.debugDisplay.draw();
    }
 
    public static function getAllObjects():Array<FlxBasic> {

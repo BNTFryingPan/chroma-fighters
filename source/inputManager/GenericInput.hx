@@ -31,6 +31,12 @@ class GenericInput {
    public var slot:PlayerSlotIdentifier;
    public var profile:Profile;
 
+   public final trackers:Map<Action, InputTracker> = [];
+
+   private static final _TRACKED_ACTIONS:Array<Action> = [
+      MENU_CONFIRM, MENU_CANCEL, MENU_ACTION, MENU_LEFT, MENU_RIGHT, MENU_BUTTON, JUMP, SHORT_JUMP, ATTACK, SPECIAL, STRONG, TAUNT, SHIELD, DODGE, WALK,
+   ];
+
    public function new(slot:PlayerSlotIdentifier, ?profile:String = null) {
       Main.log('creating ${this.inputType} input for slot ' + slot);
       this.slot = slot;
@@ -39,6 +45,10 @@ class GenericInput {
          this.profile = Profile.getProfile("", true);
       } else {
          this.profile = Profile.getProfile(profile);
+      }
+
+      for (act in _TRACKED_ACTIONS) {
+         this.trackers.set(act, new InputTracker(act, this));
       }
    }
 
@@ -53,16 +63,11 @@ class GenericInput {
       return this.getStick().clone(this.cursorStick);
    }
 
-   public final timed:Map<Action, Timed> = [
-      JUMP => new Timed(),
-      SHORT_JUMP => new Timed(),
-      ATTACK => new Timed(),
-      SPECIAL => new Timed(),
-      STRONG => new Timed(),
-      TAUNT => new Timed(),
-      SHIELD => new Timed(),
-      DODGE => new Timed()
-   ];
+   public function get(action:Action):Null<InputTracker> {
+      if (this.trackers.exists(action))
+         return this.trackers.get(action);
+      return null;
+   }
 
    public function getConfirm():InputState {
       return NOT_PRESSED;
@@ -166,6 +171,12 @@ class GenericInput {
 
    public function getRawDirection():StickVector {
       return this.rawDirectionStick.update(0, 0);
+   }
+
+   public function update(elapsed:Float) {
+      for (tracker in this.trackers) {
+         tracker.tick(elapsed);
+      }
    }
 
    public function getAction(action:Action):InputState {

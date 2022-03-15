@@ -175,23 +175,23 @@ class PlayerSlot {
    ];
 
    public static function getPlayer(slot:PlayerSlotIdentifier):PlayerSlot {
-      return PlayerSlot.players[slot];
+      return PlayerSlot.players.get(slot);
    }
 
    public static function getNumberOfPlayerSlotsToDraw():Int {
       if (!PlayerSlot.artificalPlayerLimit) {
-         if (PlayerSlot.players[P8].type != NONE)
+         if (PlayerSlot.players.get(P8).type != NONE)
             return 8;
-         if (PlayerSlot.players[P7].type != NONE)
+         if (PlayerSlot.players.get(P7).type != NONE)
             return 7;
-         if (PlayerSlot.players[P6].type != NONE)
+         if (PlayerSlot.players.get(P6).type != NONE)
             return 6;
-         if (PlayerSlot.players[P5].type != NONE)
+         if (PlayerSlot.players.get(P5).type != NONE)
             return 5;
       }
-      if (PlayerSlot.players[P4].type != NONE)
+      if (PlayerSlot.players.get(P4).type != NONE)
          return 4;
-      if (PlayerSlot.players[P3].type != NONE)
+      if (PlayerSlot.players.get(P3).type != NONE)
          return 3;
       return 2;
    }
@@ -498,7 +498,7 @@ class PlayerSlot {
    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
       // return bitmap;
       trace('new colortrans + rect');
-      var slotColor = PlayerSlot.defaultPlayerColors[this.slot];
+      var slotColor = PlayerSlot.defaultPlayerColors.get(this.slot);
       var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
       bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
       return bitmap;
@@ -707,7 +707,7 @@ class PlayerSlot {
 
       if (this.visible) {
          this.cursorSprite.update(elapsed);
-         // Main.debugDisplay.leftAppend += '\n${(cursorAngle == RIGHT || cursorAngle == UP_RIGHT || cursorAngle == DOWN_RIGHT)}';
+         // DebugDisplay.leftAppend += '\n${(cursorAngle == RIGHT || cursorAngle == UP_RIGHT || cursorAngle == DOWN_RIGHT)}';
 
          if (setToLeft) {
             if (setToUp)
@@ -770,19 +770,19 @@ class PlayerSlot {
             }
          }
          if (Main.debugDisplay.visible) {
-            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
+            DebugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}}\n';
             if (GameState.shouldDrawCursors) {
-               Main.debugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
-               Main.debugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'} [${FlxMath.roundDecimal(this.cancelHoldTime, 2)}\n';
+               DebugDisplay.leftAppend += 'Cursor: (${cursorPos.x}, ${cursorPos.y}) from ${this.input.getCursorStick()}\nStick: ${this.input.getStick()}\nButtons: con ${this.input.getConfirm()} can ${this.input.getCancel()} act ${this.input.getMenuAction()} left ${this.input.getMenuLeft()} right ${this.input.getMenuRight()}\n';
+               DebugDisplay.leftAppend += 'S: ${setToLeft ? 'L' : 'l'}${setToRight ? 'R' : 'r'}${setToUp ? 'U' : 'u'}${setToDown ? 'D' : 'd'} I: ${isAlreadyLeft ? 'L' : 'l'}${isAlreadyRight ? 'R' : 'r'} [${FlxMath.roundDecimal(this.cancelHoldTime, 2)}\n';
             }
             if (GameState.isInMatch) {
-               Main.debugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
-               Main.debugDisplay.leftAppend += '${this.fighter.getDebugString()}';
+               DebugDisplay.leftAppend += 'Fighter: (${FlxMath.roundDecimal(this.fighter.x, 2)}, ${FlxMath.roundDecimal(this.fighter.y, 2)}) [${FlxMath.roundDecimal(this.fighter.velocity.x, 2)}, ${FlxMath.roundDecimal(this.fighter.velocity.y, 2)}] {${FlxMath.roundDecimal(this.fighter.acceleration.x, 2)}, ${FlxMath.roundDecimal(this.fighter.acceleration.y, 2)}}\n';
+               DebugDisplay.leftAppend += '${this.fighter.getDebugString()}';
             }
          }
       } else {
          if (Main.debugDisplay.visible)
-            Main.debugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
+            DebugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
    }
 
@@ -799,7 +799,7 @@ class PlayerSlot {
    }
 
    public function draw() {
-      if (Main.debugDisplay == null || /*!this.visible ||*/ !this.ready)
+      if (DebugDisplay == null || /*!this.visible ||*/ !this.ready)
          return;
 
       if (GameState.shouldDrawCursors) {
