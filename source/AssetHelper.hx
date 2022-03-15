@@ -309,7 +309,7 @@ class AssetHelper {
       var folderContents = getFolderContents(folderKey);
       #else
       var folderPath = AssetHelper.getAssetDirectory(folderKey);
-      var folderContents = FileSystem.readDirectory(folderPath));
+      var folderContents = FileSystem.readDirectory(folderPath);
       #end
 
       var spritesToLoad = folderContents.filter(name -> name.endsWith('.png'));
@@ -414,6 +414,7 @@ class AssetHelper {
          return 'mods_basegame_${path}';
       if (Reflect.hasField(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}'))
          return Reflect.field(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}');
+      return null;
    }
    #end
 }
