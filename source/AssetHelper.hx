@@ -60,6 +60,57 @@ class ModScript {
    }
 }
 
+enum AssetType {
+   ASEPRITE;
+   IMAGE;
+   BYTES;
+   TEXT;
+   TEXT_RAW;
+   JSON;
+   JSON_RAW;
+   SCRIPT;
+   SOUND;
+}
+
+class DelayedAsset<T> {
+   public final key:NamespacedKey;
+   public final type:AssetType;
+
+   private final asset:T;
+
+   public function new(key:NamespacedKey, type:AssetType) {
+      this.key = key;
+      this.type = type;
+   }
+
+   public function get():Null<T> {
+      if (!AssetHelper.ready)
+         return null;
+      if (this.asset != null)
+         return this.asset;
+      return this.asset = switch (this.type) {
+         case ASEPRITE:
+            AssetHelper.getAsepriteFile(this.key);
+         case IMAGE:
+            AssetHelper.getImageAsset(this.key);
+         case BYTES:
+            null;
+         case TEXT:
+            AssetHelper.getTextAsset(this.key);
+         case TEXT_RAW:
+            AssetHelper.getRawTextAsset(this.key);
+         case JSON:
+            AssetHelper.getJsonAsset(this.key);
+         case JSON_RAW:
+            AssetHelper.getRawJsonAsset(this.key);
+         case SCRIPT:
+            AssetHelper.getScriptAsset(this.key);
+         case SOUND:
+            AssetHelper.getSoundAsset(this.key);
+      }
+   }
+}
+
 class AssetHelper {
    // public static final instance = new AssetHelper();
    public static final saveDirectory:String = "./save/";
@@ -71,7 +122,34 @@ class AssetHelper {
 
    private static var parser:Parser = new Parser();
 
+   public static var ready:Bool = #if sys true #else false #end;
+
    // private function new() {}
+
+   ///private static final DelayedAssetTypes:Map<
+
+   public static function loadWhenReady(key:NamespacedKey, type:AssetType):DelayedAsset<Dynamic> {
+      return switch (type) {
+         case ASEPRITE:
+            new DelayedAsset<Bytes>(key, type);
+         case IMAGE:
+            new DelayedAsset<BitmapData>(key, type);
+         case BYTES:
+            new DelayedAsset<Bytes>(key, type);
+         case TEXT:
+            new DelayedAsset<Array<String>>(key, type);
+         case TEXT_RAW:
+            new DelayedAsset<String>(key, type);
+         case JSON:
+            new DelayedAsset<Dynamic>(key, type);
+         case JSON_RAW:
+            new DelayedAsset<String>(key, type);
+         case SCRIPT:
+            new DelayedAsset<Expr>(key, type);
+         case SOUND:
+            new DelayedAsset<FlxSound>(key, type);
+      }
+   }
 
    private static function getNullBitmap():BitmapData {
       trace('new null bitmap');

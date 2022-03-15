@@ -42,6 +42,7 @@ class Main extends Sprite {
 
    public function new() {
       super();
+      AssetHelper.ready = true;
       Main.instance = this;
       // FlxGraphic.defaultPersist = true;
       FlxG.autoPause = false;
