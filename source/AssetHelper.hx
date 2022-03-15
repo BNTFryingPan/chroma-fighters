@@ -312,7 +312,7 @@ class AssetHelper {
       var folderContents = FileSystem.readDirectory(folderPath));
       #end
 
-      var spritesToLoad = folderContents.filter(name -> name.endsWith('.png')
+      var spritesToLoad = folderContents.filter(name -> name.endsWith('.png');
 
       var animations:Array<AnimationCombinerThing> = [];
       var curFrame:Int = 0;
