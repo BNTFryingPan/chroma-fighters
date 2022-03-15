@@ -55,7 +55,7 @@ class WeirdPlatformAssets {
 }
 
 private class FolderReference extends FileReference {
-	function new(name:String, contents:Array<String>) {
+	public function new(name:String, contents:Array<String>) {
 		super(name.split("/").join('_').split("-").join("_").split(".").join("__") + '__DIR', contents.join(','));
 	}
 }
