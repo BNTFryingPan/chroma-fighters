@@ -24,6 +24,10 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+#if wackyassets
+import openfl.utils.Assets as OpenFLAssets;
+#end
+
 class ModScript {
    public var interp:Interp;
    public var script:Expr;
@@ -209,7 +213,7 @@ class AssetHelper {
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if wackyassets
-      var assetDir = AssetHelper.getAssetPath(key);
+      var assetDir = AssetHelper.getAssetPath(key, '.ogg');
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       #end
@@ -220,7 +224,7 @@ class AssetHelper {
       #if !wackyassets
       var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
       #else
-      var sound = FlxG.sound.load(FlxAssets.getSound(assetDir), 1, loop);
+      var sound = FlxG.sound.load(OpenFLAssets.getSound(assetDir), 1, loop);
       #end
       sound.persist = persist;
       return sound;
