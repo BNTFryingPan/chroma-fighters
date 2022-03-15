@@ -66,7 +66,7 @@ class MenuMusicManager {
       sound_sub_base = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_base'), true, true);
       sound_sub_extra_a = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_extra_a'), true, true);
       sound_sub_extra_b = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_extra_b'), true, true);
-      if (sound_intro == null) return;
+      if (sound_intro == null) return trace('menu music assets are null!');
       sound_sub_fighter.volume = 0;
       sound_sub_stage.volume = 0;
       sound_sub_base.volume = 0;

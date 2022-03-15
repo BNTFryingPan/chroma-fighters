@@ -214,6 +214,7 @@ class AssetHelper {
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       #end
       if (assetDir == null) {
+         trace('sound asser dir is null!');
          return null;
       }
       #if !wackyassets
