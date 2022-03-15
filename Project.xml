@@ -70,7 +70,7 @@
 		<haxedef name="HXCPP_CHECK_POINTER" />
 	</section>
 
-	<haxedef name="wackyassets" if="mobile || html" />
+	<haxedef name="wackyassets" if="mobile || html5" />
 
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->

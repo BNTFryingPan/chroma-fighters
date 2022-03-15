@@ -80,6 +80,8 @@ class Main extends Sprite {
          }
       });
 
+      FlxG.keys.preventDefaultKeys.push(F3);
+
       // Main.debugDisplay = new DebugDisplay();
       Main.screenSprite = new ScreenSprite();
 
