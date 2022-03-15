@@ -31,6 +31,7 @@ import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import AssetHelper;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
    var P1;
