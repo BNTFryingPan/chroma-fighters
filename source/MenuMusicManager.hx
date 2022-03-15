@@ -80,8 +80,8 @@ class MenuMusicManager {
       sound_intro.play();
    }
 
-   public static function setTime(value:Float, excludeBase:Bool = false) {
-      if (sound_intro == null) return;
+   public static function setTime(value:Float, excludeBase:Bool = false):Float {
+      if (sound_intro == null) return 0.0;
       if (excludeBase)
          return sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
       return sound_base.time = sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
