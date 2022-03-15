@@ -138,17 +138,17 @@ class PlayerBox extends FlxSpriteGroup {
 }
 
 class PlayerSlot {
-   public static var PointerCoinBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"), IMAGE);
-   public static var PointerP1Bitmap:DelayedAsset<BitmapData>= AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p1"), IMAGE);
-   public static var PointerP2Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p2"), IMAGE);
-   public static var PointerP3Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p3"), IMAGE);
-   public static var PointerP4Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p4"), IMAGE);
-   public static var PointerP5Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p5"), IMAGE);
-   public static var PointerP6Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p6"), IMAGE);
-   public static var PointerP7Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p7"), IMAGE);
-   public static var PointerP8Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p8"), IMAGE);
-   public static var PointerCPUBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/cpu"), IMAGE);
-   public static var PointerCursorBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"), IMAGE);
+   public static var PointerCoinBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"), IMAGE);
+   public static var PointerP1Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p1"), IMAGE);
+   public static var PointerP2Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p2"), IMAGE);
+   public static var PointerP3Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p3"), IMAGE);
+   public static var PointerP4Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p4"), IMAGE);
+   public static var PointerP5Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p5"), IMAGE);
+   public static var PointerP6Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p6"), IMAGE);
+   public static var PointerP7Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p7"), IMAGE);
+   public static var PointerP8Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p8"), IMAGE);
+   public static var PointerCPUBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/cpu"), IMAGE);
+   public static var PointerCursorBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"), IMAGE);
 
    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
    public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [

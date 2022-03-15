@@ -76,14 +76,14 @@ class DelayedAsset<T> {
    public final key:NamespacedKey;
    public final type:AssetType;
 
-   private var asset:T;
+   private var asset:Dynamic;
 
    public function new(key:NamespacedKey, type:AssetType) {
       this.key = key;
       this.type = type;
    }
 
-   public function get():Null<T> {
+   public function get():Null<Dynamic> {
       if (!AssetHelper.ready)
          return null;
       if (this.asset != null)
