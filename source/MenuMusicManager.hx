@@ -74,8 +74,15 @@ class MenuMusicManager {
       sound_intro.onComplete = MenuMusicManager.onIntroComplete;
       sound_base.onComplete = () -> {
          Main.debugDisplay.notify('music loop');
+         setTime(0, true);
       }
       sound_intro.play();
+   }
+
+   public static function setTime(value:Float, excludeBase:Bool = false) {
+      if (excludeBase)
+         return sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
+      return sound_base.time = sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
    }
 
    public static function pause():Void {
