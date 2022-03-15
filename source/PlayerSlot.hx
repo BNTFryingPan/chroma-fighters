@@ -137,17 +137,17 @@ class PlayerBox extends FlxSpriteGroup {
 }
 
 class PlayerSlot {
-   public static var PointerCoinBitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"), IMAGE);
-   public static var PointerP1Bitmap(get, default):BitmapData= AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p1"), IMAGE);
-   public static var PointerP2Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p2"), IMAGE);
-   public static var PointerP3Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p3"), IMAGE);
-   public static var PointerP4Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p4"), IMAGE);
-   public static var PointerP5Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p5"), IMAGE);
-   public static var PointerP6Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p6"), IMAGE);
-   public static var PointerP7Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p7"), IMAGE);
-   public static var PointerP8Bitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p8"), IMAGE);
-   public static var PointerCPUBitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/cpu"), IMAGE);
-   public static var PointerCursorBitmap(get, default):BitmapData = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"), IMAGE);
+   public static var PointerCoinBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"), IMAGE);
+   public static var PointerP1Bitmap:DelayedAsset<BitmapData>= AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p1"), IMAGE);
+   public static var PointerP2Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p2"), IMAGE);
+   public static var PointerP3Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p3"), IMAGE);
+   public static var PointerP4Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p4"), IMAGE);
+   public static var PointerP5Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p5"), IMAGE);
+   public static var PointerP6Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p6"), IMAGE);
+   public static var PointerP7Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p7"), IMAGE);
+   public static var PointerP8Bitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p8"), IMAGE);
+   public static var PointerCPUBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/cpu"), IMAGE);
+   public static var PointerCursorBitmap:DelayedAsset<BitmapData> = AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"), IMAGE);
 
    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
    public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
@@ -443,7 +443,7 @@ class PlayerSlot {
          this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(v)));
 
       if (this.cursorSprite != null) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap), true, 32, 32, true, '${this.slot}-pointer');
+         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get()), true, 32, 32, true, '${this.slot}-pointer');
          this.setCursorAngle(SAME);
       }
 
@@ -518,65 +518,21 @@ class PlayerSlot {
    }
 
    public static function getCoinBitmap(slot:PlayerSlotIdentifier):BitmapData {
-      var baseCoin = PlayerSlot.PointerCoinBitmap;
+      var baseCoin = PlayerSlot.PointerCoinBitmap.get();
       var icon = switch (slot) {
-         case P1: PointerP1Bitmap;
-         case P2: PointerP2Bitmap;
-         case P3: PointerP3Bitmap;
-         case P4: PointerP4Bitmap;
-         case P5: PointerP5Bitmap;
-         case P6: PointerP6Bitmap;
-         case P7: PointerP7Bitmap;
-         case P8: PointerP8Bitmap;
+         case P1: PointerP1Bitmap.get();
+         case P2: PointerP2Bitmap.get();
+         case P3: PointerP3Bitmap.get();
+         case P4: PointerP4Bitmap.get();
+         case P5: PointerP5Bitmap.get();
+         case P6: PointerP6Bitmap.get();
+         case P7: PointerP7Bitmap.get();
+         case P8: PointerP8Bitmap.get();
       }
 
       trace('new rect+point');
       baseCoin.copyPixels(icon, new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
       return baseCoin;
-   }
-
-   public static function get_PointerCoinBitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/coin")).clone();
-   }
-
-   public static function get_PointerP1Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p1")).clone();
-   }
-
-   public static function get_PointerP2Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p2")).clone();
-   }
-
-   public static function get_PointerP3Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p3")).clone();
-   }
-
-   public static function get_PointerP4Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p4")).clone();
-   }
-
-   public static function get_PointerP5Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p5")).clone();
-   }
-
-   public static function get_PointerP6Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p6")).clone();
-   }
-
-   public static function get_PointerP7Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p7")).clone();
-   }
-
-   public static function get_PointerP8Bitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/p8")).clone();
-   }
-
-   public static function get_PointerCPUBitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/coins/cpu")).clone();
-   }
-
-   public static function get_PointerCursorBitmap():BitmapData {
-      return AssetHelper.getImageAsset(NamespacedKey.ofDefaultNamespace("images/cursor/pointer")).clone();
    }
 
    public function setCursorAngle(angle:CursorRotation) {
@@ -631,7 +587,7 @@ class PlayerSlot {
 
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();
-      this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap), true, 32, 32, true, '${this.slot}-pointer');
+      this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get()), true, 32, 32, true, '${this.slot}-pointer');
       this.playerBox = new PlayerBox(this.slot);
       this.debugSprite = new FlxSprite();
       this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(this.slot)));

@@ -76,7 +76,7 @@ class DelayedAsset<T> {
    public final key:NamespacedKey;
    public final type:AssetType;
 
-   private final asset:T;
+   private var asset:T;
 
    public function new(key:NamespacedKey, type:AssetType) {
       this.key = key;

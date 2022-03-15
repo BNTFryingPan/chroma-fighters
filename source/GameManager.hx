@@ -4,7 +4,9 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+#if cpp
 import flixel.addons.plugin.screengrab.FlxScreenGrab;
+#end
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import inputManager.Coordinates;
@@ -168,9 +170,11 @@ class GameManager {
 
       Main.debugDisplay.update();
 
+      #if cpp
       if (FlxG.keys.anyJustPressed([F2])) {
          FlxScreenGrab.grab(null, true, true);
       }
+      #end
    }
 
    public static function draw() {
