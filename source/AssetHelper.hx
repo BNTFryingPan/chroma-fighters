@@ -213,7 +213,7 @@ class AssetHelper {
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
       #if wackyassets
-      var assetDir = AssetHelper.getAssetPath(key, '.ogg');
+      var assetDir = AssetHelper.getAssetPath(key, 'ogg');
       #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
       #end
