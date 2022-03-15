@@ -305,10 +305,15 @@ class AssetHelper {
    }
 
    public static function generateCombinedSpriteSheetForFighter(folderKey:NamespacedKey, sprite:FlxSprite, size:Int, play:String) {
-      #if (sys && !wackyassets)
+      #if wackyassets
+      var folderContents = getFolderContents(folderKey);
+      #else
       var folderPath = AssetHelper.getAssetDirectory(folderKey);
+      var folderContents = FileSystem.readDirectory(folderPath));
+      #end
 
-      var spritesToLoad = FileSystem.readDirectory(folderPath).filter(name -> name.endsWith('.png'));
+      var spritesToLoad = folderContents.filter(name -> name.endsWith('.png')
+
       var animations:Array<AnimationCombinerThing> = [];
       var curFrame:Int = 0;
       for (asset in spritesToLoad) {
@@ -332,9 +337,6 @@ class AssetHelper {
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;
-      #else
-      return;
-      #end
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
@@ -384,6 +386,16 @@ class AssetHelper {
       #end
    }
 
+   public static function getFolderContents(key:NamespacedKey):Array<String> {
+      key.parseSpecialNamespaces();
+
+      #if wackyassets
+      return getAssetPathRaw(key + '__DIR').split(',');
+      #else
+      return FileSystem.readDirectory(getAssetDirectory(key));
+      #end
+   }
+
    #if wackyassets
    private static function getAssetPath(key:NamespacedKey, ?ext:String):String {
       key.parseSpecialNamespaces();
@@ -396,6 +408,13 @@ class AssetHelper {
       }
       return null;
    }
+
+   private static function getAssetPathRaw(path:String, ?ext:String):String {
+      if (ext == null)
+         return 'mods_basegame_${path}';
+      if (Reflect.hasField(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}'))
+         return Reflect.field(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}');
+   }
    #end
 }
 
@@ -407,6 +426,6 @@ typedef AnimationCombinerThing = {
 }
 
 #if wackyassets
-@:build(WeirdPlatformAssets.buildFileReferences("mods", true))
+@:build(WeirdPlatformAssets.buildFileReferences("mods"))
 class AssetPaths {}
 #end
