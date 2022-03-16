@@ -205,7 +205,7 @@ class AssetHelper {
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
       }
-
+      trace('couldnt get ${assetDir}');
       return getNullBitmap();
 
       // return getAsset(key);
