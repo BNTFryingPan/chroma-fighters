@@ -70,11 +70,10 @@ class CharSelectScreen extends BaseState {
    }
 
    public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
-      for (player in PlayerSlot.players) {
-         if (!player.isReady())
-            return false;
-      }
-      return true;
+      return [for (p in PlayerSlot.players) if (!p.isReady())].length > 0
+      //   if (!player.isReady())
+      //      return false;
+      //return true;
    }
 
    override public function update(elapsed:Float) {
@@ -90,6 +89,7 @@ class CharSelectScreen extends BaseState {
                   FlxG.switchState(new TitleScreenState());
                });
             }
+            player.cancelHoldTime += elapsed;
          }
       }
 
