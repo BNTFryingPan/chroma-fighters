@@ -390,7 +390,7 @@ class AssetHelper {
       key.parseSpecialNamespaces();
 
       #if wackyassets
-      var contents = getAssetPathRaw(key + '__DIR');
+      var contents = getAssetPath(key + '__DIR');
       trace(contents);
       return contents.split(',');
       #else
@@ -410,8 +410,6 @@ class AssetHelper {
    }
 
    private static function getAssetPathRaw(path:String, ?ext:String):String {
-      if (ext == null)
-         return 'mods_basegame_${path}';
       if (Reflect.hasField(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}'))
          return Reflect.field(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}');
       return null;
