@@ -70,7 +70,7 @@ class CharSelectScreen extends BaseState {
    }
 
    public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
-      return [for (p in PlayerSlot.players) if (!p.isReady()) true].length > 0
+      return [for (p in PlayerSlot.players) if (!p.isReady()) true].length > 0;
       //   if (!player.isReady())
       //      return false;
       //return true;
