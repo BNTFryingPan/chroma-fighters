@@ -403,8 +403,6 @@ class AssetHelper {
       key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
          // return 'mods/basegame/${key.asFileReference()}';
-         if (ext == null)
-            return 'mods_basegame_${key.asFileReference()}';
          if (Reflect.hasField(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}'))
             return Reflect.field(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}');
       }
