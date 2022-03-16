@@ -571,6 +571,7 @@ class MagicFighter extends AbstractFighter {
    override private function airStateChange(newState, oldState) {
       if (this.moveEndingLag > 0
          && newState == GROUNDED
+         && this.forceAnim != null
          && this.forceAnim.endsWith('_air')
          && this.sprite.animation.exists('${this.forceAnim}_land')) {
          this.play('${this.forceAnim}_land', true, true);

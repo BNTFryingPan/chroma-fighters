@@ -198,17 +198,21 @@ class PlayerSlot {
    }
 
    public static function getPlayerArray(?skipEmpty:Bool):Array<PlayerSlot> {
+      return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player];
+      /*
       var array = [];
       for (player in PlayerSlot.players) {
-         if ((!skipEmpty) || (player.type != NONE)) {
+         if (!(skipEmpty && PlayerSlot.type == NONE)) {
             array.push(player);
          }
       }
       return array;
+      */
    }
 
    public static function getPlayerInputArray(?skipEmpty:Bool):Array<GenericInput> {
-      return PlayerSlot.getPlayerArray(skipEmpty).map(player -> player.input);
+      return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player.input];
+      //return PlayerSlot.getPlayerArray(skipEmpty).map(player -> player.input);
    }
 
    public static function getPlayerSlotByInput(input:OneOfTwo<FlxGamepad, InputType>):Null<PlayerSlotIdentifier> {
