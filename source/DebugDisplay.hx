@@ -10,6 +10,7 @@ import lime.app.Application;
 import openfl.display.FPS;
 import openfl.events.Event;
 import openfl.events.EventType;
+import openfl.net.FileReference;
 import openfl.system.Capabilities as FlCap;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
@@ -119,6 +120,13 @@ class DebugDisplay extends FPS {
          if (this.crashHeldDuration >= 10)
             throw new DebugException('Debug Crash');
       }
+
+      /*if (FlxG.keys.justPressed.D) {
+         this.hasTriggeredDebugAction = true;
+
+         var file = new FileReference();
+
+      }*/
 
       if (FlxG.keys.justPressed.ONE) {
          this.hasTriggeredDebugAction = true;
