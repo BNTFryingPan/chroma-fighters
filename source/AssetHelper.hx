@@ -205,7 +205,7 @@ class AssetHelper {
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
       }
-      trace('couldnt get ${assetDir}');
+      trace('couldnt get ${assetDir} ${key}');
       return getNullBitmap();
 
       // return getAsset(key);
@@ -313,11 +313,16 @@ class AssetHelper {
       #end
 
       var spritesToLoad = folderContents.filter(name -> name.endsWith('.png'));
+      spriteToLoad = spritesToLoad.map(name -> name.split('.')[0]);
 
       var animations:Array<AnimationCombinerThing> = [];
       var curFrame:Int = 0;
       for (asset in spritesToLoad) {
+         #if wackyassets
          var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
+         #else
+         var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
+         #end
          var frames = Math.floor(bitmap.width / bitmap.height);
          trace('asset ${frames} ${bitmap.width / bitmap.height}');
          animations.push({
