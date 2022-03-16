@@ -329,7 +329,7 @@ class AssetHelper {
             bitmap: bitmap,
             frames: frames,
             startIndex: curFrame,
-            name: asset.substr(0, -4)
+            name: #if wackyassets asset #else asset.substr(0, -4) #end
          });
          curFrame += frames;
       }
