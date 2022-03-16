@@ -313,7 +313,7 @@ class AssetHelper {
       #end
 
       var spritesToLoad = folderContents.filter(name -> name.endsWith('.png'));
-      spriteToLoad = spritesToLoad.map(name -> name.split('.')[0]);
+      spritesToLoad = spritesToLoad.map(name -> name.split('.')[0]);
 
       var animations:Array<AnimationCombinerThing> = [];
       var curFrame:Int = 0;
