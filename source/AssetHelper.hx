@@ -390,7 +390,9 @@ class AssetHelper {
       key.parseSpecialNamespaces();
 
       #if wackyassets
-      return getAssetPathRaw(key + '__DIR').split(',');
+      var contents = getAssetPathRaw(key + '__DIR');
+      trace(contents);
+      return contents.split(',');
       #else
       return FileSystem.readDirectory(getAssetDirectory(key));
       #end
