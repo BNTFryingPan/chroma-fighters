@@ -576,5 +576,6 @@ class MagicFighter extends AbstractFighter {
          && this.sprite.animation.exists('${this.forceAnim}_land')) {
          this.play('${this.forceAnim}_land', true, true);
       }
+      // a
    }
 }
