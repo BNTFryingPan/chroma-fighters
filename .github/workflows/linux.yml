@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
-      with:
-        host: 'linux'
+    with:
+      host: 'linux'
 
     steps:
     - name: build

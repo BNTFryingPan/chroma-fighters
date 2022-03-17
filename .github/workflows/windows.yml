@@ -13,8 +13,8 @@ jobs:
     runs-on: windows-latest
 
     uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
-      with:
-        host: 'windows'
+    with:
+      host: 'windows'
 
     steps:
     - name: build
