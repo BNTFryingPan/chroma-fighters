@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: setup
-      uses: .github/workflows/setup.yml
+      uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
       with:
         host: 'ubuntu'
     - name: build
