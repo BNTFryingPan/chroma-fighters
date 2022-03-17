@@ -1,6 +1,6 @@
 name: Build
 
-on: [push, repository_dispatch]
+on: [workflow_dispatch]
 
 jobs:
   build:
@@ -57,20 +57,6 @@ jobs:
         filename: '../../../zipped/linux.tar.gz'
         directory: './export/linux/bin/'
         path: '.'
-    #- name: publish windows artifact
-    #  if: ${{ matrix.os == 'windows-latest' }}
-    #  uses: 'actions/upload-artifact@v3'
-    #  with:
-    #    name: 'windows-build'
-    #    path: |
-    #      ./zipped/windows.zip
-    #- name: publish linux artifact
-    #  if: ${{ matrix.os == 'ubuntu-latest' }}
-    #  uses: 'actions/upload-artifact@v3'
-    #  with:
-    #    name: 'linux-build'
-    #    path: |
-    #      ./zipped/linux.tar.gz
     - name: release on github
       #uses: 'ncipollo/release-action@v1'
       uses: "marvinpinto/action-automatic-releases@latest"

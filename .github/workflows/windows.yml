@@ -1,0 +1,35 @@
+name: Windows Build
+
+on: 
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+        default: 'latest-windows'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: ./.github/workflows/setup
+        with:
+          host: 'windows'
+      - name: build
+        run: haxelib run openfl build windows -debug
+      - name: archive
+        uses: thedoctor0/zip-release@master
+        with:
+          type: zip
+          filename: './windows.zip'
+      - name: release on github
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          #allowUpdates: true
+          automatic_release_tag: "${{ inputs.tag }}"
+          prerelease: true
+          title: "Windows Development Build"
+          files: |
+            ./windows.zip

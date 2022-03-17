@@ -1,0 +1,21 @@
+name: Linux Build
+
+on: workflow_dispatch
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ./.github/workflows/setup
+        with:
+          host: 'ubuntu'
+      - name: build
+        run: haxelib run openfl build html5 -debug
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{secrets.PERSONAL_TOKEN}}
+          external_repository: leotomasmc/chroma-fighters-releases
+          publish_dir: ./export/html5/bin
+          force_orphan: true
