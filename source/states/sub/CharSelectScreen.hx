@@ -7,12 +7,25 @@ import flixel.util.FlxColor;
 import inputManager.Action;
 import inputManager.InputManager;
 import inputManager.InputState;
+import flixel.ui.FlxBar;
 
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;
    public var backButton:CustomButton;
    public var readyTestButton:CustomButton;
    public var continueButton:CustomButton;
+   public var backProgress:FlxBar;
+   public var cancelHoldProgress(get, never):Float;
+
+   public function get_cancelHoldProgress():Float {
+      var playerProgress = PlayerSlot.getPlayerArray().map(p -> p.cancelHoldTime);
+      var max = 0;
+      for (p in playerProgress) {
+         if (p > max)
+            max = p;
+      }
+      return max;
+   }
 
    public var isFading:Bool = false;
 
@@ -39,12 +52,14 @@ class CharSelectScreen extends BaseState {
          });
       });
 
+      this.backProgress = new FlxBar(20, 50, LEFT_TO_RIGHT, Std.int(backButton.width), Std.int(backButton.height), this, cancelHoldProgress, 0, 3)
+
       this.readyTestButton = new CustomButton(0, 0, 'Martha', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
             return;
 
          var p = PlayerSlot.getPlayer(player);
-         p.coinDropped = true;
+         p.heldCoin = null;
          p.fighterSelection.ready = !p.fighterSelection.ready;
       });
       this.readyTestButton.screenCenter(XY);
@@ -67,9 +82,10 @@ class CharSelectScreen extends BaseState {
       add(this.readyTestButton);
       add(this.continueButton);
       add(this.backButton);
+      add(this.backProgress);
    }
 
-   public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better...
+   public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better... update 2: this looks fine i think
       return [for (p in PlayerSlot.players) if (!p.isReady()) true].length > 0;
       //   if (!player.isReady())
       //      return false;
@@ -81,7 +97,7 @@ class CharSelectScreen extends BaseState {
       for (player in InputManager.playersPressingAction(MENU_CANCEL)) {
          if (player.isReady() && player.input.getCancel() == JUST_PRESSED) {
             player.fighterSelection.ready = false;
-            player.coinDropped = false;
+            player.heldCoin = player.slot;
          } else if (!this.isFading) {
             if (player.cancelHoldTime >= 3) {
                this.isFading = true;

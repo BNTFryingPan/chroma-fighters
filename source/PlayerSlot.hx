@@ -198,8 +198,8 @@ class PlayerSlot {
    }
 
    public static function getPlayerArray(?skipEmpty:Bool):Array<PlayerSlot> {
-      return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player];
-      /*
+      //return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player];
+      
       var array = [];
       for (player in PlayerSlot.players) {
          if (!(skipEmpty && PlayerSlot.type == NONE)) {
@@ -207,12 +207,12 @@ class PlayerSlot {
          }
       }
       return array;
-      */
+      
    }
 
    public static function getPlayerInputArray(?skipEmpty:Bool):Array<GenericInput> {
-      return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player.input];
-      //return PlayerSlot.getPlayerArray(skipEmpty).map(player -> player.input);
+      //return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player.input];
+      return PlayerSlot.getPlayerArray(skipEmpty).map(player -> player.input);
    }
 
    public static function getPlayerSlotByInput(input:OneOfTwo<FlxGamepad, InputType>):Null<PlayerSlotIdentifier> {
@@ -424,16 +424,22 @@ class PlayerSlot {
    public var coinSprite:FlxSprite;
    public final cursorSpriteOffset:Coordinates = new Coordinates(30, 15);
    public final coinSpriteOffset:Coordinates = new Coordinates(16, 16);
-   public final coinDroppedPosition:Coordinates = new Coordinates(0, 0);
-   public var coinDropped(default, set):Bool = false;
+   public var heldCoin(default, set):Null<PlayerSlotIdentifier>;
    public var visible(get, default):Bool = false;
 
-   function set_coinDropped(value:Bool):Bool {
-      if (value == false)
-         return this.coinDropped = false;
+   function set_heldCoin(value:Null<PlayerSlotIdentifier>):Null<PlayerSlotIdentifier> {
+      if (this.heldCoin == value) return value;
+      if (value == null) {
+         var p = this;
+         if (this.heldCoin != this.slot)
+            p = PlayerSlot.getPlayer(this.heldCoin);
+         var pos = Coordinates.weak(this.cursorPosition.x, this.cursorPosition.y).move(-16, -16);
+         p.coinSprite.x = pos.x;
+         p.coinSprite.y = pos.y;
+         return this.heldCoin = null;
+      }
 
-      this.coinDroppedPosition.clone(this.cursorPosition);
-      return this.coinDropped = true;
+      return this.heldCoin = value;
    }
 
    private function set_slot(v:PlayerSlotIdentifier) {
@@ -617,6 +623,7 @@ class PlayerSlot {
       trace('new player slot');
       this.input = new GenericInput(slot);
       this.fighterSelection = new FighterSelection(slot);
+      this.heldCoin = this.slot;
    }
 
    public function setType(type:PlayerType) {
@@ -702,12 +709,10 @@ class PlayerSlot {
       this.cursorSprite.x = cursorPos.x - this.cursorSpriteOffset.x;
       this.cursorSprite.y = cursorPos.y - this.cursorSpriteOffset.y;
 
-      if (this.coinDropped) {
-         this.coinSprite.x = this.coinDroppedPosition.x;
-         this.coinSprite.y = this.coinDroppedPosition.y;
-      } else {
-         this.coinSprite.x = cursorPos.x - this.coinSpriteOffset.x;
-         this.coinSprite.y = cursorPos.y - this.coinSpriteOffset.y;
+      if (this.heldCoin != null) {
+         var cs = PlayerSlot.getPlayer(this.heldCoin).coinSprite;
+         cs.x = cursorPos.x - this.coinSpriteOffset.x;
+         cs.y = cursorPos.y - this.coinSpriteOffset.y;
       }
 
       this.debugSprite.x = cursorPos.x;

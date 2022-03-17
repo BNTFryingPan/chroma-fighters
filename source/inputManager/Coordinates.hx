@@ -81,8 +81,8 @@ class Coordinates implements IFlxPooled {
       return this;
    }
 
-   public function move2(coords:Coordinates):Coordinates {
-      this.move(coords.x, coords.y);
+   public function move2(coords:Coordinates, mult:Float=1):Coordinates {
+      this.move(coords.x * mult, coords.y * mult);
       coords.putWeak();
       return this;
    }
