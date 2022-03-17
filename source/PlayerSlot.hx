@@ -202,7 +202,7 @@ class PlayerSlot {
       
       var array = [];
       for (player in PlayerSlot.players) {
-         if (!(skipEmpty && PlayerSlot.type == NONE)) {
+         if (!(skipEmpty && player.type == NONE)) {
             array.push(player);
          }
       }
