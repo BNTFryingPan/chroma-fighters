@@ -1,4 +1,4 @@
-name: Linux Build
+name: Web Build
 
 on: workflow_dispatch
     
