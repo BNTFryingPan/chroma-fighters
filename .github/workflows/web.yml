@@ -6,12 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v1
-    - name: setup
-      uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
+    - uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
       with:
-        host: 'ubuntu'
+        host: 'linux'
+
+    uses: ./.github/workflows/setup.yml
+    steps:
     - name: build
       run: haxelib run openfl build html5 -debug
     - name: deploy

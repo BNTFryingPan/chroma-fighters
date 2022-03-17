@@ -12,11 +12,11 @@ jobs:
   build:
     runs-on: windows-latest
 
-    steps:
-    - uses: actions/checkout@v1
     - uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
       with:
         host: 'windows'
+
+    steps:
     - name: build
       run: haxelib run openfl build windows -debug
     - name: archive
