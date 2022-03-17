@@ -8,7 +8,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: ./.github/workflows/setup.yml
+    - name: setup
+      uses: .github/workflows/setup.yml
       with:
         host: 'ubuntu'
     - name: build
