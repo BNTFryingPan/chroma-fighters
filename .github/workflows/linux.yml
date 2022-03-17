@@ -13,25 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./.github/workflows/setup
-        with:
-          host: 'ubuntu'
-      - name: build
-        run: haxelib run openfl build linux -debug
-      - name: archive
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'tar'
-          filename: '../../../linux.tar.gz'
-          directory: './export/linux/bin/'
-          path: '.'
-      - name: release on github
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          #allowUpdates: true
-          automatic_release_tag: "${{ inputs.tag }}"
-          prerelease: true
-          title: "Linux Development Build"
-          files: |
-            ./linux.tar.gz
+    - uses: ./.github/workflows/setup
+      with:
+        host: 'ubuntu'
+    - name: build
+      run: haxelib run openfl build linux -debug
+    - name: archive
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'tar'
+        filename: '../../../linux.tar.gz'
+        directory: './export/linux/bin/'
+        path: '.'
+    - name: release on github
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        #allowUpdates: true
+        automatic_release_tag: "${{ inputs.tag }}"
+        prerelease: true
+        title: "Linux Development Build"
+        files: |
+          ./linux.tar.gz

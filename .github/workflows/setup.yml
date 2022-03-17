@@ -12,14 +12,14 @@ jobs:
     runs-on: ${{inputs.host}}-latest
     
     steps:
-      - uses: actions/checkout@v1
-      - name: setup haxe
-        uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: 4.2.4
-      
-      - name: setup libs
-        run: |
+    - uses: actions/checkout@v1
+    - name: setup haxe
+      uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: 4.2.4
+    
+    - name: setup libs
+      run: |
         haxelib install hxcpp --always --quiet
         haxelib install hscript --always --quiet
         haxelib install json2object --always --quiet
