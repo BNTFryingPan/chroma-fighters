@@ -19,7 +19,7 @@ class CharSelectScreen extends BaseState {
 
    public function get_cancelHoldProgress():Float {
       var playerProgress = PlayerSlot.getPlayerArray().map(p -> p.cancelHoldTime);
-      var max = 0;
+      var max:Float = 0;
       for (p in playerProgress) {
          if (p > max)
             max = p;
@@ -52,7 +52,7 @@ class CharSelectScreen extends BaseState {
          });
       });
 
-      this.backProgress = new FlxBar(20, 50, LEFT_TO_RIGHT, Std.int(backButton.width), Std.int(backButton.height), this, cancelHoldProgress, 0, 3);
+      this.backProgress = new FlxBar(20, 50, LEFT_TO_RIGHT, Std.int(backButton.width), Std.int(backButton.height), this, 'cancelHoldProgress', 0, 3);
 
       this.readyTestButton = new CustomButton(0, 0, 'Martha', function(player:PlayerSlotIdentifier) {
          if (this.isFading)
