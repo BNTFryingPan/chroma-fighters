@@ -23,7 +23,6 @@ using StringTools;
 import sys.FileSystem;
 import sys.io.File;
 #end
-
 #if wackyassets
 import openfl.utils.Assets as OpenFLAssets;
 #end
@@ -129,7 +128,6 @@ class AssetHelper {
    public static var ready:Bool = #if sys true #else false #end;
 
    // private function new() {}
-
    ///private static final DelayedAssetTypes:Map<
 
    public static function loadWhenReady(key:NamespacedKey, type:AssetType):DelayedAsset<Dynamic> {
@@ -197,10 +195,10 @@ class AssetHelper {
       var assetDir = AssetHelper.getAssetDirectory(key, ".png");
       #end
       if (assetDir != null) {
-         #if !wackyassets
-         var bitmap = BitmapData.fromFile(assetDir);
-         #else
+         #if wackyassets
          var bitmap = FlxAssets.getBitmapData(assetDir);
+         #else
+         var bitmap = BitmapData.fromFile(assetDir);
          #end
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
@@ -407,9 +405,8 @@ class AssetHelper {
    private static function getAssetPath(key:NamespacedKey, ?ext:String):String {
       key.parseSpecialNamespaces();
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
-         // return 'mods/basegame/${key.asFileReference()}';
-         if (Reflect.hasField(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}'))
-            return Reflect.field(AssetPaths, 'mods_basegame_${key.asFileReference()}${ext == null ? "" : "__" + ext}');
+         trace(key.asFileReference() + '__' + (ext == null ? '' : ext));
+         return getAssetPathRaw(key.asFileReference(), ext);
       }
       return null;
    }

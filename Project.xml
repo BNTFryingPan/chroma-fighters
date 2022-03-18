@@ -13,7 +13,7 @@
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
 
-	<language name="en-US" />
+	<language name="en-US" unless='android' />
 	
 
 	<!-- ____________________________ Window Settings ___________________________ -->
@@ -73,7 +73,7 @@
 		<haxedef name="HXCPP_CHECK_POINTER" />
 	</section>
 
-	<define name="wackyassets" if="html5" />
+	<define name="wackyassets" if="html5 || mobile" />
 	<echo value="using wackyassets" if="wackyassets" />
 	<echo value="mobile || html5" if="mobile || html5" />
 

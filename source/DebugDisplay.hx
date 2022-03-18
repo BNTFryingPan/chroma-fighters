@@ -365,6 +365,9 @@ class DebugDisplay extends FPS {
          #if telemetry
          lText += '[Telemetry Build]\n';
          #end
+         #if wackyassets
+         lText += '[Lime Asset Build]\n';
+         #end
          if (DebugDisplay.shouldShowAdditions)
             lText += DebugDisplay.leftAppend;
 
