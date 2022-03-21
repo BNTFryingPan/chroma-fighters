@@ -530,7 +530,7 @@ class PlayerSlot {
 
    public static function getCoinBitmap(slot:PlayerSlotIdentifier):BitmapData {
       trace('getting coin bitmap: ${AssetHelper.ready}');
-      var baseCoin = PlayerSlot.PointerCoinBitmap.get();
+      var baseCoin = PlayerSlot.PointerCoinBitmap.get().clone();
       var icon = switch (slot) {
          case P1: PointerP1Bitmap.get();
          case P2: PointerP2Bitmap.get();
@@ -776,7 +776,8 @@ class PlayerSlot {
          return;
 
       if (GameState.shouldDrawCursors) {
-         this.coinSprite.draw();
+         if (this.type != NONE)
+            this.coinSprite.draw();
          this.cursorSprite.draw();
          this.debugSprite.draw();
       }
