@@ -24,6 +24,8 @@ import hl.Gc;
 import cpp.vm.Gc;
 #end
 
+using StringTools;
+
 class DebugDisplay extends FPS {
    #if cpp
    private static final os:String = '${FlCap.os}';
