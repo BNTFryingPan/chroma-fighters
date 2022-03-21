@@ -657,7 +657,7 @@ class PlayerSlot {
 
    public function update(elapsed:Float) {
       if (!this.ready)
-         return;
+         return trace('P${this.slot + 1} not ready');
       this.updateCursorPos(elapsed);
       var cursorPos = this.getCursorPosition();
 
