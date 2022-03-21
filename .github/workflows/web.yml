@@ -3,8 +3,6 @@ name: Web Build
 on: workflow_dispatch
     
 jobs:
-  setup:
-    uses:
   build:
     runs-on: ubuntu-latest
 
