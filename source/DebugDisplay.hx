@@ -421,7 +421,7 @@ class DebugDisplay extends FPS {
          //trace('p8 in left append');
       }
       if (this.text.contains('P8')) {
-         trace('p8 in left text');
+         //trace('p8 in left text');
       }
       DebugDisplay.rightPrepend = "";
       DebugDisplay.rightAppend = "";
