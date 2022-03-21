@@ -418,7 +418,10 @@ class DebugDisplay extends FPS {
          // this.rightText.alignment = RIGHT;
       }
       if (DebugDisplay.leftAppend.contains('P8')) {
-         trace('p8 in left append');
+         //trace('p8 in left append');
+      }
+      if (this.text.contains('P8')) {
+         trace('p8 in left text');
       }
       DebugDisplay.rightPrepend = "";
       DebugDisplay.rightAppend = "";

@@ -659,7 +659,7 @@ class PlayerSlot {
       if (!this.ready)
          return trace('P${this.slot + 1} not ready');
       if (this.slot == P8) {
-         trace('P8 update');
+         //trace('P8 update');
       }
       this.updateCursorPos(elapsed);
       var cursorPos = this.getCursorPosition();
@@ -754,7 +754,7 @@ class PlayerSlot {
             DebugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
       if (this.slot == P8) {
-         trace(DebugDisplay.leftAppend);
+         //trace(DebugDisplay.leftAppend);
       }
    }
 
