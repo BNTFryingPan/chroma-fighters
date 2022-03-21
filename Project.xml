@@ -51,6 +51,7 @@
 	<haxelib name="hscript" />
 	<haxelib name="ase"/>
 	<haxelib name="flixel-addons" />
+	<!--<haxelib name="steamwrap" if="desktop" />-->
 
 	<!--In case you want to use the addons package-->
 
