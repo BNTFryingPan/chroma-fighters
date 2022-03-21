@@ -89,7 +89,7 @@ class PlayerBox extends FlxSpriteGroup {
    public var slot:PlayerSlotIdentifier;
 
    public function new(slot:PlayerSlotIdentifier) {
-      trace('new player box');
+      trace('new player box ${this.slot}');
       super(0, FlxG.height - 80);
       this.background = new FlxSprite();
       this.text = new FlxText(0, 0, 0, "0/8\nInput");
@@ -594,7 +594,7 @@ class PlayerSlot {
 
       this.ready = true;
 
-      trace('player slot init');
+      trace('player slot ${this.slot + 1} init');
 
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();
@@ -620,7 +620,7 @@ class PlayerSlot {
    private function new(slot:PlayerSlotIdentifier) {
       this.slot = slot;
       this.type = NONE;
-      trace('new player slot');
+      trace('new player slot ${this.slot}');
       this.input = new GenericInput(slot);
       this.fighterSelection = new FighterSelection(slot);
       this.heldCoin = this.slot;
@@ -658,6 +658,9 @@ class PlayerSlot {
    public function update(elapsed:Float) {
       if (!this.ready)
          return trace('P${this.slot + 1} not ready');
+      if (this.slot == P8) {
+         trace('P8 update');
+      }
       this.updateCursorPos(elapsed);
       var cursorPos = this.getCursorPosition();
 
