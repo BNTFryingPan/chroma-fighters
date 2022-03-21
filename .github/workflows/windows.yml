@@ -12,11 +12,28 @@ jobs:
   build:
     runs-on: windows-latest
 
-    uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
-    with:
-      host: 'windows'
+    #uses: leotomas/chroma-fighters/.github/workflows/setup.yml@main
+    #with:
+    #  host: 'windows'
 
     steps:
+    - uses: actions/checkout@v1
+    - name: setup haxe
+      uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: 4.2.4
+    
+    - name: setup libs
+      run: |
+        haxelib install hxcpp --always --quiet
+        haxelib install hscript --always --quiet
+        haxelib install json2object --always --quiet
+        haxelib install ase --always --quiet
+        haxelib install lime --always --quiet
+        haxelib install openfl --always --quiet
+        haxelib install flixel --always --quiet
+        haxelib install flixel-addons --always --quiet
+        echo "y" \| haxelib run openfl setup
     - name: build
       run: haxelib run openfl build windows -debug
     - name: archive
