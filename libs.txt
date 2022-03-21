@@ -1,0 +1,4 @@
+# file of extra libs to install
+haxelib install ase
+haxelib install json2object
+haxelib git steamwrap https://github.com/larsiusprime/SteamWrap
