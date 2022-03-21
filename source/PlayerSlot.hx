@@ -529,6 +529,7 @@ class PlayerSlot {
    }
 
    public static function getCoinBitmap(slot:PlayerSlotIdentifier):BitmapData {
+      trace('getting coin bitmap: ${AssetHelper.ready}');
       var baseCoin = PlayerSlot.PointerCoinBitmap.get();
       var icon = switch (slot) {
          case P1: PointerP1Bitmap.get();

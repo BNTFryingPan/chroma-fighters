@@ -30,7 +30,7 @@ class DebugDisplay extends FPS {
    #if cpp
    private static final os:String = '${FlCap.os}';
    #else
-   private static final os:String = 'windows lmao';
+   private static final os:String = 'windows? lmao';
    #end
 
    private final rightText:TextField;
