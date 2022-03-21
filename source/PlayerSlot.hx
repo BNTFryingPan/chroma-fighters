@@ -753,6 +753,9 @@ class PlayerSlot {
          if (Main.debugDisplay.visible)
             DebugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
+      if (this.slot == P8) {
+         trace(DebugDisplay.leftAppend);
+      }
    }
 
    public function isReady():Bool {
