@@ -76,6 +76,7 @@ class DebugDisplay extends FPS {
       this.notif.autoSize = TextFieldAutoSize.RIGHT;
       this.notif.selectable = false;
       this.notif.mouseEnabled = false;
+      this.notif.y = FlxG.height - 10;
 
       addEventListener(Event.ADDED, __added);
    }
@@ -414,6 +415,9 @@ class DebugDisplay extends FPS {
          // this.rightText = new FlxText(10, 10, FlxG.width - 20, rText, DebugDisplay.fontSize);
          // this.rightText.alignment = RIGHT;
       }
+      if (DebugDisplay.leftAppend.contains('P8')) {
+         trace('p8 in left append');
+      }
       DebugDisplay.rightPrepend = "";
       DebugDisplay.rightAppend = "";
       DebugDisplay.leftPrepend = "";
@@ -422,6 +426,7 @@ class DebugDisplay extends FPS {
 
    private function __added(event:Event):Void {
       Main.instance.addChild(this.rightText);
+      Main.instance.addChild(this.notif);
    }
 
    @:noCompletion
