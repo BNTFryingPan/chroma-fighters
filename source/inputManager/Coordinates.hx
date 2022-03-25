@@ -1,6 +1,7 @@
 package inputManager;
 
 import flixel.FlxCamera;
+import flixel.FlxG;
 import flixel.math.FlxAngle;
 import flixel.util.FlxPool;
 
@@ -81,7 +82,7 @@ class Coordinates implements IFlxPooled {
       return this;
    }
 
-   public function move2(coords:Coordinates, mult:Float=1):Coordinates {
+   public function move2(coords:Coordinates, mult:Float = 1):Coordinates {
       this.move(coords.x * mult, coords.y * mult);
       coords.putWeak();
       return this;
@@ -144,7 +145,7 @@ class Coordinates implements IFlxPooled {
    }
 
    public function get_sy():Float {
-      return Coordinates.xInScreenSpace(this.y);
+      return Coordinates.xInScreenSpace(this.y) - (FlxG.height / 2);
    }
 
    public function ceil():Coordinates {

@@ -1,13 +1,15 @@
 package states.sub;
 
 import GameManager;
+import MenuMusicManager.MenuMusicState;
 import PlayerSlot;
 import flixel.FlxG;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import inputManager.Action;
+import inputManager.InputHelper;
 import inputManager.InputManager;
 import inputManager.InputState;
-import flixel.ui.FlxBar;
 
 class CharSelectScreen extends BaseState {
    public var onlineMenu:Bool = false;
@@ -18,11 +20,10 @@ class CharSelectScreen extends BaseState {
    public var cancelHoldProgress(get, never):Float;
 
    public function get_cancelHoldProgress():Float {
-      var playerProgress = PlayerSlot.getPlayerArray().map(p -> p.cancelHoldTime);
       var max:Float = 0;
-      for (p in playerProgress) {
-         if (p > max)
-            max = p;
+      for (p in PlayerSlot.players) {
+         if (p.cancelHoldTime > max)
+            max = p.cancelHoldTime;
       }
       return max;
    }
@@ -38,6 +39,7 @@ class CharSelectScreen extends BaseState {
       super.create();
 
       PlayerBox.STATE = PlayerBoxState.FIGHTER_SELECT;
+      MenuMusicManager.musicState = MenuMusicState.FIGHTER_SELECT;
       GameState.shouldDrawCursors = true;
 
       this.backButton = new CustomButton(20, 20, '<- Back', function(player:PlayerSlotIdentifier) {
@@ -85,27 +87,34 @@ class CharSelectScreen extends BaseState {
       add(this.backProgress);
    }
 
-   public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better... update 2: this looks fine i think
-      return [for (p in PlayerSlot.players) if (!p.isReady()) true].length > 0;
+   public function areAllPlayersReady():Bool { // i hate this lmao; update: i think this is better... update 2: this looks fine i think; update 3: this is fine now
+      for (p in PlayerSlot.players)
+         if (!p.isReady())
+            return false;
+      return true;
+      // return [for (p in PlayerSlot.players) if (!p.isReady()) true].length > 0;
       //   if (!player.isReady())
       //      return false;
-      //return true;
+      // return true;
    }
 
    override public function update(elapsed:Float) {
       super.update(elapsed);
-      for (player in InputManager.playersPressingAction(MENU_CANCEL)) {
+      for (player in PlayerSlot.players) {
          if (player.isReady() && player.input.getCancel() == JUST_PRESSED) {
             player.fighterSelection.ready = false;
             player.heldCoin = player.slot;
-         } else if (!this.isFading) {
+         } else if (!this.isFading && InputHelper.isPressed(player.input.getCancel())) {
             if (player.cancelHoldTime >= 3) {
+               player.cancelHoldTime = 0;
                this.isFading = true;
                return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {
                   FlxG.switchState(new TitleScreenState());
                });
             }
             player.cancelHoldTime += elapsed;
+         } else {
+            player.cancelHoldTime = 0;
          }
       }
 

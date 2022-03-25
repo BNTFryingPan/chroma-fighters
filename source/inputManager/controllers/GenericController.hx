@@ -162,11 +162,13 @@ class GenericController extends GenericInput {
    }
 
    override public function getQuit():InputState {
-      return this.profile.getActionState(NULL, this);
+      return this.getButtonState(MINUS);
+      // return this.profile.getActionState(NULL, this);
    }
 
    override public function getPause():InputState {
-      return this.profile.getActionState(NULL, this);
+      return this.getButtonState(PLUS);
+      // return this.profile.getActionState(NULL, this);
    }
 
    override public function getUp():Float {
@@ -205,14 +207,13 @@ class GenericController extends GenericInput {
 
       return stick;
    }
-
    /*override public function getDirection():StickVector {
-      return new// StickVector(0, 0);
-      // return {x: 0, y: 0};
-   }
+         return new// StickVector(0, 0);
+         // return {x: 0, y: 0};
+      }
 
-   override public function getRawDirection():StickVector {
-      return new// StickVector(0, 0);
-      // return {x: 0, y: 0};
+      override public function getRawDirection():StickVector {
+         return new// StickVector(0, 0);
+         // return {x: 0, y: 0};
    }*/
 }

@@ -1,5 +1,7 @@
 package states;
 
+import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxState;
 
@@ -28,9 +30,32 @@ class BaseState extends FlxState implements ChromaFightersState {
       }*/
    }
 
+   @:access(flixel.FlxCamera)
    override public function draw() {
-      super.draw();
+      if (this.persistentDraw || this.subState == null) {
+         var i:Int = 0;
+         var basic:FlxBasic = null;
+
+         var oldDefaultCameras = FlxCamera._defaultCameras;
+         if (this.cameras != null) {
+            FlxCamera._defaultCameras = this.cameras;
+         }
+
+         while (i < this.length) {
+            basic = this.members[i++];
+
+            if (basic != null && basic.exists && basic.visible) {
+               basic.draw();
+            }
+         }
+
+         FlxCamera._defaultCameras = oldDefaultCameras;
+      }
+
       GameManager.draw();
+
+      if (this.subState != null)
+         this.subState.draw();
    }
 
    override public function update(elapsed:Float) {

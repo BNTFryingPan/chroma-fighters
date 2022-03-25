@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Chroma Fighters
+Comment=2d pixel art platform fighter
+Exec=./chroma-fighters %u
+Icon=./icon.png
+Terminal=false
+Type=Application
+Categories=Game;

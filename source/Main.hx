@@ -62,25 +62,25 @@ class Main extends Sprite {
       addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
       addChild(Main.debugDisplay);
 
-      FlxG.fixedTimestep = true;
+      FlxG.fixedTimestep = true; // forces a fixed time step. this causes slowdowns on weaker hardware, but makes it more consistent for replays and online
 
-      FlxG.gamepads.deviceConnected.add(gamepad -> {
+      FlxG.gamepads.deviceConnected.add(gamepad -> { // gamepad connected
          Main.log('${gamepad.name}.${gamepad.id} connected');
          Main.debugDisplay.notify('${gamepad.name}.${gamepad.id} connected');
       });
 
-      FlxG.gamepads.deviceDisconnected.add(gamepad -> {
+      FlxG.gamepads.deviceDisconnected.add(gamepad -> { // gamepad connected
          Main.log('${gamepad.name}.${gamepad.id} disconnected');
          Main.debugDisplay.notify('${gamepad.name}.${gamepad.id} disconnected');
-         if (InputManager.getUsedGamepads().contains(gamepad)) {
+         if (InputManager.getUsedGamepads().contains(gamepad)) { // if this gamepad is used
             var slot = InputManager.getPlayerSlotByInput(gamepad);
             if (slot != null) {
-               PlayerSlot.getPlayer(slot).setNewInput(NoInput);
+               PlayerSlot.getPlayer(slot).setNewInput(NoInput); // set that player to no input; TODO : probably change this so itll pause in game
             }
          }
       });
 
-      FlxG.keys.preventDefaultKeys.push(F3);
+      FlxG.keys.preventDefaultKeys.push(F3); // some browsers use the F3 key as a shortcut
 
       // Main.debugDisplay = new DebugDisplay();
       Main.screenSprite = new ScreenSprite();
@@ -102,18 +102,21 @@ class Main extends Sprite {
    }
 
    public static function registerClassesWithFlxDebuggerConsole():Void {
-      #if FLX_DEBUG
+      #if FLX_DEBUG // flixel debugger is disabled in release builds
       FlxG.debugger.drawDebug = true;
 
+      // add enums to flixel console
+      FlxG.game.debugger.console.registerEnum(PlayerBoxState);
+
+      // add classes to flixel console
       FlxG.game.debugger.console.registerClass(PlayerSlot);
       FlxG.game.debugger.console.registerClass(InputHelper);
       FlxG.game.debugger.console.registerClass(InputManager);
       // FlxG.game.debugger.console.registerClass(Stage);
       FlxG.game.debugger.console.registerClass(Match);
       FlxG.game.debugger.console.registerClass(PlayerBox);
-      FlxG.game.debugger.console.registerEnum(PlayerBoxState);
       FlxG.game.debugger.console.registerClass(GameState);
-      // FlxG.game.debugger.console.registerClass(GameManager);
+      FlxG.game.debugger.console.registerClass(GameManager);
       #end
       return;
    }

@@ -1,5 +1,6 @@
 package;
 
+import AssetHelper;
 import GameManager;
 import cpuController.CpuController;
 import cpuController.CpuSettings;
@@ -31,7 +32,6 @@ import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import AssetHelper;
 
 enum abstract PlayerSlotIdentifier(Int) to Int {
    var P1;
@@ -69,11 +69,11 @@ class PlayerBox extends FlxSpriteGroup {
       switch (state) {
          case PlayerBoxState.HIDDEN:
          case PlayerBoxState.FIGHTER_SELECT:
-            for (player in PlayerSlot.getPlayerArray()) {
+            for (player in PlayerSlot.players) {
                player.playerBox.configureCSS();
             }
          case PlayerBoxState.IN_GAME:
-            for (player in PlayerSlot.getPlayerArray()) {
+            for (player in PlayerSlot.players) {
                player.playerBox.configureInGame();
             }
          default:
@@ -138,7 +138,8 @@ class PlayerBox extends FlxSpriteGroup {
 }
 
 class PlayerSlot {
-   public static var PointerCoinBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"), IMAGE);
+   public static var PointerCoinBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/coin"),
+      IMAGE);
    public static var PointerP1Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p1"), IMAGE);
    public static var PointerP2Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p2"), IMAGE);
    public static var PointerP3Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p3"), IMAGE);
@@ -148,7 +149,8 @@ class PlayerSlot {
    public static var PointerP7Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p7"), IMAGE);
    public static var PointerP8Bitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/p8"), IMAGE);
    public static var PointerCPUBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/coins/cpu"), IMAGE);
-   public static var PointerCursorBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"), IMAGE);
+   public static var PointerCursorBitmap:DelayedAsset<BitmapData> = cast AssetHelper.loadWhenReady(NamespacedKey.ofDefaultNamespace("images/cursor/pointer"),
+      IMAGE);
 
    public static final artificalPlayerLimit = false; // if true, caps at 4 players instead of 8 at runtime. might break stuff, idk
    public static final defaultPlayerColors:Map<PlayerSlotIdentifier, PlayerColor> = [
@@ -198,8 +200,8 @@ class PlayerSlot {
    }
 
    public static function getPlayerArray(?skipEmpty:Bool):Array<PlayerSlot> {
-      //return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player];
-      
+      // return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player];
+
       var array = [];
       for (player in PlayerSlot.players) {
          if (!(skipEmpty && player.type == NONE)) {
@@ -207,11 +209,10 @@ class PlayerSlot {
          }
       }
       return array;
-      
    }
 
    public static function getPlayerInputArray(?skipEmpty:Bool):Array<GenericInput> {
-      //return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player.input];
+      // return [for (player in PlayerSlot.players) if (!(skipEmpty && player.type == NONE)) player.input];
       return PlayerSlot.getPlayerArray(skipEmpty).map(player -> player.input);
    }
 
@@ -276,10 +277,14 @@ class PlayerSlot {
    }
 
    public static function getPlayerByProfileName(profile:String):Null<PlayerSlot> {
-      var matched = PlayerSlot.getPlayerArray().filter(player -> player.input.profile.name == profile);
-      if (matched.length > 0)
-         return matched[0];
+      for (player in PlayerSlot.players)
+         if (player.input.profile.name == profile)
+            return player;
       return null;
+      // var matched = PlayerSlot.getPlayerArray().filter(player -> player.input.profile.name == profile);
+      // if (matched.length > 0)
+      // return matched[0];
+      // return null;
    }
 
    public static function tryToAddPlayerFromInputDevice(inputDevice:FlxGamepad):Null<PlayerSlot> {
@@ -428,7 +433,8 @@ class PlayerSlot {
    public var visible(get, default):Bool = false;
 
    function set_heldCoin(value:Null<PlayerSlotIdentifier>):Null<PlayerSlotIdentifier> {
-      if (this.heldCoin == value) return value;
+      if (this.heldCoin == value)
+         return value;
       if (value == null) {
          var p = this;
          if (this.heldCoin != this.slot)
@@ -443,10 +449,16 @@ class PlayerSlot {
    }
 
    private function set_slot(v:PlayerSlotIdentifier) {
-      if (this.playerBox != null)
+      trace('set_slot called');
+      if (this.playerBox != null) {
          this.playerBox.slot = v;
+         this.playerBox.configureCSS();
+      }
       if (this.input != null)
          this.input.slot = v;
+      if (this.heldCoin == this.slot) {
+         this.heldCoin = v;
+      }
 
       this.slot = v;
 
@@ -454,7 +466,7 @@ class PlayerSlot {
          this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(v)));
 
       if (this.cursorSprite != null) {
-         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get()), true, 32, 32, true, '${this.slot}-pointer');
+         this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get().clone()), true, 32, 32, true, '${this.slot}-pointer');
          this.setCursorAngle(SAME);
       }
 
@@ -485,8 +497,10 @@ class PlayerSlot {
    }
 
    public function setNewInput(type:InputType, ?inputDevice:OneOfTwo<FlxGamepad, InputDevice>, ?profile:String) {
-      if (this.input.getCursorPosition() != null) {
-         this.cursorPosition.clone(this.input.getCursorPosition());
+      var newPos = this.input.getCursorPosition();
+      if (newPos != null) {
+         this.cursorPosition.clone(newPos);
+         newPos.putWeak();
       }
       if (type == KeyboardInput || (inputDevice == Keyboard && type != KeyboardAndMouseInput)) {
          this.setType(PLAYER);
@@ -532,18 +546,18 @@ class PlayerSlot {
       trace('getting coin bitmap: ${AssetHelper.ready}');
       var baseCoin = PlayerSlot.PointerCoinBitmap.get().clone();
       var icon = switch (slot) {
-         case P1: PointerP1Bitmap.get();
-         case P2: PointerP2Bitmap.get();
-         case P3: PointerP3Bitmap.get();
-         case P4: PointerP4Bitmap.get();
-         case P5: PointerP5Bitmap.get();
-         case P6: PointerP6Bitmap.get();
-         case P7: PointerP7Bitmap.get();
-         case P8: PointerP8Bitmap.get();
+         case P1: PointerP1Bitmap;
+         case P2: PointerP2Bitmap;
+         case P3: PointerP3Bitmap;
+         case P4: PointerP4Bitmap;
+         case P5: PointerP5Bitmap;
+         case P6: PointerP6Bitmap;
+         case P7: PointerP7Bitmap;
+         case P8: PointerP8Bitmap;
       }
 
       trace('new rect+point');
-      baseCoin.copyPixels(icon, new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
+      baseCoin.copyPixels(icon.get(), new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
       return baseCoin;
    }
 
@@ -599,7 +613,7 @@ class PlayerSlot {
 
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();
-      this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get()), true, 32, 32, true, '${this.slot}-pointer');
+      this.cursorSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.PointerCursorBitmap.get().clone()), true, 32, 32, true, '${this.slot}-pointer');
       this.playerBox = new PlayerBox(this.slot);
       this.debugSprite = new FlxSprite();
       this.coinSprite.loadGraphic(this.applySlotColorFilter(PlayerSlot.getCoinBitmap(this.slot)));
@@ -632,20 +646,24 @@ class PlayerSlot {
    }
 
    public function moveToSlot(toSlot:PlayerSlotIdentifier) {
+      trace('moving from ${this.slot} to ${toSlot}');
       if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)
          return;
 
       if (toSlot == this.slot)
          return; // no reason to swap as we are already in that slot
 
-      var targetSlot = toSlot;
-      var thisSlot = this.slot;
+      // var targetSlot = toSlot;
+      // var thisSlot = this.slot;
 
-      PlayerSlot.players.get(toSlot).slot = thisSlot;
-      this.slot = targetSlot;
+      var target = PlayerSlot.players.get(toSlot);
 
-      PlayerSlot.players.set(thisSlot, PlayerSlot.players.get(targetSlot));
-      PlayerSlot.players.set(targetSlot, this);
+      target.slot = this.slot;
+      this.slot = toSlot;
+
+      PlayerSlot.players.set(target.slot, target);
+      PlayerSlot.players.set(toSlot, this);
+      trace('after move: ${this.slot}');
    }
 
    /**
@@ -660,7 +678,7 @@ class PlayerSlot {
       if (!this.ready)
          return trace('P${this.slot + 1} not ready');
       if (this.slot == P8) {
-         //trace('P8 update');
+         // trace('P8 update');
       }
       this.updateCursorPos(elapsed);
       var cursorPos = this.getCursorPosition();
@@ -755,8 +773,9 @@ class PlayerSlot {
             DebugDisplay.leftAppend += '\n[P${this.slot + 1}] {${this.input.inputType}} ----DISABLED----';
       }
       if (this.slot == P8) {
-         //trace(DebugDisplay.leftAppend);
+         // trace(DebugDisplay.leftAppend);
       }
+      cursorPos.putWeak();
    }
 
    public function isReady():Bool {

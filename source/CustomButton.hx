@@ -82,6 +82,7 @@ class CustomButton extends FlxButton {
       var point = FlxPoint.get(c.x, c.y);
       var overlaps = overlapsPoint(point);
       point.put();
+      c.putWeak();
       return overlaps;
    }
 

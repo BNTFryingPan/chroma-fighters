@@ -327,7 +327,7 @@ class AssetHelper {
             bitmap: bitmap,
             frames: frames,
             startIndex: curFrame,
-            name: #if wackyassets asset #else asset.substr(0, -4) #end
+            name: asset
          });
          curFrame += frames;
       }
@@ -340,6 +340,7 @@ class AssetHelper {
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;
+      trace(sprite.animation.getNameList());
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {

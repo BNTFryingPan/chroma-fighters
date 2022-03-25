@@ -1,12 +1,10 @@
 package;
 
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-#if cpp
-import flixel.addons.plugin.screengrab.FlxScreenGrab;
-#end
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import inputManager.Coordinates;
@@ -19,6 +17,9 @@ import match.MatchObject;
 import match.Ruleset;
 import match.hitbox.AbstractHitbox;
 import states.MatchState;
+#if cpp
+import flixel.addons.plugin.screengrab.FlxScreenGrab;
+#end
 
 enum PlayerBoxState {
    GENERIC; // used for generic screens. has swap/dc buttons and controls/name picker, but no fighter selection
@@ -42,6 +43,39 @@ class GameState { // this might be jank
    public static var animationDebugMode:Bool = false;
    public static var animationDebugTick:Bool = false;
    #end
+
+   public static var justPaused:Bool = false;
+   public static var pausedPlayer(default, set):Null<PlayerSlotIdentifier> = null;
+   public static var isPaused(get, never):Bool;
+
+   public static function set_pausedPlayer(?slot:PlayerSlotIdentifier):Null<PlayerSlotIdentifier> {
+      if (slot != null)
+         justPaused = true;
+
+      return pausedPlayer = slot;
+   }
+
+   public static function get_isPaused():Bool {
+      return pausedPlayer != null;
+   }
+
+   public static function trainingFrameStepCheck():Bool {
+      if (trainingFrameStepMode)
+         return trainingFrameStepTick;
+      return true;
+   }
+
+   public static function shouldDoMatchTick():Bool {
+      if (!isInMatch)
+         return false;
+      if (isPlayingOnline)
+         return true;
+      if (isTrainingMode && !isPaused)
+         return true;
+      if (isUIOpen)
+         return false;
+      return trainingFrameStepCheck() && !isPaused;
+   }
 
    // public static function getShouldDrawCursors():Bool {
    //    return isUIOpen && s
@@ -110,23 +144,33 @@ class GameManager {
       // GameState.isInMatch = (Std.isOfType(FlxG.state, MatchState));
       GameState.isInMatch = (FlxG.state is MatchState);
 
-      if (GameState.isInMatch && (!GameState.trainingFrameStepMode || GameState.trainingFrameStepTick)) {
+      if (GameState.shouldDoMatchTick()) {
          for (p in PlayerSlot.players) {
             if (p.fighter != null)
                p.fighter.update(elapsed);
+            if (!GameState.isPaused && p.input.getPause() == JUST_PRESSED)
+               GameManager.pause(p.slot);
          }
       }
 
       PlayerSlot.updateAll(elapsed);
-      if (GameState.isInMatch
-         && (GameState.isPlayingOnline || !GameState.isUIOpen)
-         && (!GameState.trainingFrameStepMode || GameState.trainingFrameStepTick)) {
-         for (player in PlayerSlot.getPlayerArray(true)) {
-            if (player.fighter != null && player.fighter.alive) {
+
+      if (GameState.shouldDoMatchTick()) {
+         for (player in PlayerSlot.players) {
+            if (player.type != NONE && player.fighter != null && player.fighter.alive) {
                player.fighter.handleInput(elapsed, player.input);
                if (player.fighter.isInBlastzone((cast FlxG.state).stage)) {
                   player.fighter.die();
                }
+            }
+         }
+      }
+
+      if (GameState.isInMatch && GameState.isPaused) {
+         for (player in PlayerSlot.players) {
+            if (player.input.getPause() == JUST_PRESSED) {
+               GameManager.unpause(player.slot);
+               break;
             }
          }
       }
@@ -167,6 +211,7 @@ class GameManager {
       GameState.animationDebugTick = false;
       #end
       GameState.trainingFrameStepTick = false;
+      GameState.justPaused = false;
 
       Main.debugDisplay.update();
 
@@ -181,25 +226,34 @@ class GameManager {
       PlayerSlot.drawAll();
 
       Main.screenSprite.draw();
+
+      // draw all the fighters
       if (GameState.isInMatch)
-         for (p in PlayerSlot.getPlayerArray().filter(p -> p.fighter != null))
-            p.fighter.draw();
+         for (p in PlayerSlot.players)
+            if (p.fighter != null)
+               p.fighter.draw();
 
       // Main.debugDisplay.draw();
+
+      // return (!GameState.isPaused);
    }
 
    public static function getAllObjects():Array<FlxBasic> {
       var ret = [];
 
+      // adds the children of the current FlxState
       for (fb in FlxG.state.members) {
          ret.push(fb);
       }
 
-      for (player in PlayerSlot.getPlayerArray()) {
+      for (player in PlayerSlot.players) {
+         // adds player box objects
          ret.push(player.playerBox.background);
          ret.push(player.playerBox.text);
          ret.push(player.playerBox.swapButton);
          ret.push(player.playerBox.disconnectButton);
+
+         // ads player fighter objects
          ret.push(player.fighter);
          // ret.push(player.fighter.getBasicChildren());
       }
@@ -218,9 +272,24 @@ class GameManager {
 
    public static function reloadTextures() {
       for (object in GameManager.getAllObjects().filter(o -> o is IMatchObject))
-         (cast object).reloadTextures();
+         (cast object).reloadTextures(); // casts to IMatchObject
    }
 
+   public static function pause(slot:PlayerSlotIdentifier) {
+      if (GameState.isInMatch && !GameState.isPaused && FlxG.state is MatchState) {
+         (cast FlxG.state).pause(slot); // casts to MatchState
+      }
+   }
+
+   public static function unpause(slot:PlayerSlotIdentifier) {
+      if (GameState.isInMatch && GameState.isPaused && GameState.pausedPlayer == slot && FlxG.state is MatchState) {
+         (cast FlxG.state).unpause(); // casts to MatchState
+      }
+   }
+
+   /**
+      gets the knockback multiplier of the current ruleset
+   **/
    public static function getKnockbackMultiplier():Float {
       return GameManager.ruleset.knockback;
    }

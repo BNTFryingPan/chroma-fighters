@@ -103,8 +103,8 @@ class InputManager {
    }
 
    public static function anyPlayerPressingAction(act:Action):Bool {
-      for (p in getPlayerArray())
-         if (InputHelper.isPressed(p.getAction(act)))
+      for (p in PlayerSlot.players)
+         if (InputHelper.isPressed(p.input.getAction(act)))
             return true;
 
       return false;

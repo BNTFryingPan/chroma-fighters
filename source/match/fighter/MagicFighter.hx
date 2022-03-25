@@ -57,6 +57,10 @@ class MagicFighterTaunt extends FighterMove {
       }
       return REJECTED(null);
    }
+
+   public function getAction() {
+      return Action.TAUNT;
+   }
 }
 
 abstract class MagicFighterStrongMove extends FighterMove {
@@ -69,11 +73,28 @@ abstract class MagicFighterStrongMove extends FighterMove {
          this._isCharging = true;
          this.fighter.moveFreeze(this.maxChargeTime());
          this.playChargeAnimation();
+         trace('charge start');
+         return SUCCESS(null);
       } else if (state == JUST_RELEASED || elapsed >= this.maxChargeTime()) {
          this._isCharging = false;
-         return this.releaseChargedAttack(input, this.chargeTime, ...params);
+         this.releaseChargedAttack(input, this.chargeTime, ...params);
+         trace('charge release');
+         return REJECTED({success: true, reason: 'CHARGE_ATTACK_RELEASED'});
+      } else if (state == PRESSED && this._isCharging) {
+         this.chargeTime += elapsed;
+         trace('charge progressed');
+         return SUCCESS(null);
       }
-      return SUCCESS(null);
+      trace('not pressed?');
+      return REJECTED(null);
+   }
+
+   public function getAction() {
+      return Action.STRONG;
+   }
+
+   override public function shouldPerform(state:InputState, input:GenericInput):String {
+      return '';
    }
 
    abstract function maxChargeTime():Float;
@@ -84,7 +105,7 @@ abstract class MagicFighterStrongMove extends FighterMove {
 }
 
 class MagicFighterForwardStrong extends MagicFighterStrongMove {
-   function maxChargeTime():Float {
+   public function maxChargeTime():Float {
       return 1;
    }
 
@@ -139,6 +160,10 @@ class MagicFighterNeutralSpecial extends FighterMove {
          return REJECTED(null);
       return SUCCESS(null);
    }
+
+   public function getAction() {
+      return Action.SPECIAL;
+   }
 }
 
 class MagicFighterUpwardSpecial extends FighterMove {
@@ -148,6 +173,10 @@ class MagicFighterUpwardSpecial extends FighterMove {
       this.fighter.hitstunTime = 1;
       this.fighter.airState = PRATFALL;
       return SUCCESS(null);
+   }
+
+   public function getAction() {
+      return Action.SPECIAL;
    }
 
    override public function canPerform() {
@@ -163,6 +192,10 @@ class MagicFighterForwardSpecial extends FighterMove {
       return SUCCESS(null);
    }
 
+   public function getAction() {
+      return Action.SPECIAL;
+   }
+
    override public function canPerform() {
       if (this.fighter.airState == PRATFALL)
          return REJECTED(null);
@@ -174,6 +207,10 @@ class MagicFighterDownwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('down_special', true, true);
       return SUCCESS(null);
+   }
+
+   public function getAction() {
+      return Action.SPECIAL;
    }
 
    override public function canPerform() {
@@ -189,12 +226,20 @@ class MagicFighterJab extends FighterMove {
       this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 65, 0.2, 0.5);
       return SUCCESS(null);
    }
+
+   public function getAction() {
+      return Action.ATTACK;
+   }
 }
 
 class MagicFighterUpwardTilt extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('up_tilt', true, true);
       return SUCCESS(null);
+   }
+
+   public function getAction() {
+      return Action.ATTACK;
    }
 }
 
@@ -203,12 +248,20 @@ class MagicFighterForwardTilt extends FighterMove {
       (cast this.fighter).play('forward_tilt', true, true);
       return SUCCESS(null);
    }
+
+   public function getAction() {
+      return Action.ATTACK;
+   }
 }
 
 class MagicFighterDownwardTilt extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('down_tilt', true, true);
       return SUCCESS(null);
+   }
+
+   public function getAction() {
+      return Action.ATTACK;
    }
 }
 
@@ -220,6 +273,10 @@ class MagicFighterAerialMove extends FighterMove {
          return REJECTED(null);
       this.attack();
       return SUCCESS(null);
+   }
+
+   public function getAction() {
+      return Action.ATTACK;
    }
 
    override public function canPerform() {
@@ -369,6 +426,7 @@ class MagicFighter extends AbstractFighter {
          }
          if (applyEndLag) {
             this.moveEndingLag = this.sprite.animation.getByName(name).frames.length * this.animFPS; // * (1 / Main.targetFps);
+            trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveEndingLag} end lag frames');
          }
          return this.sprite.animation.play(name, force);
       }
@@ -465,64 +523,68 @@ class MagicFighter extends AbstractFighter {
          this.hasBufferedFastFall = false;
       }
 
-      function attemptMove(name, action:Action, ...params:Any) {
-         this.moveset.attempt(name, input.getAction(action), input, ...params);
+      function attemptMove(name, ...params:Any) {
+         this.moveset.attempt(name, input, ...params);
       }
 
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');
       // todo : fastfall
       if (this.airState != PRATFALL && this.moveEndingLag == 0) {
-         attemptMove('taunt', TAUNT);
+         attemptMove('taunt');
 
          switch (this.getAttackDirection(stick)) {
             case UP:
-               attemptMove('uspecial', SPECIAL);
+               attemptMove('uspecial');
                if (this.airState == GROUNDED) {
-                  attemptMove('ustrong', STRONG, elapsed);
-                  attemptMove('utilt', ATTACK);
+                  attemptMove('ustrong', elapsed);
+                  attemptMove('utilt');
                } else {
-                  attemptMove('uair', ATTACK);
+                  attemptMove('uair');
                }
             case DOWN:
-               attemptMove('dspecial', SPECIAL);
+               attemptMove('dspecial');
                if (this.airState == GROUNDED) {
-                  attemptMove('dtilt', ATTACK);
-                  attemptMove('dstrong', STRONG, elapsed);
+                  attemptMove('dtilt');
+                  attemptMove('dstrong', elapsed);
                } else {
-                  attemptMove('dair', ATTACK);
+                  attemptMove('dair');
                }
             case LEFT:
-               attemptMove('fspecial', SPECIAL, this.facing);
+               attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
-                  attemptMove('ftilt', ATTACK, this.facing);
-                  attemptMove('fstrong', STRONG, this.facing, elapsed);
+                  attemptMove('ftilt', this.facing);
+                  attemptMove('fstrong', this.facing, elapsed);
                } else {
                   if (this.facing == LEFT) {
-                     attemptMove('fair', ATTACK, this.facing);
+                     attemptMove('fair', this.facing);
                   } else {
-                     attemptMove('bair', ATTACK, this.facing);
+                     attemptMove('bair', this.facing);
                   }
                }
             case RIGHT:
-               attemptMove('fspecial', SPECIAL, this.facing);
+               attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
-                  attemptMove('ftilt', ATTACK, this.facing);
-                  attemptMove('fstrong', STRONG, this.facing, elapsed);
+                  attemptMove('ftilt', this.facing);
+                  attemptMove('fstrong', this.facing, elapsed);
                } else {
                   if (this.facing == LEFT) {
-                     attemptMove('bair', ATTACK, this.facing);
+                     attemptMove('bair', this.facing);
                   } else {
-                     attemptMove('fair', ATTACK, this.facing);
+                     attemptMove('fair', this.facing);
                   }
                }
             case NEUTRAL:
-               attemptMove('nspecial', SPECIAL, input);
+               attemptMove('nspecial');
                if (this.airState == GROUNDED) {
-                  attemptMove('jab', ATTACK, input);
+                  attemptMove('jab');
                } else {
-                  attemptMove('nair', ATTACK, input);
+                  attemptMove('nair');
                }
          }
+      }
+
+      if (this.moveEndingLag > 0 && this.moveset.currentlyPerforming != null) {
+         this.moveset.update(elapsed, input);
       }
 
       if (this.airState == GROUNDED) {
@@ -564,7 +626,8 @@ class MagicFighter extends AbstractFighter {
    override public function getDebugString():String {
       if (this.sprite.animation.getNameList().length > 0)
          return
-            '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name}.${this.sprite.animation.curAnim.curFrame}/${this.sprite.animation.curAnim.numFrames} ${this.sprite.animation.frameIndex} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)} [${FlxMath.roundDecimal(this.moveEndingLag, 2)}]';
+            '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name}.${this.sprite.animation.curAnim == null ? '' : '${this.sprite.animation.curAnim.curFrame} ${this.sprite.animation.curAnim.numFrames} '} ${this.sprite.animation.frameIndex} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)} [${FlxMath.roundDecimal(this.moveEndingLag, 2)}]';
+
       return '';
    }
 

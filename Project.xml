@@ -28,13 +28,20 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="false" width="850" height="480"/>
+	<window if="mobile" orientation="landscape" fullscreen="false"/>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export" />
 	<source path="source" />
 	<assets path="mods" />
+
+	<!-- individual assets -->
+
+	<section if="linux">
+		<assets path="./assets/chroma-fighters.desktop" rename="./chroma-fighters.desktop"/>
+		<assets path="./assets/icon.png" rename="./icon.png" />
+	</section>
 
 	<!--
 	<config:android permission="android.permission.READ_EXTERNAL_STORAGE" />
