@@ -5,6 +5,7 @@ import PlayerSlot;
 import cpuController.CpuController;
 import flixel.FlxObject;
 import flixel.math.FlxMath;
+import inputManager.Action;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
 import inputManager.InputState;
@@ -43,10 +44,19 @@ enum DirectionalAttack {
    RIGHT;
 }
 
+enum FighterRestrictions {
+   MOVEMENT;
+   JUMP;
+   ATTACKS;
+   DODGE;
+}
+
 class FighterMoves {
    private final fighter:AbstractFighter;
 
    private final moves:Map<String, FighterMove> = [];
+
+   public var currentlyPerforming:Null<String>;
 
    // private function register(move:String, attack:FighterMove) {}
 
@@ -54,14 +64,45 @@ class FighterMoves {
       this.fighter = fighter;
    }
 
-   public function attempt(move:String, state:InputState, input:GenericInput, ...params:Any):Null<MoveResult> {
-      if (!this.moves.exists(move)) {
-         trace('NO_SUCH_MOVE ${move}');
+   public function attempt(moveName:String, input:GenericInput, ...params:Any):Null<MoveResult> {
+      if (!this.moves.exists(moveName)) {
+         trace('NO_SUCH_MOVE ${moveName}');
          return NO_SUCH_MOVE;
       }
+
+      if (currentlyPerforming != null && moveName != currentlyPerforming)
+         return REJECTED({success: false, reason: 'PERFORMING_OTHER_MOVE'});
+
+      var move = this.moves.get(moveName);
+      var state = input.getAction(move.getAction());
+      var res:MoveResult;
+
       if (params.length > 0)
-         return this.moves.get(move).attempt(state, input, params);
-      return this.moves.get(move).attempt(state, input);
+         res = move.attempt(state, input, params);
+      res = move.attempt(state, input);
+
+      if (res.match(SUCCESS(_))) {
+         this.currentlyPerforming = moveName;
+      }
+
+      return res;
+   }
+
+   public function getAction(move:String):Action {
+      if (!this.moves.exists(move))
+         return Action.NULL;
+      return this.moves.get(move).getAction();
+   }
+
+   public function update(elapsed:Float, input:GenericInput) {
+      if (this.currentlyPerforming == null)
+         return;
+      var move = this.moves.get(this.currentlyPerforming);
+      var res = move.attempt(input.getAction(move.getAction()), input, elapsed);
+      if (res.match(REJECTED(_))) {
+         trace('move ended');
+         this.currentlyPerforming = null;
+      }
    }
 }
 
@@ -74,6 +115,13 @@ abstract class FighterMove {
       this.fighter = fighter;
    }
 
+   /**
+      attempts to perform this move
+
+      @param state the state of the input that triggers this move
+      @param input the input device
+      @param params any extra parameter to pass on to the move
+   **/
    public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       var can = this.canPerform();
       if (can.match(REJECTED(_)))
@@ -85,9 +133,13 @@ abstract class FighterMove {
 
       var res = this.perform(state, input, ...params);
       if (res == null)
-         return SUCCESS({success: true, reason: 'ASSUMED_FROM_NO_RESULT'});
+         return REJECTED({success: false, reason: 'ASSUMED_FROM_NO_RESULT'});
       return res;
    };
+
+   public function getRestrictions():Array<FighterRestrictions> {
+      return [];
+   }
 
    abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
 
@@ -98,6 +150,10 @@ abstract class FighterMove {
    public function canPerform():MoveResult {
       return SUCCESS(null);
    }
+
+   abstract public function getAction():Action;
+
+   // return Action.NULL;
 }
 
 abstract class StatusEffect {
