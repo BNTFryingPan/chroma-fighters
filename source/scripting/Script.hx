@@ -15,7 +15,7 @@ enum Token {
 
 class TokenUtil {
    public static function getPos(token:Token) {
-      return token.getParameters()[0]
+      return token.getParameters()[0];
    }
 }
 
@@ -31,6 +31,7 @@ enum abstract Operation(Int) {
    public inline function getPriority():Int {
       return this >> 4;
    }
+
    public function toString():String {
       return 'operator 0x${StringTools.hex(this, 2)}';
    }
@@ -70,22 +71,32 @@ class Parser {
       var line = 1;
       while (pos < script.length) {
          var start = pos;
-         var c = s.charCodeAt(pos++);
+         var c = script.charCodeAt(pos++);
          switch (c) {
-            case " ".code, "\t".code: continue
-            case "\r".code, "\n".code: continue;
-				default:
+            case " ".code, "\t".code:
+               continue;
+            case "\r".code, "\n".code:
+               continue;
+            default:
          }
          var d:Pos = start;
          switch (c) {
-            case "(".code: out.push(PAR_OPEN(d));
-            case ")".code: out.push(PAR_CLOSE(d));
-            case "+".code: out.push(OPERATION(d, ADD));
-            case "-".code: out.push(OPERATION(d, SUBTRACT));
-            case "*".code: out.push(OPERATION(d, MULTIPLY));
-            case "/".code: out.push(OPERATION(d, DIVIDE));
-            case "%".code: out.push(OPERATION(d, MOD));
-            case "!".code: out.push(UNOPERATION(d, NOT));
+            case "(".code:
+               out.push(PAR_OPEN(d));
+            case ")".code:
+               out.push(PAR_CLOSE(d));
+            case "+".code:
+               out.push(OPERATION(d, ADD));
+            case "-".code:
+               out.push(OPERATION(d, SUBTRACT));
+            case "*".code:
+               out.push(OPERATION(d, MULTIPLY));
+            case "/".code:
+               out.push(OPERATION(d, DIVIDE));
+            case "%".code:
+               out.push(OPERATION(d, MOD));
+            case "!".code:
+               out.push(UNOPERATION(d, NOT));
             default:
                if (c >= "0".code && c <= "9".code || c == ".".code) {
                   var dot = c == '.'.code;
@@ -96,12 +107,12 @@ class Parser {
                      } else if (c == '.'.code && !dot) {
                         pos++;
                         dot = true;
-                     } else break;
+                     } else
+                        break;
                   }
-                  out.push(NUMBER())
-                  //var res = Parser.parseNumber(script, pos);
-                  //pos = res.pos;
-                  //out.push(res.token);
+                  out.push(NUMBER(pos, 1)); // var res = Parser.parseNumber(script, pos);
+                  // pos = res.pos;
+                  // out.push(res.token);
                } else if (Parser.charIsIdentifierStart(c)) {
                   var res = Parser.parseIdentifier(script, pos);
                   pos = res.pos;
@@ -116,9 +127,12 @@ class Parser {
    }
 
    private static function charIsIdentifierStart(c:Int) {
-      if (c == "_".code) return true;
-      if (c >= 'a'.code && c <= 'z'.code) return true;
-      if (c >= 'A'.code && c <= 'Z'.code) return true;
+      if (c == "_".code)
+         return true;
+      if (c >= 'a'.code && c <= 'z'.code)
+         return true;
+      if (c >= 'A'.code && c <= 'Z'.code)
+         return true;
       return false;
    }
 
@@ -126,17 +140,20 @@ class Parser {
       var c = script.charCodeAt(pos);
       var dot = c == '.'.code;
       while (pos < script.length) {
-         c = script.charCodeAt(pos)
+         c = script.charCodeAt(pos);
       }
 
-      return {token: IDENTIFIER(), pos: pos};
+      return {token: NUMBER(pos, 1), pos: pos};
    }
 
-   private static function parseIdentifier(script:String, pos)
+   private static function parseIdentifier(script:String, pos):SubParseResult {
+      return {token: IDENTIFIER(pos, 'lol'), pos: pos}
+   }
 }
 
 class Script {
    public var error:Null<String> = null;
+
    private var isParsed:Fuse = new Fuse();
    var contents:String;
    var tokens:Array<Token> = [];
@@ -146,7 +163,8 @@ class Script {
    }
 
    public function parse() {
-      if (this.isParsed.isBlown()) return;
+      if (this.isParsed.isBlown())
+         return;
       this.isParsed.blow();
 
       var pos = 0;
@@ -159,21 +177,20 @@ class Script {
             case "\r":
             case "\n":
             case "(":
-               this.tokens.push(PAR_OPEN);
+               this.tokens.push(PAR_OPEN(pos));
             case ")":
-               this.tokens.push(PAR_CLOSE);
+               this.tokens.push(PAR_CLOSE(pos));
             case "+":
-               this.tokens.push(OPERATION(ADD));
+               this.tokens.push(OPERATION(pos, ADD));
             case "-":
-               this.tokens.push(OPERATION(SUBTRACT));
+               this.tokens.push(OPERATION(pos, SUBTRACT));
             case "*":
-               this.tokens.push(OPERATION(MULTIPLY));
+               this.tokens.push(OPERATION(pos, MULTIPLY));
             case "/":
-               this.tokens.push(OPERATION(DIVIDE));
+               this.tokens.push(OPERATION(pos, DIVIDE));
             case "%":
-               this.tokens.push(OPERATION(MOD));
+               this.tokens.push(OPERATION(pos, MOD));
             case _:
-
          }
       }
    }
