@@ -60,6 +60,7 @@ class Script {
    var tokens:Array<ScriptToken> = [];
    var node:ScriptNode;
    var actions:Array<ScriptAction>;
+   var pos:Int = 0;
 
    var stack:GenericStack<Dynamic>;
    var vars:Dynamic;
@@ -86,9 +87,14 @@ class Script {
       stack = new GenericStack<Dynamic>();
       if (vars != null)
          this.vars = vars;
-      for (act in this.actions) {
-         this.executeAction(act);
+      
+      pos = 0;
+      while (pos < this.actions.length) {
+         this.executeAction(this.actions[pos++]);
       }
+      //for (act in this.actions) {
+      //   this.executeAction(act);
+      //}
       return stack.pop();
    }
 
@@ -164,6 +170,10 @@ class Script {
 
                stack.add(ScriptAPI.callScriptFunction(name, ...args));
             }
+         case AReturn(p):
+            pos = len;
+         case ADiscard(p):
+            stack.pop();
       }
    }
 

@@ -80,6 +80,7 @@ class ScriptParser {
                      switch (name) {
                         case 'mod': out.push(OPERATION(d, MOD));
                         case 'div': out.push(OPERATION(d, DIVIDE_INT));
+                        case 'return': out.push(RETURN(d));
                         default: out.push(IDENTIFIER(d, name));
                      }
                      // var res = Parser.parseIdentifier(script, pos);

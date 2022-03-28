@@ -64,7 +64,24 @@ class ScriptBuilder {
    }
 
    static function statement() {
-      
+      var token = next();
+      switch(token) {
+         case RETURN(p): {
+            expr(None);
+            node = NReturn(token.getPos(), node);
+         }
+         default: {
+            pos--;
+            expr(None);
+            switch (node) {
+               case NCall(p, name, args): {
+
+               }
+               default:
+                  throw error('expected a statement', node.getParameters()[0]);
+            }
+         }
+      }
    }
 
    static function expr(flags:ScriptBuilderFlags = None):Void {
@@ -156,10 +173,13 @@ class ScriptBuilder {
       pos = 0;
       len = tks.length;
       node = null;
-      expr();
-      if (pos < len - 1)
-         throw error('trailing data', tokens[pos].getPos());
+      var nodes:Array<ScriptNode> = [];
 
+      while (pos < len) {
+         statement();
+         nodes.push(node);
+      }
+      node = NBlock(0, nodes);
       return node;
    }
 }

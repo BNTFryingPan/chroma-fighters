@@ -27,6 +27,15 @@ class ScriptCompiler {
                expr(arg);
             }
             add(ACall(p, name, args.length));
+         case NBlock(p, nodes):
+            for (blockNode in nodes)
+               expr(blockNode);
+         case NReturn(p, ret):
+            expr(ret);
+            add(AReturn(p));
+         case NDiscard(p, ret):
+            expr(ret);
+            add(ADiscard(p));
       }
    }
 
