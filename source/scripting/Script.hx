@@ -171,7 +171,7 @@ class Script {
                stack.add(ScriptAPI.callScriptFunction(name, ...args));
             }
          case AReturn(p):
-            pos = len;
+            pos = actions.length;
          case ADiscard(p):
             stack.pop();
       }
