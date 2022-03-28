@@ -68,14 +68,14 @@ class ScriptBuilder {
       switch(token) {
          case RETURN(p): {
             expr(None);
-            node = NReturn(token.getPos(), node);
+            node = NReturn(p, node);
          }
          default: {
             pos--;
             expr(None);
             switch (node) {
                case NCall(p, name, args): {
-
+                  node = NDiscard(p, node);
                }
                default:
                   throw error('expected a statement', node.getParameters()[0]);
