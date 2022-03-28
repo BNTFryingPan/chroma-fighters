@@ -18,6 +18,7 @@ import match.Match;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import scripting.Script;
 import states.TitleScreenState;
 
 class Main extends Sprite {
@@ -59,7 +60,7 @@ class Main extends Sprite {
 
       // Main.fpsCounter.alpha = 1;
 
-      addChild(new FlxGame(0, 0, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
+      addChild(new FlxGame(850, 480, TitleScreenState, 1, Main.targetFps, Main.targetFps, true, false));
       addChild(Main.debugDisplay);
 
       FlxG.fixedTimestep = true; // forces a fixed time step. this causes slowdowns on weaker hardware, but makes it more consistent for replays and online
@@ -117,6 +118,7 @@ class Main extends Sprite {
       FlxG.game.debugger.console.registerClass(PlayerBox);
       FlxG.game.debugger.console.registerClass(GameState);
       FlxG.game.debugger.console.registerClass(GameManager);
+      FlxG.game.debugger.console.registerClass(Script);
       #end
       return;
    }

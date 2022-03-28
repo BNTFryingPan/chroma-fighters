@@ -1,197 +1,180 @@
 package scripting;
 
-typedef Pos = Int;
+import haxe.ds.GenericStack;
+import scripting.Op.Operation;
+import scripting.Op.UnOperation;
 
-@:using(scripting.Script.TokenUtil)
-enum Token {
-   EOF(p:Pos);
-   OPERATION(p:Pos, type:Operation);
-   UNOPERATION(p:Pos, type:UnOperation);
-   PAR_OPEN(p:Pos);
-   PAR_CLOSE(p:Pos);
-   NUMBER(p:Pos, value:Float);
-   IDENTIFIER(p:Pos, id:String);
-}
-
-class TokenUtil {
-   public static function getPos(token:Token) {
-      return token.getParameters()[0];
-   }
-}
-
-enum abstract Operation(Int) {
-   var MULTIPLY = 0x01;
-   var DIVIDE = 0x02;
-   var MOD = 0x03;
-   var DIVIDE_INT = 0x04; // ?
-   var ADD = 0x10;
-   var SUBTRACT = 0x11;
-   var MAXP = 0x20;
-
-   public inline function getPriority():Int {
-      return this >> 4;
+/*enum StackEntryType {
+   NUMBER;
+   STRING;
+   NULL;
    }
 
-   public function toString():String {
-      return 'operator 0x${StringTools.hex(this, 2)}';
-   }
-}
+   class StackEntry<T> {
+   public final value:T;
+   public final type:StackEntryType;
 
-enum abstract UnOperation(Int) {
-   var NOT;
-   var NEGATE;
-}
-
-private class Fuse {
-   private var blown:Bool = false;
-
-   public function new() {}
-
-   /**
-      sets the state of this fuse to true and returns true
-   **/
-   public function blow():Bool {
-      return this.blown = true;
+   private function new(type:StackEntryType, value:T) {
+      this.value = value;
+      this.type = type;
    }
 
-   public function isBlown():Bool {
-      return this.blown;
+   public function isString():Bool {
+      return this.type == STRING;
    }
-}
 
-typedef SubParseResult = {
-   var token:Token;
-   var pos:Pos;
-}
+   public function isNumber():Bool {
+      return this.type == NUMBER;
+   }
 
-class Parser {
-   public static function parse(script:String):Array<Token> {
-      var out:Array<Token> = [];
-      var pos = 0;
-      var line = 1;
-      while (pos < script.length) {
-         var start = pos;
-         var c = script.charCodeAt(pos++);
-         switch (c) {
-            case " ".code, "\t".code:
-               continue;
-            case "\r".code, "\n".code:
-               continue;
-            default:
-         }
-         var d:Pos = start;
-         switch (c) {
-            case "(".code:
-               out.push(PAR_OPEN(d));
-            case ")".code:
-               out.push(PAR_CLOSE(d));
-            case "+".code:
-               out.push(OPERATION(d, ADD));
-            case "-".code:
-               out.push(OPERATION(d, SUBTRACT));
-            case "*".code:
-               out.push(OPERATION(d, MULTIPLY));
-            case "/".code:
-               out.push(OPERATION(d, DIVIDE));
-            case "%".code:
-               out.push(OPERATION(d, MOD));
-            case "!".code:
-               out.push(UNOPERATION(d, NOT));
-            default:
-               if (c >= "0".code && c <= "9".code || c == ".".code) {
-                  var dot = c == '.'.code;
-                  while (pos < script.length) {
-                     c = script.charCodeAt(pos);
-                     if (c >= "0".code && c <= "9".code) {
-                        pos++;
-                     } else if (c == '.'.code && !dot) {
-                        pos++;
-                        dot = true;
-                     } else
-                        break;
-                  }
-                  out.push(NUMBER(pos, 1)); // var res = Parser.parseNumber(script, pos);
-                  // pos = res.pos;
-                  // out.push(res.token);
-               } else if (Parser.charIsIdentifierStart(c)) {
-                  var res = Parser.parseIdentifier(script, pos);
-                  pos = res.pos;
-                  out.push(res.token);
-               } else {
-                  throw 'Unexpected character `${script.charAt(start)}` at position ${start}';
-               }
-         }
+   public function castTo(targetType:StackEntryType):StackEntry<Dynamic> {
+      if (targetType == this.type)
+         return this;
+
+      if (targetType == STRING)
+         return new StackEntry<String>(STRING, Std.string(this.value));
+
+      if (targetType == NUMBER)
+         return new StackEntry<Float>(NUMBER, Std.parseFloat(Std.string(this.value)));
+
+      return new StackEntry<Dynamic>(NULL, null);
+   }
+
+   public static function get(value:Dynamic):StackEntry<Dynamic> {
+      if (value is String) {
+         return new StackEntry<String>(STRING, value);
       }
-      out.push(EOF(pos));
-      return out;
-   }
-
-   private static function charIsIdentifierStart(c:Int) {
-      if (c == "_".code)
-         return true;
-      if (c >= 'a'.code && c <= 'z'.code)
-         return true;
-      if (c >= 'A'.code && c <= 'Z'.code)
-         return true;
-      return false;
-   }
-
-   private static function parseNumber(script:String, pos):SubParseResult {
-      var c = script.charCodeAt(pos);
-      var dot = c == '.'.code;
-      while (pos < script.length) {
-         c = script.charCodeAt(pos);
+      if (value is Float || value is Int) {
+         return new StackEntry<Float>(NUMBER, value);
       }
 
-      return {token: NUMBER(pos, 1), pos: pos};
+      return new StackEntry<Dynamic>(NULL, null);
    }
-
-   private static function parseIdentifier(script:String, pos):SubParseResult {
-      return {token: IDENTIFIER(pos, 'lol'), pos: pos}
-   }
-}
-
+}*/
 class Script {
    public var error:Null<String> = null;
 
-   private var isParsed:Fuse = new Fuse();
+   // private var isParsed:Fuse = new Fuse();
+   private var isCompiled:Fuse = new Fuse();
    var contents:String;
-   var tokens:Array<Token> = [];
+   var tokens:Array<ScriptToken> = [];
+   var node:ScriptNode;
+   var actions:Array<ScriptAction>;
 
-   public function new(script:String) {
+   var stack:GenericStack<Dynamic>;
+   var vars:Dynamic;
+
+   function new(script:String) {
       this.contents = script;
    }
 
-   public function parse() {
-      if (this.isParsed.isBlown())
-         return;
-      this.isParsed.blow();
+   /*
+      public function parse() {
+         if (this.isParsed.isBlown())
+            return;
+         this.isParsed.blow();
 
-      var pos = 0;
-      while (pos < this.contents.length) {
-         var start = pos;
-         var char = this.contents.charAt(pos);
-         switch (char) {
-            case " ":
-            case "\t":
-            case "\r":
-            case "\n":
-            case "(":
-               this.tokens.push(PAR_OPEN(pos));
-            case ")":
-               this.tokens.push(PAR_CLOSE(pos));
-            case "+":
-               this.tokens.push(OPERATION(pos, ADD));
-            case "-":
-               this.tokens.push(OPERATION(pos, SUBTRACT));
-            case "*":
-               this.tokens.push(OPERATION(pos, MULTIPLY));
-            case "/":
-               this.tokens.push(OPERATION(pos, DIVIDE));
-            case "%":
-               this.tokens.push(OPERATION(pos, MOD));
-            case _:
-         }
+         this.tokens = Parser.parse(this.contents);
+   }*/
+   public function compile() {
+      this.tokens = ScriptParser.parse(this.contents);
+      this.node = ScriptBuilder.build(this.tokens);
+      this.actions = ScriptCompiler.compile(this.node);
+   }
+
+   public function exec(vars:Null<Dynamic>):Dynamic {
+      stack = new GenericStack<Dynamic>();
+      if (vars != null)
+         this.vars = vars;
+      for (act in this.actions) {
+         this.executeAction(act);
       }
+      return stack.pop();
+   }
+
+   function executeAction(action:ScriptAction) {
+      inline function error(text:String) {
+         return '${text} at position ${action.getPos()}';
+      }
+
+      action.debugPrint();
+
+      switch (action) {
+         case ANumber(p, value):
+            stack.add(value);
+         case AString(p, value):
+            stack.add(value);
+         case AIdentifier(p, name):
+            {
+               var val = Reflect.field(vars, name);
+               if (val is Float) {
+                  stack.add(val);
+               } else if (Reflect.hasField(vars, name)) {
+                  throw error('variable $name is not a number');
+               } else
+                  throw error('varibale $name does not exist');
+            }
+         case AOperation(p, op):
+            {
+               var b = stack.pop();
+               var a = stack.pop();
+               if (b is String || a is String) {
+                  var fin:String;
+                  switch (op) {
+                     case Operation.ADD:
+                        fin = Std.string(a) + Std.string(b);
+                     /*case Operation.MULTIPLY:
+                        if (b.isNumber() || a.isNumber()) {
+                           fin = Std.string(a.value * b.value);
+                     } else throw error('cannot multiply a string by a string');*/
+                     default: throw error('cant apply ${op.toString()} to ${a} and ${b}');
+                  }
+                  stack.add(fin);
+               } else {
+                  switch (op) {
+                     case Operation.ADD: a += b;
+                     case Operation.SUBTRACT: a -= b;
+                     case Operation.MULTIPLY: a *= b;
+                     case Operation.DIVIDE: a /= b;
+                     case Operation.MOD: a %= b;
+                     case Operation.DIVIDE_INT: a = Std.int(a / b);
+                     default: throw error('cant apply ${op.toString()}');
+                  }
+                  stack.add(a);
+               }
+            }
+         case AUnOperation(p, op):
+            {
+               var v = stack.pop();
+               if (v is String)
+                  throw error('cannot negate strings');
+               switch (op) {
+                  case UnOperation.NOT: v = v != 0 ? 0 : 1;
+                  case UnOperation.NEGATE: v = -v;
+               }
+               stack.add(v);
+            }
+         case ACall(p, name, argCount):
+            {
+               var args = new Array<Dynamic>();
+               args.resize(argCount);
+               var i = argCount;
+               while (--i >= 0)
+                  args[i] = stack.pop();
+
+               stack.add(ScriptAPI.callScriptFunction(name, ...args));
+            }
+      }
+   }
+
+   public static function eval(code:String):String {
+      try {
+         var pg = new Script(code);
+         pg.compile();
+         var v = pg.exec({pi: Math.PI});
+         return Std.string(v);
+      }
+      catch (x:Dynamic)
+         return Std.string(x);
    }
 }
