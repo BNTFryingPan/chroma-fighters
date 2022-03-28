@@ -11,6 +11,8 @@ enum ScriptAction {
    AOperation(p:Pos, op:Operation);
    AString(p:Pos, value:String);
    ACall(p:Pos, name:String, args:Int);
+   AReturn(p:Pos); // return stack.pop();
+   ADiscard(p:Pos); // stack.pop; // dont care about output
 }
 
 class ScriptActionTools {

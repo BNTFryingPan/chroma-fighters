@@ -63,6 +63,10 @@ class ScriptBuilder {
       node = nodes[0];
    }
 
+   static function statement() {
+      
+   }
+
    static function expr(flags:ScriptBuilderFlags = None):Void {
       var token = next();
       switch (token) {
