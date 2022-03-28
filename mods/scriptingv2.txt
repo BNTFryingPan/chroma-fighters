@@ -1,0 +1,9 @@
+chroma fighters scripting v2 documentation
+
+chroma-fighters scripts use the .cfs file extension, but are just normal text files
+scripts are parsed at runtime using a system based off of a guide made by yellowafterlife (link)
+
+supported syntax:
+expressions:
+numbers
+"strings" or 'strings'
