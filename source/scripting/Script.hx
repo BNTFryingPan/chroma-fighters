@@ -222,6 +222,10 @@ class Script {
             if (!isTruthy(stack.pop())) {
                pos = to;
             }
+         case AJumpIf(p, to):
+            if (isTruthy(stack.pop())) {
+               pos = to;
+            }
          case AAnd(p, to):
             if (isTruthy(stack.first())
                stack.pop();

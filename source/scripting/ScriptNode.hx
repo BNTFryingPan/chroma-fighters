@@ -15,6 +15,11 @@ enum ScriptNode {
    NDiscard(p:Pos, node:ScriptNode);
    NConditional(p:Pos, condition:ScriptNode, result:ScriptNode, elseResult:Null<ScriptNode>);
    NSet(p:Pos, node:ScriptNode, value:ScriptNode);
+   NWhile(p:Pos, condition:ScriptNode, expr:ScriptNode);
+   NWhileDo(p:Pos, condition:ScriptNode, expr:ScriptNode);
+   NFor(p:Pos);
+   NBreak(p:Pos);
+   NContinue(p:Pos);
 }
 
 class ScriptNodeTools {

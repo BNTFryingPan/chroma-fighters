@@ -10,6 +10,8 @@ class ScriptBuilder {
    static var tokens:Array<ScriptToken>;
    static var pos:Int;
    static var len:Int;
+   static var canBreak:Bool = false;
+   static var canContinue:Bool = false;
 
    static inline function next():ScriptToken {
       return tokens[pos++];
@@ -107,6 +109,21 @@ class ScriptBuilder {
                throw error('unclosed {} starting', p);
             node = NBlock(p, nodes);
          }
+         case WHILE(p): {
+            expr(None);
+            var condition = node;
+            loop();
+            node = NWhile(p, condition, node);
+         }
+         case DO(p): {
+            loop();
+            var body = node;
+            // expect a WHILE
+            var token2 = peek();
+            if (!token2.match(WHILE(_))) {
+               throw error('expected while');
+            }
+         }
          default:
             {
                pos--;
@@ -126,6 +143,8 @@ class ScriptBuilder {
                }
             }
       }
+      if (peek().match(SEMICOLON(_)))
+         skip();
    }
 
    static function expr(flags:ScriptBuilderFlags = None):Void {
@@ -212,11 +231,23 @@ class ScriptBuilder {
       }
    }
 
+   public static function loop() {
+      var couldBreak = canBreak;
+      var couldContinue = canContinue;
+      canBreak = true;
+      canContinue = true;
+      statement();
+      canBreak = couldBreak;
+      canContinue = couldContinue;
+   }
+
    public static function build(tks:Array<ScriptToken>) {
       tokens = tks;
       pos = 0;
       len = tks.length;
       node = null;
+      canBreak = false;
+      canContinue = false;
       var nodes:Array<ScriptNode> = [];
 
       while (pos < len - 1) {

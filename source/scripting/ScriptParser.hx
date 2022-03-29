@@ -30,6 +30,8 @@ class ScriptParser {
          }
          var d:Pos = start;
          switch (c) {
+            case ';'.code:
+               out.push(SEMICOLON(d));
             case "(".code:
                out.push(PAR_OPEN(d));
             case ")".code:
@@ -134,6 +136,11 @@ class ScriptParser {
                         case 'return': out.push(RETURN(d));
                         case 'if': out.push(IF(d));
                         case 'else': out.push(ELSE(d));
+                        case 'while': out.push(WHILE(d));
+                        case 'do': out.push(DO(d));
+                        case 'for': out.push(FOR(d));
+                        case 'break': out.push(BREAK(d));
+                        case 'continue': out.push(CONTINUE(d));
                         default: out.push(IDENTIFIER(d, name));
                      }
                      // var res = Parser.parseIdentifier(script, pos);

@@ -13,16 +13,21 @@ enum ScriptToken {
    CURLY_CLOSE(p:Pos); // }
    // SQUARE_OPEN(p:Pos); // [
    // SQUARE_CLSOE(p:Pos); // ]
-   // SEMICOLON(p:Pos); // ;
+   SEMICOLON(p:Pos); // ;
    // SET(p:Pos);
    NUMBER(p:Pos, value:Float);
    IDENTIFIER(p:Pos, id:String);
    STRING(p:Pos, value:String);
    COMMA(p:Pos); // ,
-   RETURN(p:Pos);
+   RETURN(p:Pos); // return
    SET(p:Pos); // =
    IF(p:Pos); // if statement
-   ELSE(p:Pos);
+   ELSE(p:Pos); // else
+   WHILE(p:Pos);
+   DO(p:Pos);
+   FOR(p:Pos);
+   BREAK(p:Pos):
+   CONTINUE(p:Pos);
 }
 
 class ScriptTokenUtil {
@@ -62,6 +67,8 @@ class ScriptTokenUtil {
             '\nif';
          case ELSE(_):
             '\nelse';
+         default:
+            token.getName();
       }
    }
 
