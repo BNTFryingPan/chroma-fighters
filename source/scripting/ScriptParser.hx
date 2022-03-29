@@ -51,22 +51,22 @@ class ScriptParser {
             case "%".code:
                out.push(OPERATION(d, MOD));
             case "!".code:
-               if (script.charCodeAt(pos + 1) == '='.code) {
+               if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, NOT_EQUALS));
                } else out.push(UNOPERATION(d, NOT));
             case "=".code:
-               if (script.charCodeAt(pos + 1) == '='.code) {
+               if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, EQUALS));
                } else out.push(SET(d));
             case ">".code:
-               if (script.charCodeAt(pos + 1) == '='.code) {
+               if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, GREATER_THAN_OR_EQUALS));
                } else out.push(OPERATION(d, GREATER_THAN));
             case "<".code:
-               if (script.charCodeAt(pos + 1) == '='.code) {
+               if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, LESS_THAN_OR_EQUALS));
                } else out.push(OPERATION(d, LESS_THAN));
