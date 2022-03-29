@@ -5,6 +5,9 @@ typedef SubParseResult = {
    var pos:Pos;
 }
 
+/**
+   the parser takes the raw text of a script and turns it into a list of tokens to later be built into nodes.
+**/
 class ScriptParser {
    static inline function error(text:String, pos:Int):String {
       return '(Script Parse Error): $text at position $pos';

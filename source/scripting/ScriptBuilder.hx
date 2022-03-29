@@ -2,6 +2,9 @@ package scripting;
 
 import scripting.Op.Operation;
 
+/**
+   the builder takes a list of tokens and builds them into nodes that will later be compiled into actions
+**/
 class ScriptBuilder {
    static var node:ScriptNode;
    static var tokens:Array<ScriptToken>;

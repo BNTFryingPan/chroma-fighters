@@ -1,5 +1,8 @@
 package scripting;
 
+/**
+   the compiler takes a root node that contains sub nodes and compiles it into a list of actions that can be executed
+**/
 class ScriptCompiler {
    static var actions:Array<ScriptAction>;
 

@@ -14,8 +14,6 @@ enum ScriptNode {
    NReturn(p:Pos, node:ScriptNode);
    NDiscard(p:Pos, node:ScriptNode);
    NConditional(p:Pos, condition:ScriptNode, result:ScriptNode, elseResult:Null<ScriptNode>);
-   // NIf(p:Pos, condition:ScriptNode, result:ScriptNode);
-   // NIfElse(p:Pos, condition:ScriptNode, trueResult:ScriptNode, falseResult:ScriptNode);
 }
 
 class ScriptNodeTools {
