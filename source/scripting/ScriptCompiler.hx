@@ -56,7 +56,7 @@ class ScriptCompiler {
             expr(value);
             switch (node) {
                case NIdentifier(p, name): {
-                  add(ASet(p, node.getParameter()[1]));
+                  add(ASet(p, node.getParameters()[1]));
                }
             }
          }
