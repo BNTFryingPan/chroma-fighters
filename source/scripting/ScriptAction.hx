@@ -16,6 +16,7 @@ enum ScriptAction {
    AJump(p:Pos, to:Pos /*, condition:Null<Bool>*/); // pos = to
    AJumpUnless(p:Pos, to:Pos); // if (!pop) pos = to
    ASet(p:Pos, name:String);
+   //APause(p:Pos, frames:Int);
 }
 
 class ScriptActionTools {

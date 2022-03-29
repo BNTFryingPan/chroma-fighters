@@ -62,6 +62,9 @@ class Script {
    var tokens:Array<ScriptToken> = [];
    var node:ScriptNode;
    var actions:Array<ScriptAction>;
+   public var isRunning:Bool = false;
+   public var isPaused:Bool = false;
+   var pausedFor:Int = 0;
    var pos:Int = 0;
 
    var stack:GenericStack<Dynamic>;
@@ -90,17 +93,28 @@ class Script {
    }
 
    public function exec(vars:Null<Dynamic>):Dynamic {
+      //if (forceRestart || !this.isRunning) {
       stack = new GenericStack<Dynamic>();
-      if (vars != null)
-         this.vars = vars;
-
       pos = 0;
+      if (vars != null) {
+         this.vars = vars;
+      }
+      //}
+      //if (this.isPaused) {
+      //   this.pausedFor--;
+      //   if (this.pausedFor > 0) return null;
+      //}
+      //this.isRunning = true;
+      //this.isPaused = false;
       while (pos < this.actions.length) {
          this.executeAction(this.actions[pos++]);
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
       // }
+      //if (this.isPaused)
+      //   return null;
+      //this.isRunning = false;
       return stack.pop();
    }
 
@@ -112,6 +126,9 @@ class Script {
       trace('[exec] ${action.debugPrint()}');
 
       switch (action) {
+         //case APause(p, frames):
+            //isPaused = true;
+            //pausedFor = frames;
          case ANumber(p, value):
             stack.add(value);
          case AString(p, value):

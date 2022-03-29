@@ -33,7 +33,7 @@ class ScriptNodeTools {
          return Std.string(param);
       }
       if (param is String) {
-         '"${Std.string(param)}"'
+         '"${Std.string(param)}"';
       }
       return '{"type": "${Type.typeof(param)}", "value": "${Std.string(param)}"}';
       
