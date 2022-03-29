@@ -29,4 +29,49 @@ class ScriptTokenUtil {
    public static function getPos(token:ScriptToken) {
       return token.getParameters()[0];
    }
+
+   public static function getTokenString(token:ScriptToken):String {
+      return switch (token) {
+         case EOF(_):
+            '<eof>';
+         case OPERATION(_, _):
+            'bin_op';
+         case UNOPERATION(_, _):
+            'un_op';
+         case PAR_OPEN(_):
+            '(';
+         case PAR_CLOSE(_):
+            ')';
+         case CURLY_OPEN(_):
+            '\n{';
+         case CURLY_CLOSE(_):
+            '}';
+         case NUMBER(_, _):
+            'Number';
+         case IDENTIFIER(_, _):
+            'Identifier';
+         case STRING(_, _):
+            'String';
+         case COMMA(_):
+            ',';
+         case RETURN(_):
+            '\nreturn';
+         case SET(_):
+            '=';
+         case IF(_):
+            '\nif';
+         case ELSE(_):
+            '\nelse';
+      }
+   }
+
+   public static function debugPrint(token:ScriptToken):String {
+      var params = token.getParameters();
+      var pos = params.shift();
+      var str = '[$pos]${token.getTokenString()}';
+      if (params.length > 0) {
+         str += '(${params.join(",")})';
+      } else str += ' ';
+      return str;
+   }
 }

@@ -86,6 +86,7 @@ class Script {
    }*/
    public function compile() {
       this.tokens = ScriptParser.parse(this.contents);
+      trace('parsed: ' + tokens.map(t -> t.debugPrint()).join(''))
       this.node = ScriptBuilder.build(this.tokens);
       trace(this.node.debugPrint());
       this.actions = ScriptCompiler.compile(this.node);
