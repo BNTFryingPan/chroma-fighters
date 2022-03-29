@@ -15,6 +15,7 @@ enum ScriptAction {
    ADiscard(p:Pos); // stack.pop; // dont care about output
    AJump(p:Pos, to:Pos /*, condition:Null<Bool>*/); // pos = to
    AJumpUnless(p:Pos, to:Pos); // if (!pop) pos = to
+   ASet(p:Pos, name:String);
 }
 
 class ScriptActionTools {

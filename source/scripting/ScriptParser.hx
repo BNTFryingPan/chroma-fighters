@@ -16,7 +16,7 @@ class ScriptParser {
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
       var pos = 0;
-      var line = 1;
+      //var line = 1;
       while (pos < script.length) {
          var start = pos;
          var c = script.charCodeAt(pos++);
@@ -24,6 +24,7 @@ class ScriptParser {
             case " ".code, "\t".code:
                continue;
             case "\r".code, "\n".code:
+               //line++;
                continue;
             default:
          }
@@ -51,6 +52,8 @@ class ScriptParser {
                out.push(OPERATION(d, MOD));
             case "!".code:
                out.push(UNOPERATION(d, NOT));
+            case "=".code:
+               out.push(SET(d));
             case "'".code | '"'.code:
                while (pos < script.length) {
                   if (script.charCodeAt(pos) == c)

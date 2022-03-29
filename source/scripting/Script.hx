@@ -118,13 +118,11 @@ class Script {
             stack.add(value);
          case AIdentifier(p, name):
             {
+               if (!Reflect.hasField(vars, name))
+                  throw error('variable $name does not exist');
+
                var val = Reflect.field(vars, name);
-               if (val is Float) {
-                  stack.add(val);
-               } else if (Reflect.hasField(vars, name)) {
-                  throw error('variable $name is not a number');
-               } else
-                  throw error('varibale $name does not exist');
+               stack.add(val);
             }
          case AOperation(p, op):
             {
@@ -187,6 +185,8 @@ class Script {
                trace('jumping!');
                pos = to;
             }
+         case ASet(p, name):
+            Reflect.setField(vars, name, stack.pop());
       }
    }
 

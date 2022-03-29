@@ -111,12 +111,18 @@ class ScriptBuilder {
             {
                pos--;
                expr(NoOps);
+               var _expr = node;
                switch (node) {
                   case NCall(p, name, args): {
-                        node = NDiscard(p, node);
+                        node = NDiscard(p, _expr);
                      }
                   default:
-                     throw error('expected a statement', node.getParameters()[0]);
+                     var token2 = peek();
+                     if (token2.match(SET(_))) {
+                        pos++;
+                        expr(None);
+                        node = NSet(token2.getPos(), _expr, node);
+                     } else throw error('expected a statement', node.getParameters()[0]);
                }
             }
       }

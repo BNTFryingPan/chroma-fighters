@@ -52,6 +52,14 @@ class ScriptCompiler {
             if (elseResult != null) {
                actions.insert(jump2index - 1, AJump(p, actions.length + 1));
             }
+         case NSet(p, node, value): {
+            expr(value);
+            switch (node) {
+               case NIdentifier(p, name): {
+                  add(ASet(p, node.getParameter()[1]));
+               }
+            }
+         }
       }
    }
 

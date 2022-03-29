@@ -20,6 +20,7 @@ enum ScriptToken {
    STRING(p:Pos, value:String);
    COMMA(p:Pos); // ,
    RETURN(p:Pos);
+   SET(p:Pos); // =
    IF(p:Pos); // if statement
    ELSE(p:Pos);
 }
