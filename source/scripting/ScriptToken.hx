@@ -67,8 +67,13 @@ class ScriptTokenUtil {
 
    public static function debugPrint(token:ScriptToken):String {
       var params = token.getParameters();
-      var pos = params.shift();
-      var str = '[$pos]${token.getTokenString()}';
+      var name = token.getTokenString();
+      var str = '';
+      if (name.charCodeAt(0) == '\n'.code) {
+         str += '\n';
+         name = name.substr(1);
+      }
+      str += '[${params.shift()}]${name}';
       if (params.length > 0) {
          str += '(${params.join(",")})';
       } else str += ' ';
