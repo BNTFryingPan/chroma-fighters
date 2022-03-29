@@ -111,7 +111,9 @@ class Script {
       //this.isRunning = true;
       //this.isPaused = false;
       while (pos < this.actions.length) {
-         this.executeAction(this.actions[pos++]);
+         var action = this.actions[pos++];
+         this.executeAction(action);
+         trace('<exec> ${action.debugPrint()} (${stack.first()})');
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
@@ -127,7 +129,7 @@ class Script {
          return '${text} at position ${action.getPos()}';
       }
 
-      trace('[exec] ${action.debugPrint()}');
+      
 
       switch (action) {
          //case APause(p, frames):
