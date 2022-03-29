@@ -104,7 +104,7 @@ class ScriptBuilder {
                nodes.push(node);
             }
             if (!closed)
-               throw error('unclosed {} starting');
+               throw error('unclosed {} starting', p);
             node = NBlock(p, nodes);
          }
          default:
