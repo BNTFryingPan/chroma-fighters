@@ -58,6 +58,7 @@ class ScriptCompiler {
                case NIdentifier(p, name): {
                   add(ASet(p, node.getParameters()[1]));
                }
+               default: throw 'Expression is not settable at $p';
             }
          }
       }
