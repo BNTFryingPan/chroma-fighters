@@ -75,8 +75,8 @@ class ScriptTokenUtil {
       }
       str += '[${params.shift()}]${name}';
       if (params.length > 0) {
-         str += '(${params.join(",")})';
-      } else str += ' ';
+         str += '<${params.join(",")}>';
+      };
       return str;
    }
 }

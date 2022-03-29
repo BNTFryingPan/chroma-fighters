@@ -12,18 +12,24 @@ enum abstract Operation(Int) {
    var DIVIDE_INT = 0x04; // div
    var ADD = 0x10; // +
    var SUBTRACT = 0x11; // -
-   // << >> are 0x2x
-   // & | ^ are 0x3x
+
+   var BIT_SHIFT_LEFT = 0x20; // <<
+   var BIT_SHIFT_RIGHT = 0x21; // >>
+   var BIT_AND = 0x30; // &
+   var BIT_OR = 0x31; // |
+   var BIT_XOR = 0x32; // ^
+
    var EQUALS = 0x40; // ==
    var NOT_EQUALS = 0x41; // !=
    var LESS_THAN = 0x42; // <
    var LESS_THAN_OR_EQUALS = 0x43; // <=
    var GREATER_THAN = 0x44; // >
    var GREATER_THAN_OR_EQUALS = 0x45; // >=
-   
 
-   
-   var MAXP = 0x50;
+   var AND = 0x50;
+   var OR = 0x60;
+
+   var MAXP = 0x70;
    
    public inline function getPriority():Int {
       return this >> 4;

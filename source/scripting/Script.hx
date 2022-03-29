@@ -113,7 +113,7 @@ class Script {
       while (pos < this.actions.length) {
          var action = this.actions[pos++];
          this.executeAction(action);
-         trace('<exec> ${action.debugPrint()} (${stack.first()})');
+         trace('<exec> ${action.debugPrint()} (${stack.first()}, $pos)');
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
@@ -152,12 +152,12 @@ class Script {
                var b = stack.pop();
                var a = stack.pop();
                if (op == Operation.EQUALS) {
+                  trace('checking if ${a} == ${b} (${a == b}');
                   a = (a == b);
                } else if (op == Operation.NOT_EQUALS) {
+                  trace('checking if ${a} != ${b} (${a != b}');
                   a = (a != b);
-               }
-
-               else if (b is String || a is String) {
+               } else if (b is String || a is String) {
                   var fin:String;
                   switch (op) {
                      case Operation.ADD:
@@ -181,6 +181,11 @@ class Script {
                      case Operation.LESS_THAN_OR_EQUALS: a = (a <= b);
                      case Operation.GREATER_THAN: a = (a > b);
                      case Operation.GREATER_THAN_OR_EQUALS: a = (a >= b);
+                     case Operation.BIT_SHIFT_LEFT: a <<= b;
+                     case Operation.BIT_SHIFT_RIGHT: a >>= b;
+                     case Operation.BIT_AND: a &= b;
+                     case Operation.BIT_OR: a |= b;
+                     case Operation.BIT_XOR: a ^= b;
                      default: throw error('cant apply ${op.toString()}');
                   }
                   stack.add(a);
@@ -215,9 +220,16 @@ class Script {
             pos = to;
          case AJumpUnless(p, to):
             if (!isTruthy(stack.pop())) {
-               trace('jumping!');
                pos = to;
             }
+         case AAnd(p, to):
+            if (isTruthy(stack.first())
+               stack.pop();
+            else pos = to;
+         case AOr(p, to):
+            if (isTruthy(stack.first())
+               pos = to;
+            else stack.pop();
          case ASet(p, name):
             Reflect.setField(vars, name, stack.pop());
       }

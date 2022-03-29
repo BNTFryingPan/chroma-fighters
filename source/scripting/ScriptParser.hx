@@ -50,6 +50,18 @@ class ScriptParser {
                out.push(OPERATION(d, DIVIDE));
             case "%".code:
                out.push(OPERATION(d, MOD));
+            case '^'.code:
+               out.push(OPERATION(d, BIT_XOR))
+            case '|'.code:
+               if (script.charCodeAt(pos) == '|'.code) {
+                  pos++;
+                  out.push(OPERATION(d, OR));
+               } else out.push(OPERATION(d, BIT_OR));
+            case '&'.code:
+               if (script.charCodeAt(pos) == '&'.code) {
+                  pos++;
+                  out.push(OPERATION(d, AND));
+               } else out.push(OPERATION(d, BIT_AND));
             case "!".code:
                if (script.charCodeAt(pos) == '='.code) {
                   pos++;
@@ -61,15 +73,24 @@ class ScriptParser {
                   out.push(OPERATION(d, EQUALS));
                } else out.push(SET(d));
             case ">".code:
-               if (script.charCodeAt(pos) == '='.code) {
-                  pos++;
-                  out.push(OPERATION(d, GREATER_THAN_OR_EQUALS));
-               } else out.push(OPERATION(d, GREATER_THAN));
+               switch (script.charCodeAt(pos++)) {
+                  case '='.code:
+                     out.push(OPERATION(d, GREATER_THAN_OR_EQUALS));
+                  case '>'.code:
+                     out.push(OPERATION(d, BIT_SHIFT_RIGHT));
+                  default:
+                     pos--;
+                     out.push(OPERATION(d, GREATER_THAN))
+               }
             case "<".code:
-               if (script.charCodeAt(pos) == '='.code) {
-                  pos++;
-                  out.push(OPERATION(d, LESS_THAN_OR_EQUALS));
-               } else out.push(OPERATION(d, LESS_THAN));
+               switch (script.charCodeAt(pos++)) {
+                  case '='.code:
+                     out.push(OPERATION(d, LESS_THAN_OR_EQUALS));
+                  case '>'.code:
+                     out.push(OPERATION(d, BIT_SHIFT_LEFT));
+                  default:
+                     pos--;
+                     out.push(OPERATION(d, LESS_THAN))
             case "'".code | '"'.code:
                while (pos < script.length) {
                   if (script.charCodeAt(pos) == c)
