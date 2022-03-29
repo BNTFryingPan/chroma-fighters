@@ -1,9 +1,29 @@
 chroma fighters scripting v2 documentation
 
 chroma-fighters scripts use the .cfs file extension, but are just normal text files
-scripts are parsed at runtime using a system based off of a guide made by yellowafterlife (link)
+scripts are parsed at runtime using a system based off of a guide made by yellowafterlife (https://yal.cc/interpreters-guide/)
 
 supported syntax:
 expressions:
-numbers
+numbers 1.1, 5
 "strings" or 'strings'
+unary operations (1 input)
+!value: true (1) -> false (0), or false (0) -> true(1)
+-value: value * -1
+binary operations (2 inputs)
+x * y: multiplication
+x + y: addition
+x - y: subtraction
+x / y: divides
+x div y: divides, but gives result as a whole number
+x % y: modulus
+x mod y: same as x % y
+ternary operator (3 inputs)
+bool ? expr if true : expr if false
+
+statements:
+func(arg1, arg2, ...): function call
+functions are documented as:
+functionName(argName:Type, ?optionalArg:Type, ...restArg:Type):ReturnType
+optional args (denoted by a ? before the name) and rest args (denoted by ... before the name) can be skipped.
+
