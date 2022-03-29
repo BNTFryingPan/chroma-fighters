@@ -22,28 +22,26 @@ class ScriptNodeTools {
       return a.getParameters()[0];
    }
 
+   private static function convertParamToString(param:Dynamic):String {
+      if (param is Array) {
+         return '[' + param.map(p -> convertParamToString(p)).join(', ') + ']';
+      }
+      if (param is ScriptNode) {
+         return ScriptNodeTools.debugPrint(param);
+      }
+      if (param is Int || param is Float) {
+         return Std.string(param);
+      }
+      if (param is String) {
+         '"${Std.string(param)}"'
+      }
+      return '{"type": "${Type.typeof(param)}", "value": "${Std.string(param)}"}';
+      
+   }
+
    public static function debugPrint(a:ScriptNode):String {
       // gets the syntax tree of this node
-      var params = [
-         for (param in a.getParameters()) {
-            if (param is Array) {
-               var array:Array<Dynamic> = cast param;
-               '[${[for ( subParam in array ) {
-                  if ( subParam is ScriptNode ) {
-                     ScriptNodeTools.debugPrint(subParam);
-                  } else {
-                     Std.string( subParam ); 
-                  }
-               }].join(',
-               ')}]';
-            }
-            // else if (Reflect.isEnumValue(param))
-            else if (param is ScriptNode)
-               ScriptNodeTools.debugPrint(param);
-            else
-               Std.string(param);
-         }
-      ];
+      var params = a.getParameters().map(p -> convertParamToString(p));
       return '{"type": "${a.getName()}", "params": [${params.join(', ')}]}';
       // var params:Array<String> = a.getParameters().map(p -> Std.string(p));
       // var formatted = '[${a.getPos()}] ${a.getName()} {${params.join(', ')}}';

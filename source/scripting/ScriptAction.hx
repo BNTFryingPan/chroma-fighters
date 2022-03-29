@@ -25,6 +25,6 @@ class ScriptActionTools {
 
    public static function debugPrint(a:ScriptAction):String {
       var params:Array<String> = a.getParameters().map(p -> Std.string(p));
-      return '[${a.getPos()}] ${a.getName()} {${params.join(', ')}}';
+      return '[${params.shift()}] ${a.getName()} {${params.join(', ')}}';
    }
 }

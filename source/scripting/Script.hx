@@ -119,7 +119,7 @@ class Script {
          case AIdentifier(p, name):
             {
                if (!Reflect.hasField(vars, name))
-                  throw error('variable $name does not exist');
+                  throw error('variable $name does not exist when referenced');
 
                var val = Reflect.field(vars, name);
                stack.add(val);
