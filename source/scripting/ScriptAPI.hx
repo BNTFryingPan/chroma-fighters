@@ -1,16 +1,17 @@
 package scripting;
 
-import haxe.Constraints.Function;
-
 /**
    functions availble to scripts
 **/
 @:keep
 class ScriptAPI {
-   public static final functionMap:Map<String, Function> = ["addOne" => addOne];
-
    public static function addOne(value:Float):Float {
       return value + 1;
+   }
+
+   public static function print(value:Dynamic):Dynamic {
+      trace('[SCRIPT PRINT] ${Std.string(value)}');
+      return value;
    }
 
    public static function callScriptFunction(name, ...args):Dynamic {

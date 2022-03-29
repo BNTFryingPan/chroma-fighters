@@ -1,5 +1,7 @@
 package scripting;
 
+import flixel.FlxG;
+import flixel.system.debug.log.LogStyle;
 import haxe.ds.GenericStack;
 import scripting.Op.Operation;
 import scripting.Op.UnOperation;
@@ -65,6 +67,8 @@ class Script {
    var stack:GenericStack<Dynamic>;
    var vars:Dynamic;
 
+   // var discarded:Dynamic = null;
+
    function new(script:String) {
       this.contents = script;
    }
@@ -80,21 +84,23 @@ class Script {
    public function compile() {
       this.tokens = ScriptParser.parse(this.contents);
       this.node = ScriptBuilder.build(this.tokens);
+      trace(this.node.debugPrint());
       this.actions = ScriptCompiler.compile(this.node);
+      trace('"bytecode":\n${actions.map(a -> a.debugPrint()).join('\n')}');
    }
 
    public function exec(vars:Null<Dynamic>):Dynamic {
       stack = new GenericStack<Dynamic>();
       if (vars != null)
          this.vars = vars;
-      
+
       pos = 0;
       while (pos < this.actions.length) {
          this.executeAction(this.actions[pos++]);
       }
-      //for (act in this.actions) {
+      // for (act in this.actions) {
       //   this.executeAction(act);
-      //}
+      // }
       return stack.pop();
    }
 
@@ -103,7 +109,7 @@ class Script {
          return '${text} at position ${action.getPos()}';
       }
 
-      action.debugPrint();
+      trace('[exec] ${action.debugPrint()}');
 
       switch (action) {
          case ANumber(p, value):
@@ -174,7 +180,37 @@ class Script {
             pos = actions.length;
          case ADiscard(p):
             stack.pop();
+         case AJump(p, to):
+            pos = to;
+         case AJumpUnless(p, to):
+            if (!isTruthy(stack.pop())) {
+               trace('jumping!');
+               pos = to;
+            }
       }
+   }
+
+   static function isTruthy(value:Dynamic):Bool {
+      trace('checking truthiness of `${Std.string(value)}`');
+      if (value is Bool) {
+         return value;
+      }
+      if (value is Int || value is Float) {
+         if (value == 0)
+            return false;
+         if (value == Math.NaN)
+            return false;
+         return true;
+      }
+      if (value is String) {
+         if (value == '')
+            return false;
+         return true;
+      }
+      if (value == null) {
+         return false;
+      }
+      return false;
    }
 
    public static function eval(code:String):String {
@@ -184,7 +220,13 @@ class Script {
          var v = pg.exec({pi: Math.PI});
          return Std.string(v);
       }
-      catch (x:Dynamic)
-         return Std.string(x);
+      catch (x:Dynamic) {
+         #if FLX_DEBUG
+         FlxG.log.advanced(x, errorLogStyle, false);
+         #end
+         return null;
+      }
    }
+
+   public static final errorLogStyle:LogStyle = new LogStyle("[SCRIPT ERROR]", "ff00ff", 12, false, false, false, "flixel/sounds/beep", false);
 }

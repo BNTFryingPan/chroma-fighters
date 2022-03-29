@@ -6,6 +6,10 @@ typedef SubParseResult = {
 }
 
 class ScriptParser {
+   static inline function error(text:String, pos:Int):String {
+      return '(Script Parse Error): $text at position $pos';
+   }
+
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
       var pos = 0;
@@ -49,7 +53,7 @@ class ScriptParser {
                if (pos < script.length) {
                   out.push(STRING(d, script.substring(start + 1, pos++)));
                } else
-                  throw 'String starting at $start is not closed!';
+                  throw error('String is not closed, starting', start);
             default:
                {
                   if (c >= "0".code && c <= "9".code || c == ".".code) {
@@ -81,13 +85,15 @@ class ScriptParser {
                         case 'mod': out.push(OPERATION(d, MOD));
                         case 'div': out.push(OPERATION(d, DIVIDE_INT));
                         case 'return': out.push(RETURN(d));
+                        case 'if': out.push(IF(d));
+                        case 'else': out.push(ELSE(d));
                         default: out.push(IDENTIFIER(d, name));
                      }
                      // var res = Parser.parseIdentifier(script, pos);
                      // pos = res.pos;
                      // out.push(res.token);
                   } else {
-                     throw 'Unexpected character `${script.charAt(start)}` at position ${start}';
+                     throw error('Unexpected character `${script.charAt(start)}`', start);
                   }
                }
          }

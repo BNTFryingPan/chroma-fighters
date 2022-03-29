@@ -21,7 +21,7 @@ class ScriptBuilder {
    }
 
    static inline function error(text:String, p:Pos):String {
-      return '$text at position $p';
+      return '(Script Build Error) $text at position $p';
    }
 
    static function ops(first:ScriptToken) {
@@ -65,22 +65,39 @@ class ScriptBuilder {
 
    static function statement() {
       var token = next();
-      switch(token) {
-         case RETURN(p): {
-            expr(None);
-            node = NReturn(p, node);
-         }
-         default: {
-            pos--;
-            expr(None);
-            switch (node) {
-               case NCall(p, name, args): {
-                  node = NDiscard(p, node);
-               }
-               default:
-                  throw error('expected a statement', node.getParameters()[0]);
+      switch (token) {
+         case RETURN(p):
+            {
+               expr(None);
+               node = NReturn(p, node);
             }
-         }
+         case IF(p):
+            {
+               expr(None);
+               var _condition = node;
+               statement();
+               var _then = node;
+               var _else = null;
+               var token2 = peek();
+               if (token2.match(ELSE(_))) {
+                  skip();
+                  statement();
+                  _else = node;
+               }
+               node = NConditional(p, _condition, _then, _else);
+            }
+         default:
+            {
+               pos--;
+               expr(None);
+               switch (node) {
+                  case NCall(p, name, args): {
+                        node = NDiscard(p, node);
+                     }
+                  default:
+                     throw error('expected a statement', node.getParameters()[0]);
+               }
+            }
       }
    }
 
@@ -175,7 +192,7 @@ class ScriptBuilder {
       node = null;
       var nodes:Array<ScriptNode> = [];
 
-      while (pos < len) {
+      while (pos < len - 1) {
          statement();
          nodes.push(node);
       }

@@ -36,6 +36,19 @@ class ScriptCompiler {
          case NDiscard(p, ret):
             expr(ret);
             add(ADiscard(p));
+         case NConditional(p, condition, result, elseResult):
+            expr(condition);
+            var jump1index = actions.length;
+            expr(result);
+            var jump2index = 0;
+            if (elseResult != null) {
+               expr(elseResult);
+               jump2index = actions.length;
+            }
+            actions.insert(jump1index, AJumpUnless(p, actions.length));
+            if (elseResult != null) {
+               actions.insert(jump2index - 1, AJump(p, actions.length + 1));
+            }
       }
    }
 

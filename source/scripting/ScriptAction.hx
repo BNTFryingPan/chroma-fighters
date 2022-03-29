@@ -13,6 +13,8 @@ enum ScriptAction {
    ACall(p:Pos, name:String, args:Int);
    AReturn(p:Pos); // return stack.pop();
    ADiscard(p:Pos); // stack.pop; // dont care about output
+   AJump(p:Pos, to:Pos /*, condition:Null<Bool>*/); // pos = to
+   AJumpUnless(p:Pos, to:Pos); // if (!pop) pos = to
 }
 
 class ScriptActionTools {
@@ -22,8 +24,6 @@ class ScriptActionTools {
 
    public static function debugPrint(a:ScriptAction):String {
       var params:Array<String> = a.getParameters().map(p -> Std.string(p));
-      var formatted = '[${a.getPos()}] ${a.getName()} {${params.join(', ')}}';
-      trace(formatted);
-      return formatted;
+      return '[${a.getPos()}] ${a.getName()} {${params.join(', ')}}';
    }
 }
