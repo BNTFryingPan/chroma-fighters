@@ -89,10 +89,28 @@ class ScriptBuilder {
                }
                node = NConditional(p, _condition, _then, _else);
             }
+         case CURLY_OPEN(p): {
+            var nodes = [];
+            var closed = false;
+            var token2;
+            while (pos < len) {
+               token2 = peek();
+               if (token2.match(CURLY_CLOSE(_))) {
+                  skip();
+                  closed = true;
+                  break;
+               }
+               statement();
+               nodes.push(node);
+            }
+            if (!closed)
+               throw error('unclosed {} starting');
+            node = NBlock(p, nodes);
+         }
          default:
             {
                pos--;
-               expr(None);
+               expr(NoOps);
                switch (node) {
                   case NCall(p, name, args): {
                         node = NDiscard(p, node);

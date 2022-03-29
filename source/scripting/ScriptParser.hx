@@ -33,6 +33,10 @@ class ScriptParser {
                out.push(PAR_OPEN(d));
             case ")".code:
                out.push(PAR_CLOSE(d));
+            case "{".code:
+               out.push(CURLY_OPEN(d));
+            case "}".code:
+               out.push(CURLY_CLOSE(d));
             case ','.code:
                out.push(COMMA(d));
             case "+".code:
