@@ -29,7 +29,7 @@ class ScriptNodeTools {
       if (param is ScriptNode) {
          return ScriptNodeTools.debugPrint(param);
       }
-      if (param is Int || param is Float) {
+      if (param is Int || param is Float || param is Bool) {
          return Std.string(param);
       }
       if (param is String) {
@@ -42,7 +42,7 @@ class ScriptNodeTools {
    public static function debugPrint(a:ScriptNode):String {
       // gets the syntax tree of this node
       var params = a.getParameters().map(p -> convertParamToString(p));
-      return '{"type": "${a.getName()}", "params": [${params.join(', ')}]}';
+      return '{"nodeType": "${a.getName()}", "params": [${params.join(', ')}]}';
       // var params:Array<String> = a.getParameters().map(p -> Std.string(p));
       // var formatted = '[${a.getPos()}] ${a.getName()} {${params.join(', ')}}';
       // trace(formatted);

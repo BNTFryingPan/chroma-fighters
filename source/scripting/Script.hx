@@ -128,7 +128,13 @@ class Script {
             {
                var b = stack.pop();
                var a = stack.pop();
-               if (b is String || a is String) {
+               if (op == Operation.EQUALS) {
+                  a = (a == b);
+               } else if (op == Operation.NOT_EQUALS) {
+                  a = (a != b);
+               }
+
+               else if (b is String || a is String) {
                   var fin:String;
                   switch (op) {
                      case Operation.ADD:
@@ -148,6 +154,10 @@ class Script {
                      case Operation.DIVIDE: a /= b;
                      case Operation.MOD: a %= b;
                      case Operation.DIVIDE_INT: a = Std.int(a / b);
+                     case Operation.LESS_THAN: a = (a < b);
+                     case Operation.LESS_THAN_OR_EQUALS: a = (a <= b);
+                     case Operation.GREATER_THAN: a = (a > b);
+                     case Operation.GREATER_THAN_OR_EQUALS: a = (a >= b);
                      default: throw error('cant apply ${op.toString()}');
                   }
                   stack.add(a);
