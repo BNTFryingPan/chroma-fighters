@@ -238,15 +238,16 @@ class ScriptBuilder {
          case OPERATION(p, type):
             {
                switch (type) {
-                  case ADD: expr(NoOps);
+                  case ADD: exp = expr(NoOps);
                   case SUBTRACT:
                      exp = NUnOperator(p, NEGATE, expr(NoOps));
-                  default: throw error('unexpected operator', token);
+                  default: exp = null;throw error('unexpected operator', token);
                }
             }
          case UNOPERATION(p, type):
             exp = NUnOperator(p, type, expr(NoOps));
          default:
+            exp = null;
             throw error('unexpected ${token.getName()}', token);
       }
       if (!flags.has(NoOps)) {
