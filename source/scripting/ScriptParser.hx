@@ -48,12 +48,29 @@ class ScriptParser {
                out.push(OPERATION(d, SUBTRACT));
             case "*".code:
                out.push(OPERATION(d, MULTIPLY));
-            case "/".code:
-               out.push(OPERATION(d, DIVIDE));
             case "%".code:
                out.push(OPERATION(d, MOD));
             case '^'.code:
                out.push(OPERATION(d, BIT_XOR));
+            case '/'.code:
+               switch (script.charCodeAt(pos)) {
+                  case '/'.code:
+                     while (pos < len) {
+                        var nl = script.charCodeAt(pos++)
+                        if (nl == '\r'.code || nl == '\n'.code)
+                           break;
+                     }
+                  case '*'.code:
+                     pos++;
+                     while (pos < len) {
+                        if (script.charCodeAt(pos++) == '*'.code && script.charCodeAt(pos) == '/'.code) {
+                           pos += 2;
+                           break;
+                        }
+                     }
+                  default:
+                     out.push(OPERATION(d, DIVIDE));
+               }
             case '|'.code:
                if (script.charCodeAt(pos) == '|'.code) {
                   pos++;
