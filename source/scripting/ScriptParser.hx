@@ -13,10 +13,15 @@ class ScriptParser {
       return '(Script Parse Error): $text at position $pos';
    }
 
+   //static var pos = 0;
+   //static var line = 0;
+   //static var linepos = 0;
+
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
       var pos = 0;
-      // var line = 1;
+      //var line = 0;
+      //var linepos = 0;
       while (pos < script.length) {
          var start = pos;
          var c = script.charCodeAt(pos++);
@@ -24,7 +29,8 @@ class ScriptParser {
             case " ".code, "\t".code:
                continue;
             case "\r".code, "\n".code:
-               // line++;
+               //line++;
+               //linepos = 0;
                continue;
             default:
          }
