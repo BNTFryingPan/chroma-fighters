@@ -61,14 +61,14 @@ class ScriptParser {
             case '/'.code:
                switch (script.charCodeAt(pos)) {
                   case '/'.code:
-                     while (pos < len) {
+                     while (pos < script.length) {
                         var nl = script.charCodeAt(pos++);
                         if (nl == '\r'.code || nl == '\n'.code)
                            break;
                      }
                   case '*'.code:
                      pos++;
-                     while (pos < len) {
+                     while (pos < script.length) {
                         if (script.charCodeAt(pos++) == '*'.code && script.charCodeAt(pos) == '/'.code) {
                            pos += 2;
                            break;
