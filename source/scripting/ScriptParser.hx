@@ -62,7 +62,7 @@ class ScriptParser {
                switch (script.charCodeAt(pos)) {
                   case '/'.code:
                      while (pos < len) {
-                        var nl = script.charCodeAt(pos++)
+                        var nl = script.charCodeAt(pos++);
                         if (nl == '\r'.code || nl == '\n'.code)
                            break;
                      }
