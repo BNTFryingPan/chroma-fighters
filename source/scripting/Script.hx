@@ -65,8 +65,10 @@ class Script {
    var tokens:Array<ScriptToken> = [];
    var node:ScriptNode;
    var actions:Array<ScriptAction>;
+
    public var isRunning:Bool = false;
    public var isPaused:Bool = false;
+
    var pausedFor:Int = 0;
    var pos:Int = 0;
 
@@ -97,19 +99,19 @@ class Script {
    }
 
    public function exec(vars:Null<Dynamic>):Dynamic {
-      //if (forceRestart || !this.isRunning) {
+      // if (forceRestart || !this.isRunning) {
       stack = new GenericStack<Dynamic>();
       pos = 0;
       if (vars != null) {
          this.vars = vars;
       }
-      //}
-      //if (this.isPaused) {
+      // }
+      // if (this.isPaused) {
       //   this.pausedFor--;
       //   if (this.pausedFor > 0) return null;
-      //}
-      //this.isRunning = true;
-      //this.isPaused = false;
+      // }
+      // this.isRunning = true;
+      // this.isPaused = false;
       while (pos < this.actions.length) {
          var action = this.actions[pos++];
          this.executeAction(action);
@@ -118,9 +120,9 @@ class Script {
       // for (act in this.actions) {
       //   this.executeAction(act);
       // }
-      //if (this.isPaused)
+      // if (this.isPaused)
       //   return null;
-      //this.isRunning = false;
+      // this.isRunning = false;
       return stack.pop();
    }
 
@@ -129,12 +131,10 @@ class Script {
          return '${text} at position ${action.getPos()}';
       }
 
-      
-
       switch (action) {
-         //case APause(p, frames):
-            //isPaused = true;
-            //pausedFor = frames;
+         // case APause(p, frames):
+         // isPaused = true;
+         // pausedFor = frames;
          case ANumber(p, value):
             stack.add(value);
          case AString(p, value):
@@ -227,13 +227,15 @@ class Script {
                pos = to;
             }
          case AAnd(p, to):
-            if (isTruthy(stack.first())
+            if (isTruthy(stack.first()))
                stack.pop();
-            else pos = to;
-         case AOr(p, to):
-            if (isTruthy(stack.first())
+            else
                pos = to;
-            else stack.pop();
+         case AOr(p, to):
+            if (isTruthy(stack.first()))
+               pos = to;
+            else
+               stack.pop();
          case ASet(p, name):
             Reflect.setField(vars, name, stack.pop());
       }

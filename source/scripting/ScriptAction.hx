@@ -19,7 +19,7 @@ enum ScriptAction {
    ASet(p:Pos, name:String);
    AAnd(p:Pos, to:Pos); // if (top) pop() else pos = to
    AOr(p:Pos, to:Pos); // if (top) pos = to else pop()
-   //APause(p:Pos, frames:Int);
+   // APause(p:Pos, frames:Int);
 }
 
 class ScriptActionTools {

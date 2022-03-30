@@ -1,12 +1,14 @@
 package scripting;
 
+import flixel.util.typeLimit.OneOfThree;
 import scripting.Op.Operation;
+
+typedef PosHolder = OneOfThree<ScriptToken, ScriptNode, Int>;
 
 /**
    the builder takes a list of tokens and builds them into nodes that will later be compiled into actions
 **/
 class ScriptBuilder {
-   static var node:ScriptNode;
    static var tokens:Array<ScriptToken>;
    static var pos:Int;
    static var len:Int;
@@ -25,17 +27,17 @@ class ScriptBuilder {
       pos++;
    }
 
-   static inline function error(text:String, p:Pos):String {
-      return '(Script Build Error) $text at position $p';
+   static inline function error(text:String, n:PosHolder):String {
+      var pos = (n is Int) ? n : (cast n).getPos();
+      return '(Script Build Error) $text at position $pos';
    }
 
-   static function ops(first:ScriptToken) {
-      var nodes = [node];
+   static function ops(prev:ScriptNode, first:ScriptToken):ScriptNode {
+      var nodes = [prev];
       var ops = [first];
 
       while (pos < len) {
-         expr(NoOps);
-         nodes.push(node);
+         nodes.push(expr(NoOps));
          var token = peek();
          switch (token) {
             case OPERATION(_, op):
@@ -65,93 +67,123 @@ class ScriptBuilder {
                default:
             }
       }
-      node = nodes[0];
+      return nodes[0];
    }
 
-   static function statement() {
+   static function statement():ScriptNode {
       var token = next();
+      var stat:ScriptNode;
       switch (token) {
          case RETURN(p):
             {
-               expr(None);
-               node = NReturn(p, node);
+               stat = NReturn(p, expr(None));
             }
          case IF(p):
             {
-               expr(None);
-               var _condition = node;
-               statement();
-               var _then = node;
+               var _condition = expr(None);
+
+               var _then = statement();
                var _else = null;
                var token2 = peek();
                if (token2.match(ELSE(_))) {
                   skip();
-                  statement();
-                  _else = node;
+
+                  _else = statement();
                }
-               node = NConditional(p, _condition, _then, _else);
+               stat = NConditional(p, _condition, _then, _else);
             }
-         case CURLY_OPEN(p): {
-            var nodes = [];
-            var closed = false;
-            var token2;
-            while (pos < len) {
-               token2 = peek();
-               if (token2.match(CURLY_CLOSE(_))) {
+         case CURLY_OPEN(p):
+            {
+               var nodes = [];
+               var closed = false;
+               var token2;
+               while (pos < len) {
+                  token2 = peek();
+                  if (token2.match(CURLY_CLOSE(_))) {
+                     skip();
+                     closed = true;
+                     break;
+                  };
+                  nodes.push(statement());
+               }
+               if (!closed)
+                  throw error('unclosed {} starting', token);
+               stat = NBlock(p, nodes);
+            }
+         case WHILE(p):
+            {
+               stat = NWhile(p, expr(None), loop());
+            }
+         case DO(p):
+            {
+               var body = loop();
+               // expect a WHILE
+               var token2 = peek();
+               if (!token2.match(WHILE(_)))
+                  throw error('expected while after do', token);
+               skip();
+               stat = NWhileDo(p, expr(), body);
+            }
+         case FOR(p):
+            {
+               // check for (
+               var hasParen:Bool = peek().match(PAR_OPEN(_));
+               if (hasParen)
                   skip();
-                  closed = true;
-                  break;
-               }
-               statement();
-               nodes.push(node);
+               // init
+               var _init = statement();
+               // condition
+               var _cond = expr(None);
+               if (peek().match(SEMICOLON(_)))
+                  skip();
+               // post-statement
+               var _post = statement();
+               // check for matching )
+               if (hasParen)
+                  if (peek().match(PAR_CLOSE(_)))
+                     skip();
+                  else
+                     throw error('expected closing parenthesis', peek());
+               stat = NFor(p, _init, _cond, _post, loop());
             }
-            if (!closed)
-               throw error('unclosed {} starting', p);
-            node = NBlock(p, nodes);
-         }
-         case WHILE(p): {
-            expr(None);
-            var condition = node;
-            loop();
-            node = NWhile(p, condition, node);
-         }
-         case DO(p): {
-            loop();
-            var body = node;
-            // expect a WHILE
-            var token2 = peek();
-            if (!token2.match(WHILE(_))) {
-               throw error('expected while');
-            }
-         }
+         case BREAK(p):
+            if (canBreak)
+               stat = NBreak(p);
+            else
+               throw error('cannot break', token);
+         case CONTINUE(p):
+            if (canContinue)
+               stat = NBreak(p);
+            else
+               throw error('cannot continue', token);
          default:
             {
                pos--;
-               expr(NoOps);
-               var _expr = node;
-               switch (node) {
+               var _expr = expr(NoOps);
+               switch (_expr) {
                   case NCall(p, name, args): {
-                        node = NDiscard(p, _expr);
+                        stat = NDiscard(p, _expr);
                      }
                   default:
                      var token2 = peek();
                      if (token2.match(SET(_))) {
                         pos++;
-                        expr(None);
-                        node = NSet(token2.getPos(), _expr, node);
-                     } else throw error('expected a statement', node.getParameters()[0]);
+                        stat = NSet(token2.getPos(), _expr, expr(None));
+                     } else throw error('expected a statement', _expr);
                }
             }
       }
       if (peek().match(SEMICOLON(_)))
          skip();
+      return stat;
    }
 
-   static function expr(flags:ScriptBuilderFlags = None):Void {
+   static function expr(flags:ScriptBuilderFlags = None):ScriptNode {
       var token = next();
+      var exp:ScriptNode;
       switch (token) {
          case NUMBER(p, f):
-            node = NNumber(p, f);
+            exp = NNumber(p, f);
          case IDENTIFIER(p, id):
             var next = peek();
             if (next.match(PAR_OPEN(_))) {
@@ -178,8 +210,7 @@ class ScriptBuilder {
                   }
 
                   // read argument
-                  expr(None);
-                  args.push(node);
+                  args.push(expr(None));
                   // trace('pushed node ${node.getName()}');
 
                   // skip ,
@@ -187,75 +218,74 @@ class ScriptBuilder {
                   if (token2.match(COMMA(_))) {
                      pos++;
                   } else if (!token2.match(PAR_CLOSE(_))) {
-                     throw error('expected a `,` or `)`, instead found ${token2.getName()}', token2.getPos());
+                     throw error('expected a `,` or `)`, instead found ${token2.getName()}', token2);
                   }
                }
                if (!closed)
-                  throw error('unclosed `()`', token.getPos());
+                  throw error('unclosed `()`', token);
 
-               node = NCall(p, id, args);
+               exp = NCall(p, id, args);
             } else
-               node = NIdentifier(p, id);
+               exp = NIdentifier(p, id);
          case STRING(p, value):
-            node = NString(p, value);
+            exp = NString(p, value);
          case PAR_OPEN(p):
             {
-               expr();
+               exp = expr();
                if (!next().match(PAR_CLOSE(_)))
-                  throw error('unclosed () starting', p);
+                  throw error('unclosed () starting', token);
             }
          case OPERATION(p, type):
             {
                switch (type) {
                   case ADD: expr(NoOps);
                   case SUBTRACT:
-                     expr(NoOps);
-                     node = NUnOperator(p, NEGATE, node);
-                  default: throw error('unexpected operator', p);
+                     exp = NUnOperator(p, NEGATE, expr(NoOps));
+                  default: throw error('unexpected operator', token);
                }
             }
          case UNOPERATION(p, type):
-            expr(NoOps);
-            node = NUnOperator(p, type, node);
+            exp = NUnOperator(p, type, expr(NoOps));
          default:
-            throw error('unexpected ${token.getName()}', token.getPos());
+            throw error('unexpected ${token.getName()}', token);
       }
       if (!flags.has(NoOps)) {
          var token = peek();
          switch (token) {
             case OPERATION(_, _):
                skip();
-               ops(token);
+               ops(exp, token);
             default:
          }
       }
+      return exp;
    }
 
-   public static function loop() {
+   public static function loop():ScriptNode {
       var couldBreak = canBreak;
       var couldContinue = canContinue;
       canBreak = true;
       canContinue = true;
-      statement();
+      var stat = statement();
       canBreak = couldBreak;
       canContinue = couldContinue;
+      return stat;
    }
 
-   public static function build(tks:Array<ScriptToken>) {
+   public static function build(tks:Array<ScriptToken>):ScriptNode {
       tokens = tks;
       pos = 0;
       len = tks.length;
-      node = null;
+      // node = null;
       canBreak = false;
       canContinue = false;
       var nodes:Array<ScriptNode> = [];
 
       while (pos < len - 1) {
-         statement();
-         nodes.push(node);
+         nodes.push(statement());
       }
-      node = NBlock(0, nodes);
-      return node;
+      // node = ;
+      return NBlock(0, nodes);
    }
 }
 

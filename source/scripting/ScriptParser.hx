@@ -16,7 +16,7 @@ class ScriptParser {
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
       var pos = 0;
-      //var line = 1;
+      // var line = 1;
       while (pos < script.length) {
          var start = pos;
          var c = script.charCodeAt(pos++);
@@ -24,7 +24,7 @@ class ScriptParser {
             case " ".code, "\t".code:
                continue;
             case "\r".code, "\n".code:
-               //line++;
+               // line++;
                continue;
             default:
          }
@@ -53,27 +53,31 @@ class ScriptParser {
             case "%".code:
                out.push(OPERATION(d, MOD));
             case '^'.code:
-               out.push(OPERATION(d, BIT_XOR))
+               out.push(OPERATION(d, BIT_XOR));
             case '|'.code:
                if (script.charCodeAt(pos) == '|'.code) {
                   pos++;
                   out.push(OPERATION(d, OR));
-               } else out.push(OPERATION(d, BIT_OR));
+               } else
+                  out.push(OPERATION(d, BIT_OR));
             case '&'.code:
                if (script.charCodeAt(pos) == '&'.code) {
                   pos++;
                   out.push(OPERATION(d, AND));
-               } else out.push(OPERATION(d, BIT_AND));
+               } else
+                  out.push(OPERATION(d, BIT_AND));
             case "!".code:
                if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, NOT_EQUALS));
-               } else out.push(UNOPERATION(d, NOT));
+               } else
+                  out.push(UNOPERATION(d, NOT));
             case "=".code:
                if (script.charCodeAt(pos) == '='.code) {
                   pos++;
                   out.push(OPERATION(d, EQUALS));
-               } else out.push(SET(d));
+               } else
+                  out.push(SET(d));
             case ">".code:
                switch (script.charCodeAt(pos++)) {
                   case '='.code:
@@ -82,7 +86,7 @@ class ScriptParser {
                      out.push(OPERATION(d, BIT_SHIFT_RIGHT));
                   default:
                      pos--;
-                     out.push(OPERATION(d, GREATER_THAN))
+                     out.push(OPERATION(d, GREATER_THAN));
                }
             case "<".code:
                switch (script.charCodeAt(pos++)) {
@@ -92,7 +96,8 @@ class ScriptParser {
                      out.push(OPERATION(d, BIT_SHIFT_LEFT));
                   default:
                      pos--;
-                     out.push(OPERATION(d, LESS_THAN))
+                     out.push(OPERATION(d, LESS_THAN));
+               }
             case "'".code | '"'.code:
                while (pos < script.length) {
                   if (script.charCodeAt(pos) == c)

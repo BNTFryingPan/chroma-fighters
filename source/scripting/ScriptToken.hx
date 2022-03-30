@@ -26,7 +26,7 @@ enum ScriptToken {
    WHILE(p:Pos);
    DO(p:Pos);
    FOR(p:Pos);
-   BREAK(p:Pos):
+   BREAK(p:Pos);
    CONTINUE(p:Pos);
 }
 

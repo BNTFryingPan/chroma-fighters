@@ -52,14 +52,35 @@ class ScriptCompiler {
             if (elseResult != null) {
                actions.insert(jump2index - 1, AJump(p, actions.length + 1));
             }
-         case NSet(p, node, value): {
-            expr(value);
-            switch (node) {
-               case NIdentifier(p, name): {
-                  add(ASet(p, node.getParameters()[1]));
+         case NSet(p, node, value):
+            {
+               expr(value);
+               switch (node) {
+                  case NIdentifier(p, name): {
+                        add(ASet(p, node.getParameters()[1]));
+                     }
+                  default: throw 'Expression is not settable at $p';
                }
-               default: throw 'Expression is not settable at $p';
             }
+         case NWhile(p, condition, expr):
+            {}
+         case NWhileDo(p, condition, expr):
+            {}
+         case NFor(p, init, condition, post, node):
+            {}
+         case NBreak(p):
+            {}
+         case NContinue(p):
+            {}
+      }
+   }
+
+   private static function patch(start, end, _break, _continue) {
+      var i = start;
+      while (i < end) {
+         var act = actions[i++];
+         if (act.match(AJump(_, _))) {
+            // switch (act)
          }
       }
    }

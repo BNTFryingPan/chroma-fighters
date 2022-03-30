@@ -17,7 +17,7 @@ enum ScriptNode {
    NSet(p:Pos, node:ScriptNode, value:ScriptNode);
    NWhile(p:Pos, condition:ScriptNode, expr:ScriptNode);
    NWhileDo(p:Pos, condition:ScriptNode, expr:ScriptNode);
-   NFor(p:Pos);
+   NFor(p:Pos, init:ScriptNode, condition:ScriptNode, post:ScriptNode, node:ScriptNode);
    NBreak(p:Pos);
    NContinue(p:Pos);
 }
@@ -41,7 +41,6 @@ class ScriptNodeTools {
          '"${Std.string(param)}"';
       }
       return '{"type": "${Type.typeof(param)}", "value": "${Std.string(param)}"}';
-      
    }
 
    public static function debugPrint(a:ScriptNode):String {
