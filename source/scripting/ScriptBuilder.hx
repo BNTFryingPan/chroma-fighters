@@ -238,10 +238,13 @@ class ScriptBuilder {
          case OPERATION(p, type):
             {
                switch (type) {
-                  case ADD: exp = expr(NoOps);
+                  case ADD:
+                     exp = expr(NoOps);
                   case SUBTRACT:
                      exp = NUnOperator(p, NEGATE, expr(NoOps));
-                  default: exp = null;throw error('unexpected operator', token);
+                  default:
+                     exp = null;
+                     throw error('unexpected operator', token);
                }
             }
          case UNOPERATION(p, type):
@@ -255,7 +258,7 @@ class ScriptBuilder {
          switch (token) {
             case OPERATION(_, _):
                skip();
-               ops(exp, token);
+               exp = ops(exp, token);
             default:
          }
       }
