@@ -59,6 +59,11 @@ import scripting.Op.UnOperation;
 class Script {
    public var error:Null<String> = null;
 
+   public static var DEBUG_TOKENS:Bool = true;
+   public static var DEBUG_NODE_TREE:Bool = false;
+   public static var DEBUG_BYTECODE:Bool = true;
+   public static var DEBUG_RUNTIME:Bool = false;
+
    // private var isParsed:Fuse = new Fuse();
    private var isCompiled:Fuse = new Fuse();
    var contents:String;
@@ -90,12 +95,18 @@ class Script {
          this.tokens = Parser.parse(this.contents);
    }*/
    public function compile() {
+      if (this.isCompiled.isBlown()) // already parsed
+         return;
+      this.isCompiled().blow();
       this.tokens = ScriptParser.parse(this.contents);
-      trace('parsed: ' + tokens.map(t -> t.debugPrint()).join(''));
+      if (Script.DEBUG_TOKENS)
+         trace('parsed: ' + tokens.map(t -> t.debugPrint()).join(''));
       this.node = ScriptBuilder.build(this.tokens);
-      trace(this.node.debugPrint());
+      if (Script.DEBUG_NODE_TREE)
+         trace(this.node.debugPrint());
       this.actions = ScriptCompiler.compile(this.node);
-      trace('"bytecode":\n${actions.map(a -> a.debugPrint()).join('\n')}');
+      if (Script.DEBUG_BYTE_CODE)
+         trace('"bytecode":\n${actions.map(a -> a.debugPrint()).join('\n')}');
    }
 
    public function exec(vars:Null<Dynamic>):Dynamic {
@@ -115,7 +126,8 @@ class Script {
       while (pos < this.actions.length) {
          var action = this.actions[pos++];
          this.executeAction(action);
-         trace('<exec> ${action.debugPrint()} (${stack.first()}, $pos)');
+         if (Script.DEBUG_RUNTIME)
+            trace('<exec> ${action.debugPrint()} (${stack.first()}, $pos)');
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
