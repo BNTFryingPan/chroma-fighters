@@ -13,6 +13,8 @@ enum ScriptNode {
    NBlock(p:Pos, nodes:Array<ScriptNode>);
    NReturn(p:Pos, node:ScriptNode);
    NDiscard(p:Pos, node:ScriptNode);
+   NPause(p:Pos, time:ScriptNode);
+   //NTypeOf(p:Pos, node:ScriptNode);
    NConditional(p:Pos, condition:ScriptNode, result:ScriptNode, elseResult:Null<ScriptNode>);
    NSet(p:Pos, node:ScriptNode, value:ScriptNode);
    NWhile(p:Pos, condition:ScriptNode, expr:ScriptNode);

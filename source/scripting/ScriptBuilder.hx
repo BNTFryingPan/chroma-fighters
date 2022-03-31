@@ -3,7 +3,7 @@ package scripting;
 import flixel.util.typeLimit.OneOfThree;
 import scripting.Op.Operation;
 
-typedef PosHolder = OneOfThree<ScriptToken, ScriptNode, Int>;
+typedef PosHolder = OneOfThree<ScriptToken, ScriptNode, Pos>;
 
 /**
    the builder takes a list of tokens and builds them into nodes that will later be compiled into actions
@@ -28,8 +28,8 @@ class ScriptBuilder {
    }
 
    static inline function error(text:String, n:PosHolder):String {
-      var pos = (n is Int) ? n : (cast n).getPos();
-      return '(Script Build Error) $text at position $pos';
+      var pos = (n is Pos) ? n : (cast n).getPos();
+      return '(Script Build Error) $text on line ${pos.line} at position ${pos.linepos}';
    }
 
    static function ops(prev:ScriptNode, first:ScriptToken):ScriptNode {
@@ -77,6 +77,10 @@ class ScriptBuilder {
          case RETURN(p):
             {
                stat = NReturn(p, expr(None));
+            }
+         case PAUSE(p):
+            {
+               stat = NPause(p, expr(None));
             }
          case IF(p):
             {

@@ -9,8 +9,8 @@ typedef SubParseResult = {
    the parser takes the raw text of a script and turns it into a list of tokens to later be built into nodes.
 **/
 class ScriptParser {
-   static inline function error(text:String, pos:Int):String {
-      return '(Script Parse Error): $text at position $pos';
+   static inline function error(text:String, pos:Pos):String {
+      return '(Script Parse Error): $text on line ${pos.line} position ${pos.linepos}';
    }
 
    //static var pos = 0;
@@ -20,17 +20,22 @@ class ScriptParser {
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
       var pos = 0;
-      //var line = 0;
-      //var linepos = 0;
+      var line = 0;
+      var linepos = 0;
       while (pos < script.length) {
-         var start = pos;
+         var start = {pos: pos, line: line, linepos: linepos++};
          var c = script.charCodeAt(pos++);
          switch (c) {
             case " ".code, "\t".code:
                continue;
-            case "\r".code, "\n".code:
-               //line++;
-               //linepos = 0;
+            case "\r".code:
+               if (script.charCodeAt(pos) == '\n')
+                  pos++;
+               line++;
+               linepos = 0;
+            case "\n".code:
+               line++;
+               linepos = 0;
                continue;
             default:
          }
@@ -53,7 +58,11 @@ class ScriptParser {
             case "-".code:
                out.push(OPERATION(d, SUBTRACT));
             case "*".code:
-               out.push(OPERATION(d, MULTIPLY));
+               if (script.charCodeAt(pos) == '*'.code) {
+                  out.push(OPERATION(d, EXPONENT));
+               } else {
+                  out.push(OPERATION(d, MULTIPLY));
+               }
             case "%".code:
                out.push(OPERATION(d, MOD));
             case '^'.code:
@@ -63,15 +72,37 @@ class ScriptParser {
                   case '/'.code:
                      while (pos < script.length) {
                         var nl = script.charCodeAt(pos++);
-                        if (nl == '\r'.code || nl == '\n'.code)
+                        if (nl == '\r'.code) {
+                           if (script.charCodeAt(pos) == '\n'.code)
+                              pos++;
+                           line++;
+                           linepos = 0;
                            break;
+                        } else if (nl == '\n'.code) {
+                           pos++;
+                           line++;
+                           linepos = 0;
+                        }
                      }
                   case '*'.code:
                      pos++;
+                     linepos++;
                      while (pos < script.length) {
-                        if (script.charCodeAt(pos++) == '*'.code && script.charCodeAt(pos) == '/'.code) {
-                           pos += 2;
-                           break;
+                        switch (script.charCodeAt(pos++)) {
+                           case '\r'.code:
+                              if (script.charCodeAt(pos) == '\n'.code)
+                                 pos++;
+                              line++;
+                              linepos = 0;
+                           case '\n'.code:
+                              line++;
+                              linepos = 0;
+                           case '*'.code:
+                              if (script.charCodeAt(pos) == '/'.code) {
+                                 pos += 2;
+                                 linepos += 2;
+                                 break;
+                              }
                         }
                      }
                   default:
@@ -80,28 +111,33 @@ class ScriptParser {
             case '|'.code:
                if (script.charCodeAt(pos) == '|'.code) {
                   pos++;
+                  linepos++;
                   out.push(OPERATION(d, OR));
                } else
                   out.push(OPERATION(d, BIT_OR));
             case '&'.code:
                if (script.charCodeAt(pos) == '&'.code) {
                   pos++;
+                  linepos++;
                   out.push(OPERATION(d, AND));
                } else
                   out.push(OPERATION(d, BIT_AND));
             case "!".code:
                if (script.charCodeAt(pos) == '='.code) {
                   pos++;
+                  linepos++;
                   out.push(OPERATION(d, NOT_EQUALS));
                } else
                   out.push(UNOPERATION(d, NOT));
             case "=".code:
                if (script.charCodeAt(pos) == '='.code) {
                   pos++;
+                  linepos++;
                   out.push(OPERATION(d, EQUALS));
                } else
                   out.push(SET(d));
             case ">".code:
+               linepos++;
                switch (script.charCodeAt(pos++)) {
                   case '='.code:
                      out.push(OPERATION(d, GREATER_THAN_OR_EQUALS));
@@ -112,6 +148,7 @@ class ScriptParser {
                      out.push(OPERATION(d, GREATER_THAN));
                }
             case "<".code:
+               linepos++;
                switch (script.charCodeAt(pos++)) {
                   case '='.code:
                      out.push(OPERATION(d, LESS_THAN_OR_EQUALS));
@@ -123,11 +160,23 @@ class ScriptParser {
                }
             case "'".code | '"'.code:
                while (pos < script.length) {
-                  if (script.charCodeAt(pos) == c)
+                  var n = script.charCodeAt(pos++);
+                  if (n == c && script.charCodeAt(pos - 2) != '\\'.code)
                      break;
-                  pos++;
+                  else if (n == '\r'.code) {
+                     if (script.charCodeAt(pos) == '\n'.code)
+                        pos++;
+                     line++;
+                     linepos = 0;
+                  } else if (n == '\n'.code) {
+                     line++;
+                     linepos = 0;
+                  } else {
+                     linepos++;
+                  }
                }
                if (pos < script.length) {
+                  linepos++;
                   out.push(STRING(d, script.substring(start + 1, pos++)));
                } else
                   throw error('String is not closed, starting', start);
@@ -138,6 +187,7 @@ class ScriptParser {
                      while (pos < script.length) {
                         c = script.charCodeAt(pos);
                         if (c >= "0".code && c <= "9".code) {
+                           linepos++;
                            pos++;
                         } else if (c == '.'.code && !dot) {
                            pos++;
@@ -154,6 +204,7 @@ class ScriptParser {
                         c = script.charCodeAt(pos);
                         if (ScriptParser.charIsIdentifierChar(c)) {
                            pos++;
+                           linepos++;
                         } else
                            break;
                      }
@@ -169,6 +220,8 @@ class ScriptParser {
                         case 'for': out.push(FOR(d));
                         case 'break': out.push(BREAK(d));
                         case 'continue': out.push(CONTINUE(d));
+                        case 'wait': out.push(CONTINUE(d))
+                        //case 'typeof': out.push(TYPEOF(d));
                         default: out.push(IDENTIFIER(d, name));
                      }
                      // var res = Parser.parseIdentifier(script, pos);
@@ -180,7 +233,7 @@ class ScriptParser {
                }
          }
       }
-      out.push(EOF(pos));
+      out.push(EOF({pos: pos, line: line, linepos: linepos}));
       return out;
    }
 

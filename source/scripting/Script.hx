@@ -6,14 +6,26 @@ import haxe.ds.GenericStack;
 import scripting.Op.Operation;
 import scripting.Op.UnOperation;
 
-/*enum StackEntryType {
+enum StackEntryType {
+   // floats and ints
    NUMBER;
+   // strings
    STRING;
+   // booleans
+   BOOLEAN;
+   // callable function
+   FUNCTION;
+   // arbitrary haxe objects. probably insecure to use, but its an option.
+   DYNAMIC;
+   // null
    NULL;
-   }
+}
 
-   class StackEntry<T> {
-   public final value:T;
+/**
+   basically wraps access to haxe types
+**/
+class StackEntry<T> {
+   public var value:T;
    public final type:StackEntryType;
 
    private function new(type:StackEntryType, value:T) {
@@ -21,25 +33,40 @@ import scripting.Op.UnOperation;
       this.type = type;
    }
 
-   public function isString():Bool {
-      return this.type == STRING;
+   public function isOfType(type:StackEntryType):Bool {
+      return this.type == type;
    }
 
-   public function isNumber():Bool {
-      return this.type == NUMBER;
+   public function isTruthy():Bool {
+      return Script.isTruthy(this.value)
    }
 
-   public function castTo(targetType:StackEntryType):StackEntry<Dynamic> {
+   public function asType(targetType:StackEntryType):Dynamic {
       if (targetType == this.type)
-         return this;
+         return this.value;
 
       if (targetType == STRING)
-         return new StackEntry<String>(STRING, Std.string(this.value));
+         return Std.string(this.value);
 
       if (targetType == NUMBER)
-         return new StackEntry<Float>(NUMBER, Std.parseFloat(Std.string(this.value)));
+         return Std.parseFloat(Std.string(this.value));
 
-      return new StackEntry<Dynamic>(NULL, null);
+      if (targetType == BOOLEAN)
+         return this.isTruthy();
+
+      if (targetType == NULL)
+         return null;
+
+      if (targetType == FUNCTION) {
+         if (this.type == DYNAMIC)
+            return this; // a dynamic value could be a function, but otherwise, its not
+         return null;
+      }
+
+      if (targetType == DYNAMIC)
+         return null;
+
+      return null;
    }
 
    public static function get(value:Dynamic):StackEntry<Dynamic> {
@@ -49,10 +76,15 @@ import scripting.Op.UnOperation;
       if (value is Float || value is Int) {
          return new StackEntry<Float>(NUMBER, value);
       }
-
-      return new StackEntry<Dynamic>(NULL, null);
+      if (value is Bool) {
+         return new StackEntry<Bool>(BOOLEAN, value);
+      }
+      if (value == null) {
+         return new StackEntry<Dynamic>(NULL, null);
+      }
+      return new StackEntry<Dynamic>(DYNAMIC, value);
    }
-}*/
+}
 #if js
 @:expose
 #end
@@ -77,7 +109,7 @@ class Script {
    var pausedFor:Int = 0;
    var pos:Int = 0;
 
-   var stack:GenericStack<Dynamic>;
+   var stack:GenericStack<StackEntry<Dynamic>>;
    var vars:Dynamic;
 
    // var discarded:Dynamic = null;
@@ -111,7 +143,7 @@ class Script {
 
    public function exec(vars:Null<Dynamic>):Dynamic {
       // if (forceRestart || !this.isRunning) {
-      stack = new GenericStack<Dynamic>();
+      stack = new GenericStack<StackEntry<Dynamic>>();
       pos = 0;
       if (vars != null) {
          this.vars = vars;
@@ -127,7 +159,7 @@ class Script {
          var action = this.actions[pos++];
          this.executeAction(action);
          if (Script.DEBUG_RUNTIME)
-            trace('<exec> ${action.debugPrint()} (${stack.first()}, $pos)');
+            trace('<exec> ${action.debugPrint()} (${stack.first().value}, $pos)');
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
@@ -135,7 +167,24 @@ class Script {
       // if (this.isPaused)
       //   return null;
       // this.isRunning = false;
-      return stack.pop();
+      return accessStack();
+   }
+
+   function accessStack(pop:Bool = true):StackEntry<Dynamic> {
+      var top = (pop ? stack.pop() : stack.top());
+      if (top == null) {
+         return StackEntry.get(null);
+      }
+      return top;
+   }
+
+   function step():Dynamic {
+      var action = this.action[this.pos++;]
+      this.executeAction(action);
+      if (Script.DEBUG_RUNTIME)
+         trace('<exec> ${action.debugPrint()} (${stack.first().value}, $pos)');
+
+      return accessStack(false);
    }
 
    function executeAction(action:ScriptAction) {
@@ -148,56 +197,56 @@ class Script {
          // isPaused = true;
          // pausedFor = frames;
          case ANumber(p, value):
-            stack.add(value);
+            stack.add(StackEntry.get(value));
          case AString(p, value):
-            stack.add(value);
+            stack.add(StackEntry.get(value));
          case AIdentifier(p, name):
             {
                if (!Reflect.hasField(vars, name))
                   throw error('variable $name does not exist when referenced');
 
                var val = Reflect.field(vars, name);
-               stack.add(val);
+               stack.add(StackEntry.get(val));
             }
          case AOperation(p, op):
             {
-               var b = stack.pop();
-               var a = stack.pop();
+               var b = accessStack();
+               var a = accessStack();
                if (op == Operation.EQUALS) {
                   trace('checking if ${a} == ${b} (${a == b}');
-                  a = (a == b);
+                  stack.add(StackEntry.get(a.value == b.value))
+                  //a = (a == b);
                } else if (op == Operation.NOT_EQUALS) {
                   trace('checking if ${a} != ${b} (${a != b}');
-                  a = (a != b);
-               } else if (b is String || a is String) {
-                  var fin:String;
+                  stack.add(StackEntry.get(a.value != b.value))
+                  //a = (a != b);
+               } else if (b.type == STRING || a.type == STRING) {
                   switch (op) {
                      case Operation.ADD:
-                        fin = Std.string(a) + Std.string(b);
+                        stack.add(StackEntry.get(Std.string(a.value) + Std.string(b.value)));
                      /*case Operation.MULTIPLY:
                         if (b.isNumber() || a.isNumber()) {
                            fin = Std.string(a.value * b.value);
                      } else throw error('cannot multiply a string by a string');*/
-                     default: throw error('cant apply ${op.toString()} to ${a} and ${b}');
+                     default: throw error('cant apply ${op.toString()} to ${a.value} and ${b.value}');
                   }
-                  stack.add(fin);
                } else {
                   switch (op) {
-                     case Operation.ADD: a += b;
-                     case Operation.SUBTRACT: a -= b;
-                     case Operation.MULTIPLY: a *= b;
-                     case Operation.DIVIDE: a /= b;
-                     case Operation.MOD: a %= b;
-                     case Operation.DIVIDE_INT: a = Std.int(a / b);
-                     case Operation.LESS_THAN: a = (a < b);
-                     case Operation.LESS_THAN_OR_EQUALS: a = (a <= b);
-                     case Operation.GREATER_THAN: a = (a > b);
-                     case Operation.GREATER_THAN_OR_EQUALS: a = (a >= b);
-                     case Operation.BIT_SHIFT_LEFT: a <<= b;
-                     case Operation.BIT_SHIFT_RIGHT: a >>= b;
-                     case Operation.BIT_AND: a &= b;
-                     case Operation.BIT_OR: a |= b;
-                     case Operation.BIT_XOR: a ^= b;
+                     case Operation.ADD: a.value += b.value;
+                     case Operation.SUBTRACT: a.value -= b.value;
+                     case Operation.MULTIPLY: a.value *= b.value;
+                     case Operation.DIVIDE: a.value /= b.value;
+                     case Operation.MOD: a.value %= b.value;
+                     case Operation.DIVIDE_INT: a = StackEntry.get(Std.int(a.value / b.value));
+                     case Operation.LESS_THAN: a = StackEntry.get(a.value < b.value);
+                     case Operation.LESS_THAN_OR_EQUALS: a = StackEntry.get(a.value <= b.value);
+                     case Operation.GREATER_THAN: a = StackEntry.get(a.value > b.value);
+                     case Operation.GREATER_THAN_OR_EQUALS: a = StackEntry.get(a.value >= b.value);
+                     case Operation.BIT_SHIFT_LEFT: a.value <<= b.value;
+                     case Operation.BIT_SHIFT_RIGHT: a.value >>= b.value;
+                     case Operation.BIT_AND: a.value &= b.value;
+                     case Operation.BIT_OR: a.value |= b.value;
+                     case Operation.BIT_XOR: a.value ^= b.value;
                      default: throw error('cant apply ${op.toString()}');
                   }
                   stack.add(a);
@@ -205,55 +254,56 @@ class Script {
             }
          case AUnOperation(p, op):
             {
-               var v = stack.pop();
-               if (v is String)
-                  throw error('cannot negate strings');
+               var v = accessStack();
+               if (!v.isOfType(NUMBER))
+                  if (v.isOfType(BOOLEAN)) {
+                     v.value = !v.value;
+                  } else throw error('cannot negate ${v.type.toString().toLowerCase()} values');
                switch (op) {
-                  case UnOperation.NOT: v = v != 0 ? 0 : 1;
-                  case UnOperation.NEGATE: v = -v;
+                  case UnOperation.NOT: v.value = v.value != 0 ? 0 : 1;
+                  case UnOperation.NEGATE: v.value = -v.value;
                }
                stack.add(v);
             }
          case ACall(p, name, argCount):
             {
                var args = new Array<Dynamic>();
-               args.resize(argCount);
                var i = argCount;
                while (--i >= 0)
-                  args[i] = stack.pop();
+                  args[i] = accessStack().value;
 
-               stack.add(ScriptAPI.callScriptFunction(name, p, ...args));
+               stack.add(StackEntry.get(Script.callFunctionFromScript(name, p, ...args)));
             }
          case AReturn(p):
             pos = actions.length;
          case ADiscard(p):
-            stack.pop();
+            accessStack();
          case AJump(p, to):
             pos = to;
          case AJumpUnless(p, to):
-            if (!isTruthy(stack.pop())) {
+            if (!accessStack().isTruthy()) {
                pos = to;
             }
          case AJumpIf(p, to):
-            if (isTruthy(stack.pop())) {
+            if (accessStack().isTruthy()) {
                pos = to;
             }
          case AAnd(p, to):
-            if (isTruthy(stack.first()))
-               stack.pop();
+            if (accessStack(false).isTruthy())
+               accessStack();
             else
                pos = to;
          case AOr(p, to):
-            if (isTruthy(stack.first()))
+            if (accessStack(false).isTruthy())
                pos = to;
             else
-               stack.pop();
+               accessStack();
          case ASet(p, name):
-            Reflect.setField(vars, name, stack.pop());
+            Reflect.setField(vars, name, accessStack().value);
       }
    }
 
-   static function isTruthy(value:Dynamic):Bool {
+   public static function isTruthy(value:Dynamic):Bool {
       if (Script.DEBUG_RUNTIME)
          trace('checking truthiness of `${Std.string(value)}`');
       if (value is Bool) {
@@ -292,5 +342,7 @@ class Script {
       }
    }
 
+   #if flixel
    public static final errorLogStyle:LogStyle = new LogStyle("[SCRIPT ERROR]", "ff00ff", 12, false, false, false, "flixel/sounds/beep", false);
+   #end
 }
