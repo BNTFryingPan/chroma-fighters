@@ -97,7 +97,7 @@ class Script {
    public function compile() {
       if (this.isCompiled.isBlown()) // already parsed
          return;
-      this.isCompiled().blow();
+      this.isCompiled.blow();
       this.tokens = ScriptParser.parse(this.contents);
       if (Script.DEBUG_TOKENS)
          trace('parsed: ' + tokens.map(t -> t.debugPrint()).join(''));
@@ -105,7 +105,7 @@ class Script {
       if (Script.DEBUG_NODE_TREE)
          trace(this.node.debugPrint());
       this.actions = ScriptCompiler.compile(this.node);
-      if (Script.DEBUG_BYTE_CODE)
+      if (Script.DEBUG_BYTECODE)
          trace('"bytecode":\n${actions.map(a -> a.debugPrint()).join('\n')}');
    }
 
@@ -222,7 +222,7 @@ class Script {
                while (--i >= 0)
                   args[i] = stack.pop();
 
-               stack.add(ScriptAPI.callScriptFunction(name, ...args));
+               stack.add(ScriptAPI.callScriptFunction(name, p, ...args));
             }
          case AReturn(p):
             pos = actions.length;
@@ -254,7 +254,8 @@ class Script {
    }
 
    static function isTruthy(value:Dynamic):Bool {
-      trace('checking truthiness of `${Std.string(value)}`');
+      if (Script.DEBUG_RUNTIME)
+         trace('checking truthiness of `${Std.string(value)}`');
       if (value is Bool) {
          return value;
       }
