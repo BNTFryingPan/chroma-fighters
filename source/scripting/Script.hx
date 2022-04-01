@@ -38,7 +38,7 @@ class StackEntry<T> {
    }
 
    public function isTruthy():Bool {
-      return Script.isTruthy(this.value)
+      return Script.isTruthy(this.value);
    }
 
    public function asType(targetType:StackEntryType):Dynamic {
@@ -85,6 +85,7 @@ class StackEntry<T> {
       return new StackEntry<Dynamic>(DYNAMIC, value);
    }
 }
+
 #if js
 @:expose
 #end
@@ -171,7 +172,7 @@ class Script {
    }
 
    function accessStack(pop:Bool = true):StackEntry<Dynamic> {
-      var top = (pop ? stack.pop() : stack.top());
+      var top = (pop ? stack.pop() : stack.first());
       if (top == null) {
          return StackEntry.get(null);
       }
@@ -179,7 +180,7 @@ class Script {
    }
 
    function step():Dynamic {
-      var action = this.action[this.pos++;]
+      var action = this.actions[this.pos++];
       this.executeAction(action);
       if (Script.DEBUG_RUNTIME)
          trace('<exec> ${action.debugPrint()} (${stack.first().value}, $pos)');
@@ -214,12 +215,10 @@ class Script {
                var a = accessStack();
                if (op == Operation.EQUALS) {
                   trace('checking if ${a} == ${b} (${a == b}');
-                  stack.add(StackEntry.get(a.value == b.value))
-                  //a = (a == b);
+                  stack.add(StackEntry.get(a.value == b.value)); // a = (a == b);
                } else if (op == Operation.NOT_EQUALS) {
                   trace('checking if ${a} != ${b} (${a != b}');
-                  stack.add(StackEntry.get(a.value != b.value))
-                  //a = (a != b);
+                  stack.add(StackEntry.get(a.value != b.value)); // a = (a != b);
                } else if (b.type == STRING || a.type == STRING) {
                   switch (op) {
                      case Operation.ADD:
@@ -258,7 +257,8 @@ class Script {
                if (!v.isOfType(NUMBER))
                   if (v.isOfType(BOOLEAN)) {
                      v.value = !v.value;
-                  } else throw error('cannot negate ${v.type.toString().toLowerCase()} values');
+                  } else
+                     throw error('cannot negate ${v.type.toString().toLowerCase()} values');
                switch (op) {
                   case UnOperation.NOT: v.value = v.value != 0 ? 0 : 1;
                   case UnOperation.NEGATE: v.value = -v.value;
