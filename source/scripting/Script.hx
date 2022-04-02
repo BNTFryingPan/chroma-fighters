@@ -64,7 +64,7 @@ class StackEntry<T> {
       }
 
       if (targetType == DYNAMIC)
-         return null;
+         return this.value;
 
       return null;
    }
@@ -190,7 +190,7 @@ class Script {
 
    function executeAction(action:ScriptAction) {
       inline function error(text:String) {
-         return '${text} at position ${action.getPos()}';
+         return '${text} on line ${action.getPos().line} at position ${action.getPos().linepos}';
       }
 
       switch (action) {
@@ -219,34 +219,29 @@ class Script {
                } else if (op == Operation.NOT_EQUALS) {
                   trace('checking if ${a} != ${b} (${a != b}');
                   stack.add(StackEntry.get(a.value != b.value)); // a = (a != b);
-               } else if (b.type == STRING || a.type == STRING) {
-                  switch (op) {
-                     case Operation.ADD:
-                        stack.add(StackEntry.get(Std.string(a.value) + Std.string(b.value)));
-                     /*case Operation.MULTIPLY:
-                        if (b.isNumber() || a.isNumber()) {
-                           fin = Std.string(a.value * b.value);
-                     } else throw error('cannot multiply a string by a string');*/
-                     default: throw error('cant apply ${op.toString()} to ${a.value} and ${b.value}');
-                  }
                } else {
-                  switch (op) {
-                     case Operation.ADD: a.value += b.value;
-                     case Operation.SUBTRACT: a.value -= b.value;
-                     case Operation.MULTIPLY: a.value *= b.value;
-                     case Operation.DIVIDE: a.value /= b.value;
-                     case Operation.MOD: a.value %= b.value;
-                     case Operation.DIVIDE_INT: a = StackEntry.get(Std.int(a.value / b.value));
-                     case Operation.LESS_THAN: a = StackEntry.get(a.value < b.value);
-                     case Operation.LESS_THAN_OR_EQUALS: a = StackEntry.get(a.value <= b.value);
-                     case Operation.GREATER_THAN: a = StackEntry.get(a.value > b.value);
-                     case Operation.GREATER_THAN_OR_EQUALS: a = StackEntry.get(a.value >= b.value);
-                     case Operation.BIT_SHIFT_LEFT: a.value <<= b.value;
-                     case Operation.BIT_SHIFT_RIGHT: a.value >>= b.value;
-                     case Operation.BIT_AND: a.value &= b.value;
-                     case Operation.BIT_OR: a.value |= b.value;
-                     case Operation.BIT_XOR: a.value ^= b.value;
-                     default: throw error('cant apply ${op.toString()}');
+                  try {
+                     switch (op) {
+                        case Operation.ADD: a.value += b.value;
+                        case Operation.SUBTRACT: a.value -= b.value;
+                        case Operation.MULTIPLY: a.value *= b.value;
+                        case Operation.DIVIDE: a.value /= b.value;
+                        case Operation.MOD: a.value %= b.value;
+                        case Operation.DIVIDE_INT: a = StackEntry.get(Std.int(a.value / b.value));
+                        case Operation.LESS_THAN: a = StackEntry.get(a.value < b.value);
+                        case Operation.LESS_THAN_OR_EQUALS: a = StackEntry.get(a.value <= b.value);
+                        case Operation.GREATER_THAN: a = StackEntry.get(a.value > b.value);
+                        case Operation.GREATER_THAN_OR_EQUALS: a = StackEntry.get(a.value >= b.value);
+                        case Operation.BIT_SHIFT_LEFT: a.value <<= b.value;
+                        case Operation.BIT_SHIFT_RIGHT: a.value >>= b.value;
+                        case Operation.BIT_AND: a.value &= b.value;
+                        case Operation.BIT_OR: a.value |= b.value;
+                        case Operation.BIT_XOR: a.value ^= b.value;
+                        default:
+                           throw error('Dont know how to apply ${op.toString()}');
+                     } catch (err) {
+                        throw error('cant apply ${op.toString()} between types ${a.type.getName().toLowerCase()} and ${b.type.getName().toLowerCase()}');
+                     }
                   }
                   stack.add(a);
                }
@@ -254,14 +249,21 @@ class Script {
          case AUnOperation(p, op):
             {
                var v = accessStack();
-               if (!v.isOfType(NUMBER))
-                  if (v.isOfType(BOOLEAN)) {
-                     v.value = !v.value;
-                  } else
-                     throw error('cannot negate ${v.type.toString().toLowerCase()} values');
                switch (op) {
-                  case UnOperation.NOT: v.value = v.value != 0 ? 0 : 1;
-                  case UnOperation.NEGATE: v.value = -v.value;
+                  case UnOperation.NOT: {
+                     if (v.isOfType(NUMBER))
+                        v.value = v.value != 0 ? 0 : 1;
+                     else if (v.isOfType(BOOLEAN))
+                        v.value = !v.value;
+                     else
+                        throw error('cannot flip value of type ${v.type.getName().toLowerCase()}');
+                  }
+                  case UnOperation.NEGATE: {
+                     if (v.isOfType(NUMBER))
+                        v.value = -v.value;
+                     else
+                        throw error('cannot negate value of type ${v.type.getName().toLowerCase()}');
+                     }
                }
                stack.add(v);
             }
@@ -300,6 +302,7 @@ class Script {
                accessStack();
          case ASet(p, name):
             Reflect.setField(vars, name, accessStack().value);
+            
       }
    }
 

@@ -19,7 +19,7 @@ enum ScriptToken {
    IDENTIFIER(p:Pos, id:String);
    STRING(p:Pos, value:String);
    //TYPEOF(p:Pos);
-   PAUSE(p:Pos)
+   PAUSE(p:Pos);
    COMMA(p:Pos); // ,
    RETURN(p:Pos); // return
    SET(p:Pos); // =

@@ -31,8 +31,8 @@ enum abstract Operation(Int) {
    var GREATER_THAN = 0x46; // >
    var GREATER_THAN_OR_EQUALS = 0x47; // >=
    // bool
-   var AND = 0x50;
-   var OR = 0x60;
+   var AND = 0x50; // &&
+   var OR = 0x60; // ||
    // misc
    var MAXP = 0x70;
 
