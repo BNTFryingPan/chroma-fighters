@@ -29,7 +29,7 @@ class ScriptActionTools {
 
    public static function debugPrint(a:ScriptAction):String {
       var params:Array<String> = a.getParameters().map(p -> Std.string(p));
-      return '[${params.shift().pos}] ${a.getName()} {${params.join(', ')}}';
+      return '[${params.shift()}] ${a.getName()} {${params.join(', ')}}';
       //      [ script position ]  action  name   action parameters
    }
 
@@ -38,21 +38,21 @@ class ScriptActionTools {
       params.shift(); // dont care about pos
       var stringParams = params.map(p -> {
          if (a.getName() == 'AUnOperation' || a.getName() == 'AOperation') {
-            return StringTools.hex(p, 2);
+            return StringTools.hex(Std.parseInt(p), 2);
          }
          if (p is String) {
             return '"$p"';
          }
          return Std.string(p);
-      })
-      return '${a.getName().substring(1).toUpperCase()} ${params.join(" ")}';
+      });
+      return '${a.getName().substring(1).toUpperCase()} ${stringParams.join(" ")}';
    }
 
    public static function fromBytecode(s:String, line:Int):ScriptAction {
       var parts:Array<Dynamic> = [s.split(' ').shift()];
 
       // parse the string. splitting on spaces doesnt do what i need it to
-      var pos = parts[0].length;
+      var pos = cast(parts[0], String).length;
       while (pos < s.length) {
          var start = pos;
          var c = s.charCodeAt(pos++);
@@ -60,55 +60,66 @@ class ScriptActionTools {
             case '"'.code | "'".code:
                while (pos < s.length) {
                   var n = s.charCodeAt(pos++);
-                  if (n == c && s.charCodeAt(pos-2) != '\\'.code)
+                  if (n == c && s.charCodeAt(pos - 2) != '\\'.code) {
+                     parts.push(s.substring(start, pos - 1));
                      break;
+                  }
                }
             case ' '.code:
-               if (!inString) {
-                  if (currentPart.toUpperCase() == 'true') parts.push(true);
-                  else if (currentPart.toLowerCase() == 'false') parts.push(false);
-                  else parts.push(currentPart);
-                  currentPart = '';
+               pos++;
+            default:
+               if (c >= "0".code && c <= "9".code || c == ".".code) {
+                  var dot = c == '.'.code;
+                  while (pos < s.length) {
+                     c = s.charCodeAt(pos);
+                     if (c >= "0".code && c <= "9".code) {
+                        pos++;
+                     } else if (c == '.'.code && !dot) {
+                        pos++;
+                        dot = true;
+                     } else
+                        break;
+                  }
                }
          }
-         currentPart += s.charAt(pos-1)
       }
 
-      var p:Pos = {line: line, pos: 0, linepos: 0}
+      var p:Pos = {line: line, pos: 0, linePos: 0}
 
-      return switch (parts.shift().toUpperCase()) {
+      switch (parts.shift().toUpperCase()) {
          case "NUMBER":
-            ANumber(p, Std.parseFloat(parts[0]));
+            return ANumber(p, Std.parseFloat(parts[0]));
          case "IDENTIFIER":
-            AIdentifier(p, parts[0]);
+            return AIdentifier(p, parts[0]);
          case "UNOPERATION":
-            AUnOperation(p, parts[0]);
+            return AUnOperation(p, parts[0]);
          case "OPERATION":
-            AOperation(p, parts[0]);
+            return AOperation(p, parts[0]);
          case "STRING":
-            AString(p, parts[0])
+            return AString(p, parts[0]);
          case "CALL":
-            ACall(p, parts[0], parts[1]);
+            return ACall(p, parts[0], parts[1]);
          case "RETURN":
-            AReturn(p);
+            return AReturn(p);
          case "DISCARD":
-            ADiscard(p);
+            return ADiscard(p);
          case "JUMP":
-            AJump(p, parts[0]);
+            return AJump(p, parts[0]);
          case "JUMPIF":
-            AJumpIf(p, parts[0]);
+            return AJumpIf(p, parts[0]);
          case "JUMPUNLESS":
-            AJumpUnless(p, parts[0]);
+            return AJumpUnless(p, parts[0]);
          case "SET":
-            ASet(p, parts[0]);
+            return ASet(p, parts[0]);
          case "AND":
-            AAnd(p, parts[0]);
+            return AAnd(p, parts[0]);
          case "OR":
-            AOr(p, parts[0]);
+            return AOr(p, parts[0]);
          case "PAUSE":
-            APause(p);
+            return APause(p);
          default:
             throw 'Unknown action on line ${line}';
       }
+      return ANumber(p, 0);
    }
 }

@@ -94,10 +94,12 @@ class Script {
 
    public static var DEBUG_TOKENS:Bool = true;
    public static var DEBUG_NODE_TREE:Bool = false;
-   public static var DEBUG_BYTECODE:Bool = true;
+   public static var DEBUG_BYTECODE:Bool = false;
    public static var DEBUG_RUNTIME:Bool = false;
+   public static var DEBUG_REAL_BYTECODE:Bool = true;
 
    // private var isParsed:Fuse = new Fuse();
+   @:allow(scripting.ScriptManager)
    private var isCompiled:Fuse = new Fuse();
    var contents:String;
    var tokens:Array<ScriptToken> = [];
@@ -119,6 +121,21 @@ class Script {
       this.contents = script;
    }
 
+   private var cached_syncCheck:Null<Bool>;
+
+   public function isSync():Bool {
+      if (cached_syncCheck != null)
+         return cached_syncCheck;
+      cached_syncCheck = true;
+      for (action in this.actions) {
+         if (action.match(APause(_))) {
+            cached_syncCheck = false;
+            break;
+         }
+      }
+      return cached_syncCheck;
+   }
+
    /*
       public function parse() {
          if (this.isParsed.isBlown())
@@ -138,29 +155,38 @@ class Script {
       if (Script.DEBUG_NODE_TREE)
          trace(this.node.debugPrint());
       this.actions = ScriptCompiler.compile(this.node);
+      // if (Script.DEBUG_REAL_BYTECODE)
+      // for (action in actions)
+      // trace(action.asBytecode());
       if (Script.DEBUG_BYTECODE)
          trace('"bytecode":\n${actions.map(a -> a.debugPrint()).join('\n')}');
    }
 
-   public function exec(vars:Null<Dynamic>):Dynamic {
-      // if (forceRestart || !this.isRunning) {
-      stack = new GenericStack<StackEntry<Dynamic>>();
-      pos = 0;
-      if (vars != null) {
-         this.vars = vars;
+   public function exec(forceRestart:Bool = false):Dynamic {
+      if (forceRestart || !this.isRunning) {
+         stack = new GenericStack<StackEntry<Dynamic>>();
+         pos = 0;
+         isPaused = false;
+         isRunning = true;
       }
-      // }
-      // if (this.isPaused) {
-      //   this.pausedFor--;
-      //   if (this.pausedFor > 0) return null;
-      // }
+      if (this.isPaused) {
+         this.pausedFor--;
+         if (this.pausedFor > 0)
+            return null;
+      }
       // this.isRunning = true;
       // this.isPaused = false;
       while (pos < this.actions.length) {
-         var action = this.actions[pos++];
-         this.executeAction(action);
-         if (Script.DEBUG_RUNTIME)
-            trace('<exec> ${action.debugPrint()} (${stack.first().value}, $pos)');
+         if (this.isPaused) {
+            this.pausedFor--;
+            if (--this.pausedFor <= 0)
+               this.isPaused = false;
+            break;
+         }
+         this.step();
+      }
+      if (pos >= this.actions.length) {
+         this.isRunning = false;
       }
       // for (act in this.actions) {
       //   this.executeAction(act);
@@ -168,11 +194,13 @@ class Script {
       // if (this.isPaused)
       //   return null;
       // this.isRunning = false;
-      return accessStack();
+      return accessStack(false).value;
    }
 
-   function accessStack(pop:Bool = true):StackEntry<Dynamic> {
-      var top = (pop ? stack.pop() : stack.first());
+   function accessStack(pop:Bool = true):StackEntry<Any> {
+      var top = stack.first();
+      if (pop)
+         top = stack.pop();
       if (top == null) {
          return StackEntry.get(null);
       }
@@ -190,7 +218,7 @@ class Script {
 
    function executeAction(action:ScriptAction) {
       inline function error(text:String) {
-         return '${text} on line ${action.getPos().line} at position ${action.getPos().linepos}';
+         return '${text} on line ${action.getPos().line} at position ${action.getPos().linePos}';
       }
 
       switch (action) {
@@ -211,10 +239,10 @@ class Script {
             }
          case AOperation(p, op):
             {
-               var b = accessStack();
-               var a = accessStack();
+               var b = cast(accessStack(), StackEntry<Dynamic>);
+               var a = cast(accessStack(), StackEntry<Dynamic>);
                if (op == Operation.EQUALS) {
-                  trace('checking if ${a} == ${b} (${a == b}');
+                  trace('checking if ${a.value} == ${b.value} (${a.value == b.value}');
                   stack.add(StackEntry.get(a.value == b.value)); // a = (a == b);
                } else if (op == Operation.NOT_EQUALS) {
                   trace('checking if ${a} != ${b} (${a != b}');
@@ -239,30 +267,31 @@ class Script {
                         case Operation.BIT_XOR: a.value ^= b.value;
                         default:
                            throw error('Dont know how to apply ${op.toString()}');
-                     } catch (err) {
-                        throw error('cant apply ${op.toString()} between types ${a.type.getName().toLowerCase()} and ${b.type.getName().toLowerCase()}');
                      }
+                     stack.add(a);
                   }
-                  stack.add(a);
+                  catch (err) {
+                     throw error('cant apply ${op.toString()} between types ${a.type.getName().toLowerCase()} and ${b.type.getName().toLowerCase()}');
+                  }
                }
             }
          case AUnOperation(p, op):
             {
-               var v = accessStack();
+               var v = cast(accessStack(), StackEntry<Dynamic>);
                switch (op) {
                   case UnOperation.NOT: {
-                     if (v.isOfType(NUMBER))
-                        v.value = v.value != 0 ? 0 : 1;
-                     else if (v.isOfType(BOOLEAN))
-                        v.value = !v.value;
-                     else
-                        throw error('cannot flip value of type ${v.type.getName().toLowerCase()}');
-                  }
+                        if (v.isOfType(NUMBER))
+                           v.value = v.value != 0 ? 0 : 1;
+                        else if (v.isOfType(BOOLEAN))
+                           v.value = !v.value;
+                        else
+                           throw error('cannot flip value of type ${v.type.getName().toLowerCase()}');
+                     }
                   case UnOperation.NEGATE: {
-                     if (v.isOfType(NUMBER))
-                        v.value = -v.value;
-                     else
-                        throw error('cannot negate value of type ${v.type.getName().toLowerCase()}');
+                        if (v.isOfType(NUMBER))
+                           v.value = -v.value;
+                        else
+                           throw error('cannot negate value of type ${v.type.getName().toLowerCase()}');
                      }
                }
                stack.add(v);
@@ -274,7 +303,7 @@ class Script {
                while (--i >= 0)
                   args[i] = accessStack().value;
 
-               stack.add(StackEntry.get(Script.callFunctionFromScript(name, p, ...args)));
+               stack.add(StackEntry.get(ScriptAPI.callScriptFunction(name, p, ...args)));
             }
          case AReturn(p):
             pos = actions.length;
@@ -302,7 +331,13 @@ class Script {
                accessStack();
          case ASet(p, name):
             Reflect.setField(vars, name, accessStack().value);
-            
+         case APause(p):
+            var time = accessStack();
+            if (!time.isOfType(NUMBER)) {
+               throw error('invalid value passed to pause');
+            }
+            this.isPaused = true;
+            this.pausedFor = Std.int(time.asType(NUMBER));
       }
    }
 
@@ -330,17 +365,22 @@ class Script {
       return false;
    }
 
-   public static function eval(code:String):String {
+   public static function eval(code:String):Null<Dynamic> {
       try {
          var pg = new Script(code);
          pg.compile();
-         var v = pg.exec({pi: Math.PI});
-         return Std.string(v);
+         pg.vars = {pi: Math.PI};
+         if (!pg.isSync())
+            throw 'Cannot eval async code';
+         return ScriptManager.run(pg);
+         // var v = pg.exec();
+         // return Std.string(v);
       }
       catch (x:Dynamic) {
          #if FLX_DEBUG
          FlxG.log.advanced(x, errorLogStyle, false);
          #end
+         trace('[SCRIPT ERROR] ${x}');
          return null;
       }
    }

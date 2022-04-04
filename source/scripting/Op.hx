@@ -3,7 +3,7 @@ package scripting;
 enum abstract UnOperation(Int) {
    var NOT;
    var NEGATE;
-   //var TYPEOF;
+   // var TYPEOF;
 }
 
 enum abstract Operation(Int) {
@@ -14,7 +14,7 @@ enum abstract Operation(Int) {
    var DIVIDE_INT = 0x04; // div
    var ADD = 0x10; // +
    var SUBTRACT = 0x11; // -
-   var EXPONENT = 0x12 // **
+   var EXPONENT = 0x12; // **
    // bitwise
    var BIT_SHIFT_LEFT = 0x20; // <<
    var BIT_SHIFT_RIGHT = 0x21; // >>

@@ -10,26 +10,26 @@ typedef SubParseResult = {
 **/
 class ScriptParser {
    static inline function error(text:String, pos:Pos):String {
-      return '(Script Parse Error): $text on line ${pos.line} position ${pos.linepos}';
+      return '(Script Parse Error): $text on line ${pos.line} position ${pos.linePos}';
    }
 
-   //static var pos = 0;
-   //static var line = 0;
-   //static var linepos = 0;
+   // static var pos = 0;
+   // static var line = 0;
+   // static var linepos = 0;
 
    public static function parse(script:String):Array<ScriptToken> {
       var out:Array<ScriptToken> = [];
-      var pos = 0;
-      var line = 0;
-      var linepos = 0;
+      var pos:Int = 0;
+      var line:Int = 0;
+      var linepos:Int = 0;
       while (pos < script.length) {
-         var start = {pos: pos, line: line, linepos: linepos++};
+         var start:Pos = {pos: pos, line: line, linePos: linepos++};
          var c = script.charCodeAt(pos++);
          switch (c) {
             case " ".code, "\t".code:
                continue;
             case "\r".code:
-               if (script.charCodeAt(pos) == '\n')
+               if (script.charCodeAt(pos) == '\n'.code)
                   pos++;
                line++;
                linepos = 0;
@@ -177,7 +177,7 @@ class ScriptParser {
                }
                if (pos < script.length) {
                   linepos++;
-                  out.push(STRING(d, script.substring(start + 1, pos++)));
+                  out.push(STRING(d, script.substring(start.pos + 1, pos++)));
                } else
                   throw error('String is not closed, starting', start);
             default:
@@ -195,7 +195,7 @@ class ScriptParser {
                         } else
                            break;
                      }
-                     out.push(NUMBER(d, Std.parseFloat(script.substring(start, pos))));
+                     out.push(NUMBER(d, Std.parseFloat(script.substring(start.pos, pos))));
                      // var res = Parser.parseNumber(script, pos);
                      // pos = res.pos;
                      // out.push(res.token);
@@ -208,7 +208,7 @@ class ScriptParser {
                         } else
                            break;
                      }
-                     var name = script.substring(start, pos);
+                     var name = script.substring(start.pos, pos);
                      switch (name) {
                         case 'mod': out.push(OPERATION(d, MOD));
                         case 'div': out.push(OPERATION(d, DIVIDE_INT));
@@ -220,20 +220,20 @@ class ScriptParser {
                         case 'for': out.push(FOR(d));
                         case 'break': out.push(BREAK(d));
                         case 'continue': out.push(CONTINUE(d));
-                        case 'wait': out.push(CONTINUE(d))
-                        //case 'typeof': out.push(TYPEOF(d));
+                        case 'wait': out.push(CONTINUE(d)); // case 'typeof': out.push(TYPEOF(d));
+                        case 'pause': out.push(PAUSE(d));
                         default: out.push(IDENTIFIER(d, name));
                      }
                      // var res = Parser.parseIdentifier(script, pos);
                      // pos = res.pos;
                      // out.push(res.token);
                   } else {
-                     throw error('Unexpected character `${script.charAt(start)}`', start);
+                     throw error('Unexpected character `${script.charAt(start.pos)}`', start);
                   }
                }
          }
       }
-      out.push(EOF({pos: pos, line: line, linepos: linepos}));
+      out.push(EOF({pos: pos, line: line, linePos: linepos}));
       return out;
    }
 
@@ -254,18 +254,17 @@ class ScriptParser {
          return true;
       return false;
    }
+   /*private static function parseNumber(script:String, pos):SubParseResult {
+         var c = script.charCodeAt(pos);
+         var dot = c == '.'.code;
+         while (pos < script.length) {
+            c = script.charCodeAt(pos);
+         }
 
-   private static function parseNumber(script:String, pos):SubParseResult {
-      var c = script.charCodeAt(pos);
-      var dot = c == '.'.code;
-      while (pos < script.length) {
-         c = script.charCodeAt(pos);
+         return {token: NUMBER(pos, 1), pos: pos};
       }
 
-      return {token: NUMBER(pos, 1), pos: pos};
-   }
-
-   private static function parseIdentifier(script:String, pos):SubParseResult {
-      return {token: IDENTIFIER(pos, 'lol'), pos: pos}
-   }
+      private static function parseIdentifier(script:String, pos):SubParseResult {
+         return {token: IDENTIFIER(pos, 'lol'), pos: pos}
+   }*/
 }

@@ -57,8 +57,8 @@ class ScriptCompiler {
                expr(value);
                switch (node) {
                   case NIdentifier(p, name): {
-                     add(ASet(p, node.getParameters()[1]));
-                  }
+                        add(ASet(p, node.getParameters()[1]));
+                     }
                   default: throw 'Expression is not settable at $p';
                }
             }
@@ -113,6 +113,9 @@ class ScriptCompiler {
             add(AJump(p, -10));
          case NContinue(p):
             add(AJump(p, -11));
+         case NPause(p, time):
+            expr(time);
+            add(APause(p));
       }
    }
 
@@ -128,7 +131,7 @@ class ScriptCompiler {
                      actions[i] = AJump(p, _continue);
                   }
                }
-               default:
+            default:
          }
          i++;
       }

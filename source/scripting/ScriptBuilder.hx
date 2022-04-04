@@ -28,8 +28,8 @@ class ScriptBuilder {
    }
 
    static inline function error(text:String, n:PosHolder):String {
-      var pos = (n is Pos) ? n : (cast n).getPos();
-      return '(Script Build Error) $text on line ${pos.line} at position ${pos.linepos}';
+      var pos = (n is ScriptToken || n is ScriptNode) ? (cast n).getPos() : (cast n);
+      return '(Script Build Error) $text on line ${pos.line} at position ${pos.linePos}';
    }
 
    static function ops(prev:ScriptNode, first:ScriptToken):ScriptNode {
@@ -293,7 +293,7 @@ class ScriptBuilder {
          nodes.push(statement());
       }
       // node = ;
-      return NBlock(0, nodes);
+      return NBlock({pos: 0, linePos: 0, line: 0}, nodes);
    }
 }
 
