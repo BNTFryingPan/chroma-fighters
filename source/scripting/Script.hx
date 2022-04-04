@@ -5,6 +5,7 @@ import flixel.system.debug.log.LogStyle;
 import haxe.ds.GenericStack;
 import scripting.Op.Operation;
 import scripting.Op.UnOperation;
+import script.ScriptManager;
 
 enum StackEntryType {
    // floats and ints

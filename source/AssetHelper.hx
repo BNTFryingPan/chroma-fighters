@@ -16,6 +16,7 @@ import haxe.io.Bytes;
 //import hscript.Parser;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
+import scripting.Script;
 
 using StringTools;
 
