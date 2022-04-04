@@ -1,7 +1,10 @@
 print('hi!')
 a = 2
-if (addOne(a) >= 3) print('is true')
-for i = 0 i <= 5 i++ print(i)
+if (addOne(a) >= 3)
+print('is true')
+for i = 0; i <= 5 i++ 
+{print(i);
+}
 
 // comment lmao
 /*

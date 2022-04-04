@@ -31,7 +31,7 @@ class ScriptScope {
 
       if (interop_write.exists(name)) {
          interop_write.set(name, value);
-         return
+         return;
       }
       Reflect.setField(dynamicVars, name, value);
    }
@@ -90,7 +90,7 @@ class ScriptManager {
    public var scope:ScriptScope;
 
    public function new(vars:Null<Dynamic>) {
-      scope = new ScriptScope(vars)
+      scope = new ScriptScope(vars);
    }
 
    public function tick() {
@@ -121,7 +121,7 @@ class ScriptManager {
    }
 
    public function loadThenRun(file:NamespacedKey):Script {
-      var script = load(file, true)
+      var script = load(file, true);
       script.exec();
       return script;
    }
