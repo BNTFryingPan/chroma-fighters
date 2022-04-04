@@ -115,7 +115,7 @@ class ScriptManager {
       return script;
    }
 
-   public function load(file:NamespacedKey, compile:Bool = true):Script; {
+   public function load(file:NamespacedKey, compile:Bool = true):Script {
       var script = AssetHelper.getScriptAsset(file);
       return add(script, compile);
    }
