@@ -11,9 +11,9 @@ import flixel.system.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.extern.Rest;
 import haxe.io.Bytes;
-import hscript.Expr;
-import hscript.Interp;
-import hscript.Parser;
+//import hscript.Expr;
+//import hscript.Interp;
+//import hscript.Parser;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 
@@ -27,7 +27,7 @@ import sys.io.File;
 import openfl.utils.Assets as OpenFLAssets;
 #end
 
-class ModScript {
+/*class ModScript {
    public var interp:Interp;
    public var script:Expr;
 
@@ -61,7 +61,7 @@ class ModScript {
       var func:Array<Dynamic>->Dynamic = cast this.interp.variables.get(name);
       return func(args);
    }
-}
+}*/
 
 enum AssetType {
    ASEPRITE;
@@ -119,11 +119,11 @@ class AssetHelper {
    public static final saveDirectory:String = "./save/";
    static inline final saveNamespace:String = "chromasave";
 
-   public static final scriptCache:Map<String, Expr> = new Map<String, Expr>();
+   //public static final scriptCache:Map<String, Expr> = new Map<String, Expr>();
    public static final imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
    public static final aseCache:Map<String, Bytes> = new Map<String, Bytes>();
 
-   private static var parser:Parser = new Parser();
+   //private static var parser:Parser = new Parser();
 
    public static var ready:Bool = #if sys true #else false #end;
 
@@ -189,11 +189,8 @@ class AssetHelper {
          return AssetHelper.imageCache.get(key.toString());
       }
 
-      #if wackyassets
-      var assetDir = getAssetPath(key, 'png');
-      #else
       var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-      #end
+      
       if (assetDir != null) {
          #if wackyassets
          var bitmap = FlxAssets.getBitmapData(assetDir);
@@ -210,20 +207,19 @@ class AssetHelper {
    }
 
    public static function getSoundAsset(key:NamespacedKey, loop:Bool = false, persist:Bool = false):FlxSound {
-      #if wackyassets
-      var assetDir = AssetHelper.getAssetPath(key, 'ogg');
-      #else
       var assetDir = AssetHelper.getAssetDirectory(key, '.ogg');
-      #end
       if (assetDir == null) {
          trace('sound asser dir is null!');
          return null;
       }
-      #if !wackyassets
-      var sound = FlxG.sound.load(Sound.fromFile(assetDir), 1, loop);
+      #if wackyassets
+      var soundFile = OpenFLAssets.getSound(assetDir);
       #else
-      var sound = FlxG.sound.load(OpenFLAssets.getSound(assetDir), 1, loop);
+      var soundFile = Sound.fromFile(assetDir);
       #end
+
+      var sound = FlxG.sound.load(soundFile, 1, loop);
+
       sound.persist = persist;
       return sound;
    }
@@ -252,21 +248,23 @@ class AssetHelper {
       #end
    }
 
-   public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Expr {
-      #if (sys && !wackyassets)
-      if ((!reload) && AssetHelper.scriptCache.exists(key.toString())) {
-         return AssetHelper.scriptCache.get(key.toString());
+   public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Script {
+      var isCFASM = key.key.endsWith('.cfasm'); // .cfasm = chroma-fighters assembly
+      var ext = isCFASM ? '.cfasm' : '.cfs';
+
+      var assetDir = AssetHelper.getAssetDirectory(key, ext);
+      
+      if (assetDir == null) {
+         return new Script('return 0');
       }
-      var assetDir = AssetHelper.getAssetDirectory(key, ".cfs");
-      if (assetDir != null) {
-         var parsed = AssetHelper.parser.parseString(sys.io.File.getContent(assetDir));
-         AssetHelper.scriptCache.set(key.toString(), parsed);
-         return parsed;
-      }
-      return null;
+      
+      #if wackyassets
+      var contents = OpenFLAssets.getText(assetDir);
       #else
-      return null;
+      var contents = sys.io.File.getContent(assetDir);
       #end
+
+      return new Script(contents);
    }
 
    public static function getJsonAsset(key:NamespacedKey):Dynamic {
@@ -346,6 +344,10 @@ class AssetHelper {
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
       key.parseSpecialNamespaces();
       #if wackyassets
+       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
+         trace(key.asFileReference() + '__' + (ext == null ? '' : ext));
+         return getAssetPathRaw(key.asFileReference(), ext);
+      }
       return null;
       #elseif (sys)
       // #if (debug)
@@ -403,15 +405,6 @@ class AssetHelper {
    }
 
    #if wackyassets
-   private static function getAssetPath(key:NamespacedKey, ?ext:String):String {
-      key.parseSpecialNamespaces();
-      if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
-         trace(key.asFileReference() + '__' + (ext == null ? '' : ext));
-         return getAssetPathRaw(key.asFileReference(), ext);
-      }
-      return null;
-   }
-
    private static function getAssetPathRaw(path:String, ?ext:String):String {
       if (Reflect.hasField(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}'))
          return Reflect.field(AssetPaths, 'mods_basegame_${path}${ext == null ? "" : "__" + ext}');

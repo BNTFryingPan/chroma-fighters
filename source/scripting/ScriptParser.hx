@@ -252,6 +252,8 @@ class ScriptParser {
          return true;
       if (c >= '0'.code && c <= '9'.code)
          return true;
+      if (c == '.'.code)
+         return true;
       return false;
    }
    /*private static function parseNumber(script:String, pos):SubParseResult {

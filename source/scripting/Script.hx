@@ -92,6 +92,8 @@ class StackEntry<T> {
 class Script {
    public var error:Null<String> = null;
 
+   private static var evalScriptManager:ScriptManager = new ScriptManager();
+
    public static var DEBUG_TOKENS:Bool = true;
    public static var DEBUG_NODE_TREE:Bool = false;
    public static var DEBUG_BYTECODE:Bool = false;
@@ -113,12 +115,24 @@ class Script {
    var pos:Int = 0;
 
    var stack:GenericStack<StackEntry<Dynamic>>;
-   var vars:Dynamic;
+   var manager:Null<ScriptManager> = null;
+   var scope(get, never):ScriptScope;
+   var _scope:Null<ScriptScope> = null;
+
+   function get_scope():ScriptScope {
+      if (manager != null)
+         return manager.scope;
+      if (_scope != null)
+         return _scope;
+      _scope = new ScriptScope();
+      return _scope;
+   }
 
    // var discarded:Dynamic = null;
 
-   function new(script:String) {
+   function new(script:String, asm:Bool = false) {
       this.contents = script;
+      this.isCFASM = asm;
    }
 
    private var cached_syncCheck:Null<Bool>;
@@ -148,6 +162,14 @@ class Script {
       if (this.isCompiled.isBlown()) // already parsed
          return;
       this.isCompiled.blow();
+      if (this.isCFASM) {
+         lines = contents.split('\n');
+         this.actions = [];
+         for (line in lines) {
+            this.actions.push(ScriptActionTools.fromBytecode(line));
+         }
+         return;
+      }
       this.tokens = ScriptParser.parse(this.contents);
       if (Script.DEBUG_TOKENS)
          trace('parsed: ' + tokens.map(t -> t.debugPrint()).join(''));
@@ -209,7 +231,11 @@ class Script {
 
    function step():Dynamic {
       var action = this.actions[this.pos++];
-      this.executeAction(action);
+      try {
+         this.executeAction(action);
+      } catch (err:Dynamic) {
+         throw '$err on line ${action.getPos().line} at position ${action.getPos().linePos}';
+      }
       if (Script.DEBUG_RUNTIME)
          trace('<exec> ${action.debugPrint()} (${stack.first().value}, $pos)');
 
@@ -218,7 +244,7 @@ class Script {
 
    function executeAction(action:ScriptAction) {
       inline function error(text:String) {
-         return '${text} on line ${action.getPos().line} at position ${action.getPos().linePos}';
+         return '$text';
       }
 
       switch (action) {
@@ -231,10 +257,10 @@ class Script {
             stack.add(StackEntry.get(value));
          case AIdentifier(p, name):
             {
-               if (!Reflect.hasField(vars, name))
+               if (scope.exists(name))
                   throw error('variable $name does not exist when referenced');
 
-               var val = Reflect.field(vars, name);
+               var val = scope.getVar(name);
                stack.add(StackEntry.get(val));
             }
          case AOperation(p, op):
@@ -303,7 +329,7 @@ class Script {
                while (--i >= 0)
                   args[i] = accessStack().value;
 
-               stack.add(StackEntry.get(ScriptAPI.callScriptFunction(name, p, ...args)));
+               stack.add(StackEntry.get(scope.call(name, p, ...args)));
             }
          case AReturn(p):
             pos = actions.length;
@@ -330,14 +356,14 @@ class Script {
             else
                accessStack();
          case ASet(p, name):
-            Reflect.setField(vars, name, accessStack().value);
+            scope.setVar(name, accessStack().value);
          case APause(p):
             var time = accessStack();
             if (!time.isOfType(NUMBER)) {
                throw error('invalid value passed to pause');
             }
             this.isPaused = true;
-            this.pausedFor = Std.int(time.asType(NUMBER));
+            this.pausedFor = Std.int(time.value);
       }
    }
 
@@ -369,10 +395,9 @@ class Script {
       try {
          var pg = new Script(code);
          pg.compile();
-         pg.vars = {pi: Math.PI};
          if (!pg.isSync())
             throw 'Cannot eval async code';
-         return ScriptManager.run(pg);
+         return Std.string(pg.exec(true));
          // var v = pg.exec();
          // return Std.string(v);
       }

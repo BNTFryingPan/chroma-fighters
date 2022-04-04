@@ -3,7 +3,7 @@ package scripting;
 import flixel.FlxG;
 
 /**
-   functions availble to scripts
+   default functions availble to scripts
 **/
 @:keep
 class ScriptAPI {
@@ -20,8 +20,6 @@ class ScriptAPI {
    }
 
    public static function callScriptFunction(name, scriptPos:Pos, ...args:Dynamic):Dynamic {
-      if (Script.DEBUG_RUNTIME)
-         trace('trying to call ${name} with args (${args.toArray().join(', ')})');
       if (Reflect.hasField(ScriptAPI, name)) {
          args.prepend(scriptPos);
          return Reflect.callMethod(ScriptAPI, Reflect.field(ScriptAPI, name), args.toArray());
