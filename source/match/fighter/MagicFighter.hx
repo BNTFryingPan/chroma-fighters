@@ -68,7 +68,7 @@ abstract class MagicFighterStrongMove extends FighterMove {
    private var chargeTime:Float;
 
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      var elapsed:Float = params[0];
+      var elapsed:Float = params[1];
       if (state == JUST_PRESSED) {
          this._isCharging = true;
          this.fighter.moveFreeze(this.maxChargeTime());

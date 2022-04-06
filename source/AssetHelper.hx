@@ -4,6 +4,7 @@ import NamespacedKey.AbstractNamespacedKey;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxAnimationController;
+import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets;
@@ -11,15 +12,15 @@ import flixel.system.FlxSound;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.extern.Rest;
 import haxe.io.Bytes;
-//import hscript.Expr;
-//import hscript.Interp;
-//import hscript.Parser;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import scripting.Script;
 
 using StringTools;
 
+// import hscript.Expr;
+// import hscript.Interp;
+// import hscript.Parser;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -63,7 +64,6 @@ import openfl.utils.Assets as OpenFLAssets;
       return func(args);
    }
 }*/
-
 enum AssetType {
    ASEPRITE;
    IMAGE;
@@ -115,17 +115,46 @@ class DelayedAsset<T> {
    }
 }
 
+/**
+ * special version of openfls BitmapData that cannot be disposed (normally).
+ * this exists soley to help with issues casued by flixel disposing it when i dont want it to (so i can cache it)
+ */
+class PersistentBitmapData extends BitmapData {
+   override public function dispose():Void {
+      // just dont dispose the image lmao
+   }
+
+   // a way to dispose anyways, just in case i want to manually do it
+   public function reallyDispose():Void {
+      super.dispose();
+   }
+
+   public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xffffffff) {
+      trace('new persistent bitmap');
+      super(width, height, transparent, fillColor);
+   }
+
+   public static function fromFile(path:String) {
+      #if (js && html5)
+      return null;
+      #else
+      var bitmapData = new PersistentBitmapData(0, 0, true, 0);
+      bitmapData.__fromFile(path);
+      return bitmapData.image != null ? bitmapData : null;
+      #end
+   }
+}
+
 class AssetHelper {
    // public static final instance = new AssetHelper();
    public static final saveDirectory:String = "./save/";
    static inline final saveNamespace:String = "chromasave";
 
-   //public static final scriptCache:Map<String, Expr> = new Map<String, Expr>();
+   // public static final scriptCache:Map<String, Expr> = new Map<String, Expr>();
    public static final imageCache:Map<String, BitmapData> = new Map<String, BitmapData>();
    public static final aseCache:Map<String, Bytes> = new Map<String, Bytes>();
 
-   //private static var parser:Parser = new Parser();
-
+   // private static var parser:Parser = new Parser();
    public static var ready:Bool = #if sys true #else false #end;
 
    // private function new() {}
@@ -148,7 +177,7 @@ class AssetHelper {
          case JSON_RAW:
             new DelayedAsset<String>(key, type);
          case SCRIPT:
-            new DelayedAsset<Expr>(key, type);
+            new DelayedAsset<Script>(key, type);
          case SOUND:
             new DelayedAsset<FlxSound>(key, type);
       }
@@ -191,12 +220,12 @@ class AssetHelper {
       }
 
       var assetDir = AssetHelper.getAssetDirectory(key, ".png");
-      
+
       if (assetDir != null) {
          #if wackyassets
          var bitmap = FlxAssets.getBitmapData(assetDir);
          #else
-         var bitmap = BitmapData.fromFile(assetDir);
+         var bitmap = PersistentBitmapData.fromFile(assetDir);
          #end
          AssetHelper.imageCache.set(key.toString(), bitmap);
          return bitmap;
@@ -254,11 +283,11 @@ class AssetHelper {
       var ext = isCFASM ? '.cfasm' : '.cfs';
 
       var assetDir = AssetHelper.getAssetDirectory(key, ext);
-      
+
       if (assetDir == null) {
          return new Script('return 0');
       }
-      
+
       #if wackyassets
       var contents = OpenFLAssets.getText(assetDir);
       #else
@@ -301,7 +330,12 @@ class AssetHelper {
       return array;
    }
 
-   public static function generateCombinedSpriteSheetForFighter(folderKey:NamespacedKey, sprite:FlxSprite, size:Int, play:String) {
+   public static function generateCombinedSpriteSheetForFighter(folderKey:NamespacedKey, sprite:FlxSprite, size:Int, play:String):Void {
+      folderKey.parseSpecialNamespaces();
+      var cacheKey = folderKey.withKey(folderKey.key + '?combined');
+
+      var bitmap:BitmapData;
+
       #if wackyassets
       var folderContents = getFolderContents(folderKey);
       #else
@@ -314,24 +348,35 @@ class AssetHelper {
 
       var animations:Array<AnimationCombinerThing> = [];
       var curFrame:Int = 0;
+      // var oldPersist = FlxGraphic.defaultPersist;
+      // FlxGraphic.defaultPersist = true;
       for (asset in spritesToLoad) {
          #if wackyassets
-         var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
+         var thisBitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
          #else
-         var bitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
+         var thisBitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
          #end
-         var frames = Math.floor(bitmap.width / bitmap.height);
-         trace('asset ${frames} ${bitmap.width / bitmap.height}');
+         var frames = Math.floor(thisBitmap.width / thisBitmap.height);
+         trace('asset ${frames} ${thisBitmap.width / thisBitmap.height}');
          animations.push({
-            bitmap: bitmap,
+            bitmap: thisBitmap,
             frames: frames,
             startIndex: curFrame,
             name: asset
          });
          curFrame += frames;
       }
-      sprite.loadGraphic(FlxTileFrames.combineTileSets(animations.map(a -> a.bitmap), FlxPoint.weak(size, size)).parent, true, size, size);
-      FlxG.bitmapLog.add(sprite.graphic.bitmap, 'combined');
+
+      if (imageCache.exists(cacheKey.toString())) {
+         bitmap = imageCache.get(cacheKey.toString());
+         trace('reusing bitmap');
+      } else {
+         bitmap = FlxTileFrames.combineTileSets(animations.map(a -> a.bitmap), FlxPoint.weak(size, size)).parent.bitmap;
+         imageCache.set(cacheKey.toString(), bitmap);
+      }
+      // FlxGraphic.defaultPersist = oldPersist;
+      sprite.loadGraphic(bitmap, true, size, size);
+      FlxG.bitmapLog.add(bitmap, cacheKey.toString());
       // PlayerSlot.getPlayer(0).fighter.sprite.animation.play('crouch_idle')
       for (animation in animations) {
          trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
@@ -345,7 +390,7 @@ class AssetHelper {
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
       key.parseSpecialNamespaces();
       #if wackyassets
-       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
+      if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
          trace(key.asFileReference() + '__' + (ext == null ? '' : ext));
          return getAssetPathRaw(key.asFileReference(), ext);
       }

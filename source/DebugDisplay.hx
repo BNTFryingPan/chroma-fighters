@@ -18,13 +18,14 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import states.BaseState;
 import states.MatchState;
+
+using StringTools;
+
 #if hl
 import hl.Gc;
 #elseif cpp
 import cpp.vm.Gc;
 #end
-
-using StringTools;
 
 class DebugDisplay extends FPS {
    #if cpp
@@ -218,7 +219,7 @@ class DebugDisplay extends FPS {
          AssetHelper.imageCache.clear();
          if (FlxG.keys.pressed.SHIFT) {
             AssetHelper.aseCache.clear();
-            AssetHelper.scriptCache.clear();
+            // AssetHelper.scriptCache.clear();
             this.notify('Cleared all AssetHelper caches');
          } else {
             this.notify('Cleared AssetHelper BitmapData cache');
@@ -228,8 +229,8 @@ class DebugDisplay extends FPS {
 
       if (FlxG.keys.justPressed.R) {
          this.hasTriggeredDebugAction = true;
-         AssetHelper.scriptCache.clear();
-         this.notify('Cleared script cache');
+         // AssetHelper.scriptCache.clear();
+         this.notify('Cleared script cache (jk there is no script cache right now lmao)');
       }
 
       if (FlxG.keys.justPressed.B) {
@@ -418,10 +419,10 @@ class DebugDisplay extends FPS {
          // this.rightText.alignment = RIGHT;
       }
       if (DebugDisplay.leftAppend.contains('P8')) {
-         //trace('p8 in left append');
+         // trace('p8 in left append');
       }
       if (this.text.contains('P8')) {
-         //trace('p8 in left text');
+         // trace('p8 in left text');
       }
       DebugDisplay.rightPrepend = "";
       DebugDisplay.rightAppend = "";

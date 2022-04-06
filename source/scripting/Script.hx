@@ -5,6 +5,7 @@ import flixel.system.debug.log.LogStyle;
 import haxe.ds.GenericStack;
 import scripting.Op.Operation;
 import scripting.Op.UnOperation;
+import scripting.ScriptAction;
 import scripting.ScriptManager;
 
 enum StackEntryType {
@@ -103,6 +104,7 @@ class Script {
 
    // private var isParsed:Fuse = new Fuse();
    @:allow(scripting.ScriptManager)
+   @:allow(AssetHelper)
    private var isCompiled:Fuse = new Fuse();
    var contents:String;
    var tokens:Array<ScriptToken> = [];
@@ -116,6 +118,7 @@ class Script {
    var pos:Int = 0;
 
    var stack:GenericStack<StackEntry<Dynamic>>;
+   @:allow(scripting.ScriptManager)
    var manager:Null<ScriptManager> = null;
    var scope(get, never):ScriptScope;
    var _scope:Null<ScriptScope> = null;
@@ -131,6 +134,7 @@ class Script {
 
    // var discarded:Dynamic = null;
 
+   @:allow(AssetHelper)
    function new(script:String, asm:Bool = false) {
       this.contents = script;
       this.isCFASM = asm;
@@ -151,6 +155,8 @@ class Script {
       return cached_syncCheck;
    }
 
+   var isCFASM:Bool = false;
+
    /*
       public function parse() {
          if (this.isParsed.isBlown())
@@ -164,10 +170,10 @@ class Script {
          return;
       this.isCompiled.blow();
       if (this.isCFASM) {
-         lines = contents.split('\n');
+         var lines = contents.split('\n');
          this.actions = [];
          for (line in lines) {
-            this.actions.push(ScriptActionTools.fromBytecode(line));
+            this.actions.push(ScriptActionTools.fromBytecode(line, 0));
          }
          return;
       }
@@ -234,7 +240,8 @@ class Script {
       var action = this.actions[this.pos++];
       try {
          this.executeAction(action);
-      } catch (err:Dynamic) {
+      }
+      catch (err:Dynamic) {
          throw '$err on line ${action.getPos().line} at position ${action.getPos().linePos}';
       }
       if (Script.DEBUG_RUNTIME)

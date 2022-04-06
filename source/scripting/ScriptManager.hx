@@ -8,10 +8,10 @@ typedef ScriptScopeOptions = {
 typedef ScriptMath = Math;
 
 class ScriptScope {
-   public var dynamicVars = vars;
+   public var dynamicVars:Dynamic;
    public var interop_read:Map<String, Dynamic> = [];
    public var interop_write:Map<String, Dynamic> = [];
-   public var api_classes:Array<Class> = [];
+   public var api_classes:Array<Class<Dynamic>> = [];
 
    public var options:ScriptScopeOptions = {allowMath: true};
 
@@ -48,8 +48,8 @@ class ScriptScope {
 
    public function call(name, pos, ...args:Dynamic):Dynamic {
       for (clazz in api_classes) {
-         if (Reflect.hasField(name)) {
-            var func = Reflect.field(name);
+         if (Reflect.hasField(clazz, name)) {
+            var func = Reflect.field(clazz, name);
             if (Reflect.isFunction(func))
                return Reflect.callMethod(null, func, args.toArray());
          }
@@ -61,7 +61,7 @@ class ScriptScope {
             return Reflect.callMethod(null, func, args.toArray());
          }
       }
-      
+
       if (interop_read.exists(name)) {
          var func = interop_write.get(name);
          if (Reflect.isFunction(func)) {
@@ -76,7 +76,7 @@ class ScriptScope {
       throw 'tried calling non-function value';
    }
 
-   public function new(vars:Null<Dynamic>, addDefaults:Bool = true) {
+   public function new(?vars:Null<Dynamic>, addDefaults:Bool = true) {
       this.dynamicVars = vars;
       if (!addDefaults)
          return;
@@ -89,7 +89,7 @@ class ScriptManager {
 
    public var scope:ScriptScope;
 
-   public function new(vars:Null<Dynamic>) {
+   public function new(?vars:Null<Dynamic>) {
       scope = new ScriptScope(vars);
    }
 
