@@ -5,6 +5,7 @@ import PlayerSlot;
 import cpuController.CpuController;
 import flixel.FlxObject;
 import flixel.math.FlxMath;
+import haxe.Constraints.Function;
 import inputManager.Action;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
@@ -294,6 +295,31 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.createFighterMoves();
    }
 
+   public function getScriptFunctions():Map<String, Function> {
+      var functions = [
+         "getPercent",
+         "getSlot",
+         "launch",
+         "stale",
+         "die",
+         "isInBlastzone",
+         "createRoundAttackHitbox",
+      ];
+
+      var map = new Map<String, Function>();
+
+      for (func in functions) {
+         if (!Reflect.hasField(this, func))
+            continue;
+         var f = Reflect.field(this, func);
+         if (!Reflect.isFunction(f))
+            continue;
+         map.set(func, f);
+      }
+
+      return map;
+   }
+
    public function getAttackDirection(stick:StickVector):DirectionalAttack {
       if (stick.y < -0.5)
          return DirectionalAttack.UP;
@@ -316,6 +342,8 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    override public function update(elapsed:Float) {
       super.update(elapsed);
+      // this.moveFreezeTime = Math.max(this.moveFreezeTime - elapsed, 0);
+      this.moveFreezeTime = Math.max(this.moveFreezeTime - (1 / 60), 0);
       // this.debugSprite.setPosition(this.x, this.y);
       this.hitbox.x = this.x;
       this.hitbox.y = this.y;
@@ -369,7 +397,6 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
 
    public function shouldHandleInput(elapsed:Float):Bool {
       if (this.moveFreezeTime > 0) {
-         this.moveFreezeTime = Math.max(this.moveFreezeTime - elapsed, 0);
          return false;
       }
       return true;

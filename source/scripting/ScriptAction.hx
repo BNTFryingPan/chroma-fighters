@@ -16,6 +16,8 @@ enum ScriptAction {
    AJump(p:Pos, to:Int /*, condition:Null<Bool>*/); // pos = to
    AJumpUnless(p:Pos, to:Int); // if (!pop) pos = to
    AJumpIf(p:Pos, to:Int); // if (pop) pos = to
+   AJumpPush(p:Pos, to:Int); // jumpstack.add(pos) pos = to;
+   AJumpPop(p:Pos); // pos = jumpstack.pop()
    ASet(p:Pos, name:String);
    AAnd(p:Pos, to:Int); // if (top) pop() else pos = to
    AOr(p:Pos, to:Int); // if (top) pos = to else pop()

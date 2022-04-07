@@ -16,20 +16,22 @@ enum ScriptToken {
    SEMICOLON(p:Pos); // ;
    // SET(p:Pos);
    NUMBER(p:Pos, value:Float);
+   BOOLEAN(p:Pos, value:Bool);
    IDENTIFIER(p:Pos, id:String);
    STRING(p:Pos, value:String);
    // TYPEOF(p:Pos);
-   PAUSE(p:Pos);
+   PAUSE(p:Pos); // pause
    COMMA(p:Pos); // ,
    RETURN(p:Pos); // return
    SET(p:Pos); // =
    IF(p:Pos); // if statement
    ELSE(p:Pos); // else
-   WHILE(p:Pos);
-   DO(p:Pos);
-   FOR(p:Pos);
-   BREAK(p:Pos);
-   CONTINUE(p:Pos);
+   WHILE(p:Pos); // while
+   DO(p:Pos); // while expr do stat
+   FOR(p:Pos); // for
+   BREAK(p:Pos); // break
+   CONTINUE(p:Pos); // continue
+   FUNCTION(p:Pos); // function
 }
 
 class ScriptTokenUtil {

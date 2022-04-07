@@ -79,7 +79,7 @@ class DebugDisplay extends FPS {
       this.notif.autoSize = TextFieldAutoSize.RIGHT;
       this.notif.selectable = false;
       this.notif.mouseEnabled = false;
-      this.notif.y = FlxG.height - 10;
+      this.notif.y = 30;
 
       addEventListener(Event.ADDED, __added);
    }
@@ -285,7 +285,7 @@ class DebugDisplay extends FPS {
 
       if (FlxG.keys.justPressed.E) {
          this.hasTriggeredDebugAction = true;
-         if (GameState.isInMatch && (#if !debug GameState.isTrainingMode && #end!GameState.isPlayingOnline)) {
+         if (GameState.isInMatch && (#if !debug GameState.isTrainingMode && #end!GameState.isPlayingOnline) || true) {
             GameState.trainingFrameStepMode = !GameState.trainingFrameStepMode;
             this.notify('Frame step ${GameState.trainingFrameStepMode ? 'en' : 'dis'}abled.');
          } else {

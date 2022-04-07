@@ -39,7 +39,7 @@ class MatchState extends BaseState {
             continue;
 
          // TODO : change this lmao
-         player.fighter = new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight - 100);
+         player.fighter = new MagicFighter(player.slot, 0, this.stage.mainGround.groundHeight - 200);
       }
    }
 
@@ -53,10 +53,14 @@ class MatchState extends BaseState {
 
    public function unpause() {
       trace('attempt unpause');
-      if (GameState.justPaused)
-         return trace('just paused');
-      if (!GameState.isPaused)
-         return trace('not paused');
+      if (GameState.justPaused) {
+         trace('just paused');
+         return;
+      }
+      if (!GameState.isPaused) {
+         trace('not paused');
+         return;
+      }
       this.closeSubState();
       GameState.pausedPlayer = null;
    }

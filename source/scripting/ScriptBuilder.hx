@@ -160,6 +160,44 @@ class ScriptBuilder {
                stat = NBreak(p);
             else
                throw error('cannot continue', token);
+         case FUNCTION(p):
+            {
+               var name = expr(None);
+               if (!name.match(NIdentifier(_, _)))
+                  throw error('expected identifier for function name', token);
+               var hasArgs = peek().match(PAR_OPEN(_));
+               var args = [];
+               if (hasArgs) {
+                  skip();
+                  var closed = false;
+
+                  var argToken:ScriptToken;
+                  while (pos < len) {
+                     argToken = peek();
+                     if (argToken == null)
+                        break;
+                     if (argToken.match(PAR_CLOSE(_))) {
+                        skip();
+                        closed = true;
+                        break;
+                     }
+                     var nextArg = expr(NoOps);
+                     if (!nextArg.match(NIdentifier(_, _)))
+                        throw error('expected argument name identifier', nextArg);
+                     args.push(nextArg.getParameters()[1]);
+
+                     argToken = peek(0);
+                     if (argToken.match(COMMA(_)))
+                        skip();
+                     else if (!argToken.match(PAR_CLOSE(_)))
+                        throw error('expected closing ) or separator ,', argToken);
+                  }
+                  if (!closed)
+                     throw error('unclosed ()', token);
+               }
+               var body = statement();
+               stat = NFunction(p, name.getParameters()[1], args, body);
+            }
          default:
             {
                pos--;

@@ -209,7 +209,7 @@ class ScriptParser {
                            break;
                      }
                      var name = script.substring(start.pos, pos);
-                     switch (name) {
+                     switch (name.toLowerCase()) {
                         case 'mod': out.push(OPERATION(d, MOD));
                         case 'div': out.push(OPERATION(d, DIVIDE_INT));
                         case 'return': out.push(RETURN(d));
@@ -220,7 +220,10 @@ class ScriptParser {
                         case 'for': out.push(FOR(d));
                         case 'break': out.push(BREAK(d));
                         case 'continue': out.push(CONTINUE(d));
-                        case 'wait': out.push(CONTINUE(d)); // case 'typeof': out.push(TYPEOF(d));
+                        case 'true': out.push(BOOLEAN(d, true));
+                        case 'false': out.push(BOOLEAN(d, false));
+                        case 'function': out.push(FUNCTION(d));
+                        // case 'wait': out.push(CONTINUE(d)); // case 'typeof': out.push(TYPEOF(d));
                         case 'pause': out.push(PAUSE(d));
                         default: out.push(IDENTIFIER(d, name));
                      }

@@ -675,8 +675,10 @@ class PlayerSlot {
    }
 
    public function update(elapsed:Float) {
-      if (!this.ready)
-         return trace('P${this.slot + 1} not ready');
+      if (!this.ready) {
+         trace('P${this.slot + 1} not ready');
+         return;
+      }
       if (this.slot == P8) {
          // trace('P8 update');
       }

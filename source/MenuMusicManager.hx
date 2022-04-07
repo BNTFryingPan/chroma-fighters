@@ -66,7 +66,10 @@ class MenuMusicManager {
       sound_sub_base = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_base'), true, true);
       sound_sub_extra_a = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_extra_a'), true, true);
       sound_sub_extra_b = AssetHelper.getSoundAsset(NamespacedKey.ofDefaultNamespace('sound/music/menu_sub_extra_b'), true, true);
-      if (sound_intro == null) return trace('menu music assets are null!');
+      if (sound_intro == null) {
+         trace('menu music assets are null!');
+         return;
+      }
       sound_sub_fighter.volume = 0;
       sound_sub_stage.volume = 0;
       sound_sub_base.volume = 0;
@@ -81,14 +84,16 @@ class MenuMusicManager {
    }
 
    public static function setTime(value:Float, excludeBase:Bool = false):Float {
-      if (sound_intro == null) return 0.0;
+      if (sound_intro == null)
+         return 0.0;
       if (excludeBase)
          return sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
       return sound_base.time = sound_sub_fighter.time = sound_sub_stage.time = sound_sub_base.time = sound_sub_extra_a.time = sound_sub_extra_b.time = value;
    }
 
    public static function pause():Void {
-      if (sound_intro == null) return;
+      if (sound_intro == null)
+         return;
       sound_base.pause();
       sound_sub_fighter.pause();
       sound_sub_stage.pause();
@@ -98,7 +103,8 @@ class MenuMusicManager {
    }
 
    public static function resume():Void {
-      if (sound_intro == null) return;
+      if (sound_intro == null)
+         return;
       sound_base.play();
       sound_sub_fighter.play();
       sound_sub_stage.play();
@@ -111,7 +117,8 @@ class MenuMusicManager {
       if (GameState.isInMatch)
          return '';
 
-      if (sound_intro == null) return '';
+      if (sound_intro == null)
+         return '';
 
       var ret = 'MenuMusicManager state: ${musicState} ${_hasFinishedIntro}\n';
       ret += 'base: ${sound_base.time}/${sound_base.length} ${sound_base.volume}\n';
@@ -166,7 +173,8 @@ class MenuMusicManager {
    static function set_musicState(value:MenuMusicState):MenuMusicState {
       if (!_hasFinishedIntro)
          return musicState = value;
-      if (sound_intro == null) return musicState = value;
+      if (sound_intro == null)
+         return musicState = value;
 
       var layersInThisState = musicLayersPerState.get(value);
       for (layer in allMusicLayers) {

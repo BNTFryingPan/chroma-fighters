@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import haxe.Constraints.Function;
 import inputManager.Action;
 import inputManager.GenericInput;
 import inputManager.InputHelper;
@@ -425,8 +426,9 @@ class MagicFighter extends AbstractFighter {
             this.forceAnim = name;
          }
          if (applyEndLag) {
-            this.moveEndingLag = this.sprite.animation.getByName(name).frames.length * this.animFPS; // * (1 / Main.targetFps);
-            trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveEndingLag} end lag frames');
+            this.moveFreezeTime = this.sprite.animation.getByName(name).frames.length * (this.animFPS / Main.targetFps); // * (1 / Main.targetFps);
+            // this.moveFreeze(this.moveEndinmogLag);
+            trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
          }
          return this.sprite.animation.play(name, force);
       }
@@ -438,6 +440,14 @@ class MagicFighter extends AbstractFighter {
    }
 
    private var lastStickDownValue:String = '0';
+
+   public override function getScriptFunctions():Map<String, Function> {
+      var map = super.getScriptFunctions();
+
+      map.set("play", this.play);
+
+      return map;
+   }
 
    private function clamp(value:Float, ?min:Float, ?max:Float):Float {
       if (min != null && min >= value)
@@ -457,6 +467,9 @@ class MagicFighter extends AbstractFighter {
       }
 
       if (this.hitstunTime > 0)
+         return;
+
+      if (this.moveFreezeTime > 0)
          return;
 
       /*this.lastPressedDodge += elapsed;
@@ -529,7 +542,7 @@ class MagicFighter extends AbstractFighter {
 
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');
       // todo : fastfall
-      if (this.airState != PRATFALL && this.moveEndingLag == 0) {
+      if (this.airState != PRATFALL && this.moveFreezeTime == 0) {
          attemptMove('taunt');
 
          switch (this.getAttackDirection(stick)) {
@@ -583,7 +596,7 @@ class MagicFighter extends AbstractFighter {
          }
       }
 
-      if (this.moveEndingLag > 0 && this.moveset.currentlyPerforming != null) {
+      if (this.moveFreezeTime > 0 && this.moveset.currentlyPerforming != null) {
          this.moveset.update(elapsed, input);
       }
 
@@ -611,7 +624,7 @@ class MagicFighter extends AbstractFighter {
       this.sprite.setPosition(this.x - 36, this.y - 23);
       this.sprite.flipX = this.facing == RIGHT;
       // this.moveEndingLag = Math.max(0, this.moveEndingLag - elapsed);
-      this.moveEndingLag = Math.max(0, this.moveEndingLag - 1);
+      // this.moveEndingLag = Math.max(0, this.moveEndingLag - 1);
    }
 
    override public function draw() {
@@ -625,14 +638,22 @@ class MagicFighter extends AbstractFighter {
 
    override public function getDebugString():String {
       if (this.sprite.animation.getNameList().length > 0)
-         return
-            '${this.airJumps} / ${this.maxAirJumps} [${this.hasBufferedFastFall ? 'F' : 'f'}] a=${this.sprite.animation.name}.${this.sprite.animation.curAnim == null ? '' : '${this.sprite.animation.curAnim.curFrame} ${this.sprite.animation.curAnim.numFrames} '} ${this.sprite.animation.frameIndex} ${FlxMath.roundDecimal(this.hitstunTime, 2)} ${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)} ${this.airState == RESPAWN && this.aliveTime >= 3} ${FlxMath.roundDecimal(this.airStateTime, 2)} [${FlxMath.roundDecimal(this.moveEndingLag, 2)}]';
+         return '${this.airJumps} / ${this.maxAirJumps}' // jumps
+            + '[${this.hasBufferedFastFall ? 'F' : 'f'}] ' // buffers
+            + 'a=${this.sprite.animation.name}.' // animation details
+            + '${this.sprite.animation.curAnim == null ? '' : '${this.sprite.animation.curAnim.curFrame} ${this.sprite.animation.curAnim.numFrames} '}'
+            + '${this.sprite.animation.frameIndex} ${FlxMath.roundDecimal(this.hitstunTime, 2)}'
+            + '${FlxMath.roundDecimal(this.iframes, 2)} ${this.facing}'
+            + '\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)}'
+            + '${this.airState == RESPAWN && this.aliveTime >= 3}'
+            + '${FlxMath.roundDecimal(this.airStateTime, 2)}\n' // air state time
+            + '[${FlxMath.roundDecimal(this.moveEndingLag, 2)}:${FlxMath.roundDecimal(this.moveFreezeTime, 2)}]'; // end lag
 
       return '';
    }
 
    override private function airStateChange(newState, oldState) {
-      if (this.moveEndingLag > 0
+      if (this.moveFreezeTime > 0
          && newState == GROUNDED
          && this.forceAnim != null
          && this.forceAnim.endsWith('_air')

@@ -5,6 +5,7 @@ package scripting;
 **/
 class ScriptCompiler {
    static var actions:Array<ScriptAction>;
+   static var functions:Map<String, Int>;
 
    static inline function add(a:ScriptAction):Void {
       actions.push(a);
@@ -116,6 +117,8 @@ class ScriptCompiler {
          case NPause(p, time):
             expr(time);
             add(APause(p));
+         case NFunction(p, name, args, body):
+            functions.set(name, actions.length + 1);
       }
    }
 

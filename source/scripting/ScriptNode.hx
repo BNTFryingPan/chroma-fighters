@@ -14,7 +14,7 @@ enum ScriptNode {
    NReturn(p:Pos, node:ScriptNode);
    NDiscard(p:Pos, node:ScriptNode);
    NPause(p:Pos, time:ScriptNode);
-   //NTypeOf(p:Pos, node:ScriptNode);
+   // NTypeOf(p:Pos, node:ScriptNode);
    NConditional(p:Pos, condition:ScriptNode, result:ScriptNode, elseResult:Null<ScriptNode>);
    NSet(p:Pos, node:ScriptNode, value:ScriptNode);
    NWhile(p:Pos, condition:ScriptNode, expr:ScriptNode);
@@ -22,6 +22,7 @@ enum ScriptNode {
    NFor(p:Pos, init:ScriptNode, condition:ScriptNode, post:ScriptNode, node:ScriptNode);
    NBreak(p:Pos);
    NContinue(p:Pos);
+   NFunction(p:Pos, name:String, args:Array<String>, body:ScriptNode);
 }
 
 class ScriptNodeTools {

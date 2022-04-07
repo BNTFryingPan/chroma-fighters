@@ -7,6 +7,7 @@ import scripting.Op.Operation;
 import scripting.Op.UnOperation;
 import scripting.ScriptAction;
 import scripting.ScriptManager;
+import scripting.ScriptScope;
 
 enum StackEntryType {
    // floats and ints
@@ -118,18 +119,18 @@ class Script {
    var pos:Int = 0;
 
    var stack:GenericStack<StackEntry<Dynamic>>;
+   var jumpstack:GenericStack<Int>;
    @:allow(scripting.ScriptManager)
    var manager:Null<ScriptManager> = null;
    var scope(get, never):ScriptScope;
-   var _scope:Null<ScriptScope> = null;
+   var _globalScope:Null<ScriptScope> = null;
 
    function get_scope():ScriptScope {
       if (manager != null)
          return manager.scope;
-      if (_scope != null)
-         return _scope;
-      _scope = new ScriptScope();
-      return _scope;
+      if (_globalScope == null)
+         _globalScope = new GlobalScriptScope();
+      return _globalScope;
    }
 
    // var discarded:Dynamic = null;
@@ -353,6 +354,11 @@ class Script {
             if (accessStack().isTruthy()) {
                pos = to;
             }
+         case AJumpPush(p, to):
+            jumpstack.add(pos);
+            pos = to;
+         case AJumpPop(p):
+            pos = jumpstack.pop();
          case AAnd(p, to):
             if (accessStack(false).isTruthy())
                accessStack();
