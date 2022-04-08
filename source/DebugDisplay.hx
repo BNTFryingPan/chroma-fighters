@@ -60,7 +60,9 @@ class DebugDisplay extends FPS {
 
    public function new() {
       super(10, 10, 0xff00ff);
+      #if memtraces
       trace('new debug display v2');
+      #end
       defaultTextFormat = new TextFormat("_sans", 10, 0xff00ff);
       this.rightText = new TextField();
 

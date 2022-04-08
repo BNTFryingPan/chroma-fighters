@@ -130,7 +130,9 @@ class PersistentBitmapData extends BitmapData {
    }
 
    public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xffffffff) {
+      #if memtraces
       trace('new persistent bitmap');
+      #end
       super(width, height, transparent, fillColor);
    }
 
@@ -184,7 +186,9 @@ class AssetHelper {
    }
 
    private static function getNullBitmap():BitmapData {
+      #if memtraces
       trace('new null bitmap');
+      #end
       return new BitmapData(1, 1, true, 0xFF00FFFF);
    }
 
@@ -357,7 +361,7 @@ class AssetHelper {
          var thisBitmap = AssetHelper.getImageAsset(folderKey.withKey(folderKey.key + '/${asset}'));
          #end
          var frames = Math.floor(thisBitmap.width / thisBitmap.height);
-         trace('asset ${frames} ${thisBitmap.width / thisBitmap.height}');
+         // trace('asset ${frames} ${thisBitmap.width / thisBitmap.height}');
          animations.push({
             bitmap: thisBitmap,
             frames: frames,
@@ -369,7 +373,9 @@ class AssetHelper {
 
       if (imageCache.exists(cacheKey.toString())) {
          bitmap = imageCache.get(cacheKey.toString());
+         #if memtraces
          trace('reusing bitmap');
+         #end
       } else {
          bitmap = FlxTileFrames.combineTileSets(animations.map(a -> a.bitmap), FlxPoint.weak(size, size)).parent.bitmap;
          imageCache.set(cacheKey.toString(), bitmap);
@@ -379,19 +385,21 @@ class AssetHelper {
       FlxG.bitmapLog.add(bitmap, cacheKey.toString());
       // PlayerSlot.getPlayer(0).fighter.sprite.animation.play('crouch_idle')
       for (animation in animations) {
-         trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
+         // trace('${animation.name} ${getFramesArray(animation.startIndex, animation.frames)}');
          sprite.animation.add(animation.name, getFramesArray(animation.startIndex, animation.frames), 12, false);
       }
       sprite.animation.play(play);
       sprite.graphic.persist = true;
-      trace(sprite.animation.getNameList());
+      // trace(sprite.animation.getNameList());
    }
 
    public static function getAssetDirectory(key:NamespacedKey, ext:String = "") {
       key.parseSpecialNamespaces();
       #if wackyassets
       if (key.namespace == NamespacedKey.DEFAULT_NAMESPACE) {
+         #if memtraces
          trace(key.asFileReference() + '__' + (ext == null ? '' : ext));
+         #end
          return getAssetPathRaw(key.asFileReference(), ext);
       }
       return null;

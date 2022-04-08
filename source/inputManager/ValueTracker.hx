@@ -11,7 +11,9 @@ class ValueTracker<T> {
    public var valueTime(get, never):Float;
 
    public function new(initialValue:T) {
+      #if memtraces
       trace('new value tracker');
+      #end
       this.value = initialValue;
    }
 

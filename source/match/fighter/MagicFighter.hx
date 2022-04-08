@@ -67,35 +67,45 @@ class MagicFighterTaunt extends FighterMove {
 abstract class MagicFighterStrongMove extends FighterMove {
    private var _isCharging = true;
    private var chargeTime:Float;
+   private var releaseTime:Float;
+   private var releaseLength(get, never):Float;
+
+   function get_releaseLength():Float {
+      return 0.3;
+   }
 
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       var elapsed:Float = params[1];
-      if (state == JUST_PRESSED) {
+      if (state.isPressed() && !this._isCharging) { // just pressed
          this._isCharging = true;
          this.fighter.moveFreeze(this.maxChargeTime());
          this.playChargeAnimation();
-         trace('charge start');
-         return SUCCESS(null);
+         // trace('charge start');
+         return SUCCESS("CHARGE_START");
       } else if (state == JUST_RELEASED || elapsed >= this.maxChargeTime()) {
          this._isCharging = false;
          this.releaseChargedAttack(input, this.chargeTime, ...params);
-         trace('charge release');
-         return REJECTED({success: true, reason: 'CHARGE_ATTACK_RELEASED'});
+         // trace('charge release');
+         this.releaseTime = this.releaseLength;
+         return SUCCESS('CHARGE_ATTACK_RELEASED');
       } else if (state == PRESSED && this._isCharging) {
          this.chargeTime += elapsed;
-         trace('charge progressed');
-         return SUCCESS(null);
+         // trace('charge progressed');
+         return SUCCESS("CHARGING");
+      } else if (!this._isCharging && this.releaseTime > 0) {
+         this.releaseTime = Math.max(this.releaseTime - elapsed, 0);
+         return SUCCESS('RELEASING');
       }
-      trace('not pressed?');
-      return REJECTED(null);
+      // trace('not pressed?');
+      return REJECTED("NOT_PRESSING");
    }
 
    public function getAction() {
       return Action.STRONG;
    }
 
-   override public function shouldPerform(state:InputState, input:GenericInput):String {
-      return '';
+   override public function shouldPerform(state:InputState, input:GenericInput):MoveResult {
+      return SUCCESS('OK_I_GUESS'); // TODO : change this
    }
 
    abstract function maxChargeTime():Float;
@@ -282,9 +292,9 @@ class MagicFighterAerialMove extends FighterMove {
 
    override public function canPerform() {
       if (this.fighter.airState == GROUNDED)
-         return REJECTED({success: false, reason: "NOT_IN_AIR"});
+         return REJECTED("NOT_IN_AIR");
       if (this.fighter.airState == PRATFALL)
-         return REJECTED({success: false, reason: 'IN_PRATFALL'});
+         return REJECTED('IN_PRATFALL');
       return SUCCESS(null);
    }
 }
@@ -427,8 +437,9 @@ class MagicFighter extends AbstractFighter {
          }
          if (applyEndLag) {
             this.moveFreezeTime = this.sprite.animation.getByName(name).frames.length * (this.animFPS / Main.targetFps); // * (1 / Main.targetFps);
+            this.moveset.remainingEndLag = this.moveFreezeTime;
             // this.moveFreeze(this.moveEndinmogLag);
-            trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
+            // trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
          }
          return this.sprite.animation.play(name, force);
       }
@@ -590,6 +601,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('nspecial');
                if (this.airState == GROUNDED) {
                   attemptMove('jab');
+                  attemptMove('fspecial', this.facing);
                } else {
                   attemptMove('nair');
                }
@@ -647,6 +659,7 @@ class MagicFighter extends AbstractFighter {
             + '\n${this.airState} ${FlxMath.roundDecimal(this.aliveTime, 2)}'
             + '${this.airState == RESPAWN && this.aliveTime >= 3}'
             + '${FlxMath.roundDecimal(this.airStateTime, 2)}\n' // air state time
+            + '${this.moveset.currentlyPerforming == null ? 'no move' : this.moveset.currentlyPerforming}'
             + '[${FlxMath.roundDecimal(this.moveEndingLag, 2)}:${FlxMath.roundDecimal(this.moveFreezeTime, 2)}]'; // end lag
 
       return '';

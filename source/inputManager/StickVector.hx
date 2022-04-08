@@ -5,7 +5,9 @@ class StickVector {
    public var y(get, default):Float;
 
    public function new(x:Float = 0.0, y:Float = 0.0) {
+      #if memtraces
       trace('new stick vector');
+      #end
       // Main.log("new stick vector");
       this.x = x;
       this.y = y;

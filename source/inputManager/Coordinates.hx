@@ -57,7 +57,9 @@ class Coordinates implements IFlxPooled {
 
    public function new(x:Float = 0, y:Float = 0, readOnly:Bool = false) {
       this.set(x, y);
+      #if memtraces
       trace('new coordinates');
+      #end
       this.readOnly = readOnly;
    }
 

@@ -89,7 +89,9 @@ class PlayerBox extends FlxSpriteGroup {
    public var slot:PlayerSlotIdentifier;
 
    public function new(slot:PlayerSlotIdentifier) {
+      #if memtraces
       trace('new player box ${this.slot}');
+      #end
       super(0, FlxG.height - 80);
       this.background = new FlxSprite();
       this.text = new FlxText(0, 0, 0, "0/8\nInput");
@@ -485,10 +487,14 @@ class PlayerSlot {
 
       this.input = switch (inputDevice.model) {
          case SWITCH_PRO:
+            #if memtraces
             trace('new pro controller');
+            #end
             new SwitchProController(this.slot, profile);
          default:
+            #if memtraces
             trace('new generic controller');
+            #end
             new GenericController(this.slot, profile);
       };
 
@@ -522,7 +528,9 @@ class PlayerSlot {
 
    public function applySlotColorFilter(bitmap:BitmapData):BitmapData {
       // return bitmap;
+      #if memtraces
       trace('new colortrans + rect');
+      #end
       var slotColor = PlayerSlot.defaultPlayerColors.get(this.slot);
       var transform = new ColorTransform(slotColor.red, slotColor.green, slotColor.blue, 1.0, 0, 0, 0, 0);
       bitmap.colorTransform(new Rectangle(0, 0, bitmap.width, bitmap.height), transform);
@@ -543,7 +551,9 @@ class PlayerSlot {
    }
 
    public static function getCoinBitmap(slot:PlayerSlotIdentifier):BitmapData {
+      #if memtraces
       trace('getting coin bitmap: ${AssetHelper.ready}');
+      #end
       var baseCoin = PlayerSlot.PointerCoinBitmap.get().clone();
       var icon = switch (slot) {
          case P1: PointerP1Bitmap;
@@ -556,7 +566,9 @@ class PlayerSlot {
          case P8: PointerP8Bitmap;
       }
 
+      #if memtraces
       trace('new rect+point');
+      #end
       baseCoin.copyPixels(icon.get(), new Rectangle(0, 0, 32, 32), new Point(0, 0), null, null, true);
       return baseCoin;
    }
@@ -609,7 +621,9 @@ class PlayerSlot {
 
       this.ready = true;
 
+      #if memtraces
       trace('player slot ${this.slot + 1} init');
+      #end
 
       this.coinSprite = new FlxSprite();
       this.cursorSprite = new FlxSprite();

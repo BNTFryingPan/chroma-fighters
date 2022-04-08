@@ -44,7 +44,9 @@ class NamespacedKey extends AbstractNamespacedKey {
    ];
 
    public function new(namespace:String, key:String) {
+      #if memtraces
       trace('new namespaced key');
+      #end
       if (namespace == null)
          namespace = NamespacedKey.DEFAULT_NAMESPACE;
       this.namespace = namespace;

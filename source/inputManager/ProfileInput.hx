@@ -69,7 +69,9 @@ class ProfileInput {
    public var value:Null<Float> = 1;
 
    public function new(options:ProfileInputOptions) {
+      #if memtraces
       trace('new profile input');
+      #end
       this.rawOptions = options;
       this.type = options.type;
       this.source = options.source;

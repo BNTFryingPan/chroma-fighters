@@ -16,14 +16,9 @@ import match.hitbox.AbstractHitbox;
 import match.hitbox.CircleHitbox;
 import match.stage.AbstractStage;
 
-typedef MoveResultData = {
-   public var ?success:Bool;
-   public var ?reason:String;
-}
-
 enum MoveResult {
-   SUCCESS(data:Null<MoveResultData>);
-   REJECTED(data:Null<MoveResultData>);
+   SUCCESS(reason:String);
+   REJECTED(reason:String);
    NO_SUCH_MOVE;
 }
 
@@ -55,6 +50,8 @@ enum FighterRestrictions {
 class FighterMoves {
    private final fighter:AbstractFighter;
 
+   public var remainingEndLag:Float;
+
    private final moves:Map<String, FighterMove> = [];
 
    public var currentlyPerforming:Null<String>;
@@ -72,7 +69,8 @@ class FighterMoves {
       }
 
       if (currentlyPerforming != null && moveName != currentlyPerforming)
-         return REJECTED({success: false, reason: 'PERFORMING_OTHER_MOVE'});
+         if (!this.moves.get(currentlyPerforming).canBeInteruptedBy(moveName))
+            return REJECTED('PERFORMING_OTHER_MOVE');
 
       var move = this.moves.get(moveName);
       var state = input.getAction(move.getAction());
@@ -100,7 +98,13 @@ class FighterMoves {
          return;
       var move = this.moves.get(this.currentlyPerforming);
       var res = move.attempt(input.getAction(move.getAction()), input, elapsed);
+      trace(res.getParameters()[0]);
       if (res.match(REJECTED(_))) {
+         if (this.remainingEndLag > 0) {
+            this.remainingEndLag = Math.max(this.remainingEndLag - elapsed, 0);
+            trace('end lag');
+            return;
+         }
          trace('move ended');
          this.currentlyPerforming = null;
       }
@@ -129,12 +133,14 @@ abstract class FighterMove {
          return can;
 
       var should = this.shouldPerform(state, input);
-      if (should != '')
-         return REJECTED({success: false, reason: should});
+      if (should.match(REJECTED(_)))
+         return should;
 
       var res = this.perform(state, input, ...params);
+      trace(res);
+      trace(res == null);
       if (res == null)
-         return REJECTED({success: false, reason: 'ASSUMED_FROM_NO_RESULT'});
+         return REJECTED('ASSUMED_FROM_NO_RESULT');
       return res;
    };
 
@@ -142,10 +148,20 @@ abstract class FighterMove {
       return [];
    }
 
+   public function canBeInteruptedBy(move:String):Bool {
+      return false;
+   }
+
    abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
 
-   public function shouldPerform(state:InputState, input:GenericInput):String {
-      return (state == JUST_PRESSED) ? '' : 'NOT_PRESSED';
+   public function shouldPerform(state:InputState, input:GenericInput):MoveResult {
+      if (state == JUST_PRESSED)
+         return SUCCESS("JUST_PRESSED");
+
+      if (state == PRESSED)
+         return SUCCESS("PRESSED");
+
+      return REJECTED('NOT_PRESSED');
    }
 
    public function canPerform():MoveResult {

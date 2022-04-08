@@ -23,7 +23,9 @@ class Timed /*implements IFlxPooled*/ {
    private var _invalid:Bool = false;
 
    public function new(frames:Int = 0, seconds:Float = 0) {
+      #if memtraces
       trace('new timed');
+      #end
       this.setFrames(frames);
       this.setSeconds(seconds);
    }
