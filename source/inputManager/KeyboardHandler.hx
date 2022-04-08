@@ -3,17 +3,22 @@ package inputManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
+import inputManager.GenericInput.GenericInputImplementation;
 import inputManager.InputState;
 
 /**
    input handler for keyboard
 **/
-class KeyboardHandler extends GenericInput {
+class KeyboardHandler extends GenericInputImplementation {
    override public function get_inputType() {
       return "Keyboard";
    }
 
    override public function get_inputEnabled() {
+      return true;
+   }
+
+   override public function isKeyboard():Bool {
       return true;
    }
 
@@ -37,62 +42,6 @@ class KeyboardHandler extends GenericInput {
       }
 
       return NOT_PRESSED;
-   }
-
-   override public function getConfirm():InputState {
-      return this.profile.getActionState(MENU_CONFIRM, this);
-   }
-
-   override public function getCancel():InputState {
-      return this.profile.getActionState(MENU_CANCEL, this);
-   }
-
-   override public function getMenuAction():InputState {
-      return this.profile.getActionState(MENU_ACTION, this);
-   }
-
-   override public function getMenuLeft():InputState {
-      return this.profile.getActionState(MENU_LEFT, this);
-   }
-
-   override public function getMenuRight():InputState {
-      return this.profile.getActionState(MENU_RIGHT, this);
-   }
-
-   override public function getMenuButton():InputState {
-      return this.profile.getActionState(MENU_BUTTON, this);
-   }
-
-   override public function getAttack():InputState {
-      return this.profile.getActionState(ATTACK, this);
-   }
-
-   override public function getJump():InputState {
-      return this.profile.getActionState(JUMP, this);
-   }
-
-   override public function getShortJump():InputState {
-      return this.profile.getActionState(SHORT_JUMP, this);
-   }
-
-   override public function getSpecial():InputState {
-      return this.profile.getActionState(SPECIAL, this);
-   }
-
-   override public function getStrong():InputState {
-      return this.profile.getActionState(STRONG, this);
-   }
-
-   override public function getShield():InputState {
-      return this.profile.getActionState(SHIELD, this);
-   }
-
-   override public function getWalk():InputState {
-      return this.profile.getActionState(WALK, this);
-   }
-
-   override public function getTaunt():InputState {
-      return this.profile.getActionState(TAUNT, this);
    }
 
    override public function getQuit():InputState {
