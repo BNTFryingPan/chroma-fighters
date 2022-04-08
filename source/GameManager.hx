@@ -1,6 +1,7 @@
 package;
 
 import PlayerSlot.PlayerSlotIdentifier;
+import PlayerSlot.PlayerSlotIdentifier;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -293,4 +294,16 @@ class GameManager {
    public static function getKnockbackMultiplier():Float {
       return GameManager.ruleset.knockback;
    }
+
+   public static function isMaster(slot:PlayerSlotIdentifier):Bool {
+      if (slot == P1) {
+         return true;
+      }
+
+      if (PlayerSlot.getPlayer(slot).input.isKeyboard())
+         return true;
+      return false;
+   }
+
+   public static function returnToTitleScreen() {}
 }
