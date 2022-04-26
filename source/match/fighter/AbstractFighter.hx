@@ -40,7 +40,7 @@ enum DirectionalAttack {
    RIGHT;
 }
 
-enum FighterRestrictions {
+enum FighterRestrictions { // actions that can be restricted
    MOVEMENT;
    JUMP;
    ATTACKS;
@@ -52,7 +52,7 @@ class FighterMoves {
 
    public var remainingEndLag:Float;
 
-   private final moves:Map<String, FighterMove> = [];
+   private final moves:Map<String, BaseFighterMove> = [];
 
    public var currentlyPerforming:Null<String>;
 
@@ -98,7 +98,7 @@ class FighterMoves {
          return;
       var move = this.moves.get(this.currentlyPerforming);
       var res = move.attempt(input.getAction(move.getAction()), input, elapsed);
-      trace(res.getParameters()[0]);
+      trace('success: ${res.getParameters()[0]}');
       if (res.match(REJECTED(_))) {
          if (this.remainingEndLag > 0) {
             this.remainingEndLag = Math.max(this.remainingEndLag - elapsed, 0);
@@ -111,7 +111,7 @@ class FighterMoves {
    }
 }
 
-abstract class FighterMove {
+abstract class BaseFighterMove {
    public var useCount:Int = 0;
 
    private final fighter:AbstractFighter;
@@ -120,6 +120,28 @@ abstract class FighterMove {
       this.fighter = fighter;
    }
 
+   abstract public function attempt(state:InputState, input:GenericInput, ...params:Any):MoveResult;
+
+   abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
+
+   public function getRestrictions():Array<FighterRestrictions> {
+      return [];
+   }
+
+   public function canBeInteruptedBy(move:String):Bool {
+      return false;
+   }
+
+   abstract public function getAction():Action;
+}
+
+class ScriptedFighterMove extends BaseFighterMove {
+   public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult> {
+      return null;
+   }
+}
+
+abstract class FighterMove extends BaseFighterMove {
    /**
       attempts to perform this move
 
@@ -138,21 +160,11 @@ abstract class FighterMove {
 
       var res = this.perform(state, input, ...params);
       trace(res);
-      trace(res == null);
+      // trace(res == null);
       if (res == null)
          return REJECTED('ASSUMED_FROM_NO_RESULT');
       return res;
    };
-
-   public function getRestrictions():Array<FighterRestrictions> {
-      return [];
-   }
-
-   public function canBeInteruptedBy(move:String):Bool {
-      return false;
-   }
-
-   abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
 
    public function shouldPerform(state:InputState, input:GenericInput):MoveResult {
       if (state == JUST_PRESSED)
@@ -167,8 +179,6 @@ abstract class FighterMove {
    public function canPerform():MoveResult {
       return SUCCESS(null);
    }
-
-   abstract public function getAction():Action;
 
    // return Action.NULL;
 }
