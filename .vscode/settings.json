@@ -9,5 +9,8 @@
 			"source.sortImports": true
 		}
 	},
-	"haxe.enableExtendedIndentation": true
+	"haxe.enableExtendedIndentation": true,
+	"files.watcherExclude": {
+		"**/export/**": true
+	}
 }
