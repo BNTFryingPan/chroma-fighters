@@ -147,7 +147,7 @@ class Coordinates implements IFlxPooled {
    }
 
    public function get_sy():Float {
-      return Coordinates.xInScreenSpace(this.y) - (FlxG.height / 2);
+      return Coordinates.yInScreenSpace(this.y);
    }
 
    public function ceil():Coordinates {
