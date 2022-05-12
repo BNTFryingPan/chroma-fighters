@@ -147,7 +147,7 @@ class GameManager {
 
       if (GameState.shouldDoMatchTick()) {
          for (p in PlayerSlot.players) {
-            if (p.fighter != null)
+            if (p.fighter != null && p.fighter.alive)
                p.fighter.update(elapsed);
             if (!GameState.isPaused && p.input.getPause() == JUST_PRESSED)
                GameManager.pause(p.slot);

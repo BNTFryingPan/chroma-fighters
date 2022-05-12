@@ -29,7 +29,7 @@ class MagicFighterMoves extends FighterMoves {
       this.moves.set('taunt', new MagicFighterTaunt(fighter));
       this.moves.set('nspecial', new MagicFighterNeutralSpecial(fighter));
       this.moves.set('uspecial', new MagicFighterUpwardSpecial(fighter));
-      this.moves.set('dspecial', new MagicFighterDownwardSpecial(fighter));
+      this.moves.set('dspecial', new MagicFighterForwardSpecial(fighter));
       this.moves.set('fspecial', new MagicFighterForwardSpecial(fighter));
       this.moves.set('uair', new MagicFighterUpwardAirMove(fighter));
       this.moves.set('nair', new MagicFighterNeutralAirMove(fighter));
@@ -90,7 +90,7 @@ abstract class MagicFighterStrongMove extends FighterMove {
          return SUCCESS('CHARGE_ATTACK_RELEASED');
       } else if (state == PRESSED && this._isCharging) {
          this.chargeTime += elapsed;
-         // trace('charge progressed');
+         trace('charge progressed');
          return SUCCESS("CHARGING");
       } else if (!this._isCharging && this.releaseTime > 0) {
          this.releaseTime = Math.max(this.releaseTime - elapsed, 0);
@@ -236,7 +236,7 @@ class MagicFighterDownwardSpecial extends FighterMove {
 class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('jab', true, true);
-      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 65, 0.2, 0.5);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 65, 0.2, 0.5, 0.5);
       return SUCCESS(null);
    }
 
@@ -392,6 +392,10 @@ class MagicFighter extends AbstractFighter {
          prev = this.sprite.animation.name;
       var fin = this.sprite.animation.finished;
 
+      if (hitstunTime > 0) {
+         return this.play('ouch');
+      }
+
       if (this.moveFreezeTime > 0 && fin && this.forceAnim != null)
          return;
 
@@ -438,7 +442,7 @@ class MagicFighter extends AbstractFighter {
             this.forceAnim = name;
          }
          if (applyEndLag) {
-            this.moveFreezeTime = ((this.sprite.animation.getByName(name).frames.length - 2) * this.animFPS) / Main.targetFps; // * (1 / Main.targetFps);
+            this.moveFreezeTime = ((this.sprite.animation.getByName(name).frames.length) * this.animFPS) / Main.targetFps; // * (1 / Main.targetFps);
             this.moveset.remainingEndLag = this.moveFreezeTime;
             // this.moveFreeze(this.moveEndinmogLag);
             // trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
@@ -645,6 +649,11 @@ class MagicFighter extends AbstractFighter {
    override public function draw() {
       super.draw();
       this.sprite.draw();
+   }
+
+   override private function onNoStocksLeft():Void {
+      super.onNoStocksLeft();
+      this.sprite.visible = false;
    }
 
    public function collidesWithPoint(point:FlxPoint):Bool {

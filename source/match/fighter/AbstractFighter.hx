@@ -419,7 +419,8 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
             box.update(elapsed);
       }
 
-      PlayerSlot.getPlayer(this.slot).playerBox.setPercentText('${FlxMath.roundDecimal(this.percent, 1)}%');
+      PlayerSlot.getPlayer(this.slot)
+         .playerBox.setPercentText('${FlxMath.roundDecimal(this.percent, 1)}%${this.remainingStocks == null ? '' : ' (${this.remainingStocks})'}');
 
       // handleInput is called by GameManager when needed
 
@@ -529,6 +530,16 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       this.acceleration.y = 0;
       this.aliveTime = 0;
       this.activeHitboxes.resize(0);
+      if (this.remainingStocks != null) {
+         this.remainingStocks--;
+         if (this.remainingStocks <= 0) {
+            this.onNoStocksLeft();
+         }
+      }
+   }
+
+   private function onNoStocksLeft():Void {
+      this.alive = false;
    }
 
    public function getChildren():Array<IMatchObject> {
@@ -565,8 +576,10 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
       newHitBox.knockback = knockback;
       newHitBox.kbGrowth = growth;
       newHitBox.follow = follow;
-      if (this.facing == RIGHT)
+      if (this.facing == RIGHT) {
          angle *= -1;
+         velX *= -1;
+      }
       newHitBox.angle = angle;
       newHitBox.owner = this.getSlot();
       newHitBox.offsetX = offsetX;
