@@ -810,11 +810,13 @@ class PlayerSlot {
       if (DebugDisplay == null || /*!this.visible ||*/ !this.ready)
          return;
 
-      if (GameState.shouldDrawCursors) {
+      if (GameState.shouldDrawCursors || GameState.isPaused) {
          if (this.type != NONE)
             this.coinSprite.draw();
          this.cursorSprite.draw();
          this.debugSprite.draw();
+      } else {
+         // trace('not drawing, draw cursors: ${GameState.shouldDrawCursors}');
       }
    }
 

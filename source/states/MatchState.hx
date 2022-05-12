@@ -52,13 +52,13 @@ class MatchState extends BaseState {
    }
 
    public function unpause() {
-      trace('attempt unpause');
+      // trace('attempt unpause');
       if (GameState.justPaused) {
-         trace('just paused');
+         // trace('just paused');
          return;
       }
       if (!GameState.isPaused) {
-         trace('not paused');
+         // trace('not paused');
          return;
       }
       this.closeSubState();

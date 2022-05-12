@@ -279,12 +279,17 @@ class GameManager {
    public static function pause(slot:PlayerSlotIdentifier) {
       if (GameState.isInMatch && !GameState.isPaused && FlxG.state is MatchState) {
          (cast FlxG.state).pause(slot); // casts to MatchState
+         GameState.isUIOpen = true;
+         GameState.shouldDrawCursors = true;
+         trace('set draw cursors: ${GameState.shouldDrawCursors}');
       }
    }
 
    public static function unpause(slot:PlayerSlotIdentifier) {
       if (GameState.isInMatch && GameState.isPaused && GameState.pausedPlayer == slot && FlxG.state is MatchState) {
          (cast FlxG.state).unpause(); // casts to MatchState
+         GameState.isUIOpen = false;
+         GameState.shouldDrawCursors = false;
       }
    }
 

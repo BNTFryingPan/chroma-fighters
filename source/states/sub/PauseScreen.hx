@@ -20,5 +20,13 @@ class PauseScreen extends FlxSubState {
          if (GameManager.isMaster(slot))
             GameManager.returnToTitleScreen();
       });
+
+      this.resumeButton.screenCenter(XY);
+      this.resumeButton.y -= 15;
+      this.exitButton.screenCenter(XY);
+      this.exitButton.y += 15;
+
+      add(this.resumeButton);
+      add(this.exitButton);
    }
 }

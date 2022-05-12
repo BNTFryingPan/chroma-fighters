@@ -19,6 +19,7 @@ class BaseState extends FlxState implements ChromaFightersState {
       super.create();
 
       FlxG.autoPause = false;
+      this.persistentUpdate = true;
 
       // add(new MonospaceText(100, 200, 0, "HI"));
 
