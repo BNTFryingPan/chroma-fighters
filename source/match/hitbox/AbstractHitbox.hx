@@ -34,9 +34,24 @@ abstract class AbstractHitbox implements IHitbox {
    public var offsetY:Float = 0;
    public var follow:Bool = true;
 
+   public var velocityX:Float = 0;
+   public var velocityY:Float = 0;
+
    public var owner:PlayerSlotIdentifier;
 
    public function update(elapsed:Float) {
+      if (follow) {
+         if (velocityX != 0)
+            this.offsetX += this.velocityX;
+         if (velocityY != 0)
+            this.offsetY += this.velocityY;
+      } else {
+         if (velocityX != 0)
+            this.x += this.velocityX;
+         if (velocityY != 0)
+            this.y += this.velocityY;
+      }
+
       if (this.duration <= 0)
          this.active = false;
       else

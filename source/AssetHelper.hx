@@ -14,10 +14,10 @@ import haxe.extern.Rest;
 import haxe.io.Bytes;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
-import scripting.Script;
 
 using StringTools;
 
+// import scripting.Script;
 // import hscript.Expr;
 // import hscript.Interp;
 // import hscript.Parser;
@@ -72,7 +72,7 @@ enum AssetType {
    TEXT_RAW;
    JSON;
    JSON_RAW;
-   SCRIPT;
+   // SCRIPT;
    SOUND;
 }
 
@@ -107,8 +107,8 @@ class DelayedAsset<T> {
             AssetHelper.getJsonAsset(this.key);
          case JSON_RAW:
             AssetHelper.getRawJsonAsset(this.key);
-         case SCRIPT:
-            AssetHelper.getScriptAsset(this.key);
+         // case SCRIPT:
+         // AssetHelper.getScriptAsset(this.key);
          case SOUND:
             AssetHelper.getSoundAsset(this.key);
       }
@@ -178,8 +178,8 @@ class AssetHelper {
             new DelayedAsset<Dynamic>(key, type);
          case JSON_RAW:
             new DelayedAsset<String>(key, type);
-         case SCRIPT:
-            new DelayedAsset<Script>(key, type);
+         // case SCRIPT:
+         // new DelayedAsset<Script>(key, type);
          case SOUND:
             new DelayedAsset<FlxSound>(key, type);
       }
@@ -282,7 +282,7 @@ class AssetHelper {
       #end
    }
 
-   public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Script {
+   /*public static function getScriptAsset(key:NamespacedKey, ?reload:Bool = false):Script {
       var isCFASM = key.key.endsWith('.cfasm'); // .cfasm = chroma-fighters assembly
       var ext = isCFASM ? '.cfasm' : '.cfs';
 
@@ -299,8 +299,7 @@ class AssetHelper {
       #end
 
       return new Script(contents);
-   }
-
+   }*/
    public static function getJsonAsset(key:NamespacedKey):Dynamic {
       #if (sys && !wackyassets)
       var assetDir = AssetHelper.getAssetDirectory(key, ".json");

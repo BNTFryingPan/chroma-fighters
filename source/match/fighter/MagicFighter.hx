@@ -75,7 +75,7 @@ abstract class MagicFighterStrongMove extends FighterMove {
    }
 
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      var elapsed:Float = params[1];
+      var elapsed:Float = params[0];
       if (state.isPressed() && !this._isCharging) { // just pressed
          this._isCharging = true;
          this.fighter.moveFreeze(this.maxChargeTime());
@@ -94,6 +94,7 @@ abstract class MagicFighterStrongMove extends FighterMove {
          return SUCCESS("CHARGING");
       } else if (!this._isCharging && this.releaseTime > 0) {
          this.releaseTime = Math.max(this.releaseTime - elapsed, 0);
+         trace(elapsed);
          return SUCCESS('RELEASING');
       }
       // trace('not pressed?');
@@ -163,6 +164,7 @@ class MagicFighterDownwardStrong extends MagicFighterStrongMove {
 class MagicFighterNeutralSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('neutral_special', true, true);
+      this.fighter.createRoundAttackHitbox(33, 40, 20, 15, false, 60, 2, 0.5, 1, 5, 0);
       return SUCCESS(null);
    }
 
@@ -199,7 +201,7 @@ class MagicFighterUpwardSpecial extends FighterMove {
 
 class MagicFighterForwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      (cast this.fighter).play('forward_special', true, true);
+      (cast this.fighter).play('side_special', true, true);
       return SUCCESS(null);
    }
 
@@ -307,7 +309,7 @@ class MagicFighterNeutralAirMove extends MagicFighterAerialMove {
 
 class MagicFighterUpwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
-      (cast this.fighter).play('upward_air', true, true);
+      (cast this.fighter).play('up_air', true, true);
    }
 }
 
@@ -436,7 +438,7 @@ class MagicFighter extends AbstractFighter {
             this.forceAnim = name;
          }
          if (applyEndLag) {
-            this.moveFreezeTime = this.sprite.animation.getByName(name).frames.length * (this.animFPS / Main.targetFps); // * (1 / Main.targetFps);
+            this.moveFreezeTime = ((this.sprite.animation.getByName(name).frames.length - 2) * this.animFPS) / Main.targetFps; // * (1 / Main.targetFps);
             this.moveset.remainingEndLag = this.moveFreezeTime;
             // this.moveFreeze(this.moveEndinmogLag);
             // trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
@@ -476,7 +478,7 @@ class MagicFighter extends AbstractFighter {
       if (this.slot == P2) {
          this.sprite.alpha = 0.5;
       }
-
+      this.moveset.update(elapsed, input);
       if (this.hitstunTime > 0)
          return;
 
@@ -552,6 +554,7 @@ class MagicFighter extends AbstractFighter {
       }
 
       // Main.debugDisplay.notify('${this.airJumps}/${this.maxAirJumps} ${this.isJumping} ${FlxMath.roundDecimal(this.velocity.y, 1)} ${FlxMath.roundDecimal(this.acceleration.y, 1)}');
+
       // todo : fastfall
       if (this.airState != PRATFALL && this.moveFreezeTime == 0) {
          attemptMove('taunt');
@@ -660,7 +663,9 @@ class MagicFighter extends AbstractFighter {
             + '${this.airState == RESPAWN && this.aliveTime >= 3}'
             + '${FlxMath.roundDecimal(this.airStateTime, 2)}\n' // air state time
             + '${this.moveset.currentlyPerforming == null ? 'no move' : this.moveset.currentlyPerforming}'
-            + '[${FlxMath.roundDecimal(this.moveEndingLag, 2)}:${FlxMath.roundDecimal(this.moveFreezeTime, 2)}]'; // end lag
+            + '[${FlxMath.roundDecimal(this.moveEndingLag, 2)}:${FlxMath.roundDecimal(this.moveFreezeTime, 2)}]'
+            + '[${FlxMath.roundDecimal(this.moveset.remainingEndLag, 2)}]';
+      //            + '\n${this.moveset.moves.get}'; // end lag
 
       return '';
    }

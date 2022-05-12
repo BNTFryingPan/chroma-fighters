@@ -64,7 +64,7 @@ class FighterMoves {
 
    public function attempt(moveName:String, input:GenericInput, ...params:Any):Null<MoveResult> {
       if (!this.moves.exists(moveName)) {
-         trace('NO_SUCH_MOVE ${moveName}');
+         // trace('NO_SUCH_MOVE ${moveName}');
          return NO_SUCH_MOVE;
       }
 
@@ -97,15 +97,15 @@ class FighterMoves {
       if (this.currentlyPerforming == null)
          return;
       var move = this.moves.get(this.currentlyPerforming);
-      var res = move.attempt(input.getAction(move.getAction()), input, elapsed);
-      trace('success: ${res.getParameters()[0]}');
+      var res = move.update(input.getAction(move.getAction()), input, elapsed);
+      // trace('success: ${res.getParameters()[0]}');
       if (res.match(REJECTED(_))) {
          if (this.remainingEndLag > 0) {
             this.remainingEndLag = Math.max(this.remainingEndLag - elapsed, 0);
-            trace('end lag');
+            // trace('end lag');
             return;
          }
-         trace('move ended');
+         // trace('move ended');
          this.currentlyPerforming = null;
       }
    }
@@ -124,6 +124,8 @@ abstract class BaseFighterMove {
 
    abstract public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult>;
 
+   abstract public function update(state:InputState, input:GenericInput, ...params:Any):MoveResult;
+
    public function getRestrictions():Array<FighterRestrictions> {
       return [];
    }
@@ -135,12 +137,11 @@ abstract class BaseFighterMove {
    abstract public function getAction():Action;
 }
 
-class ScriptedFighterMove extends BaseFighterMove {
+/*class ScriptedFighterMove extends BaseFighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):Null<MoveResult> {
       return null;
    }
-}
-
+}*/
 abstract class FighterMove extends BaseFighterMove {
    /**
       attempts to perform this move
@@ -157,21 +158,25 @@ abstract class FighterMove extends BaseFighterMove {
       var should = this.shouldPerform(state, input);
       if (should.match(REJECTED(_)))
          return should;
-
+      // trace(params);
       var res = this.perform(state, input, ...params);
-      trace(res);
+      // trace(res);
       // trace(res == null);
       if (res == null)
          return REJECTED('ASSUMED_FROM_NO_RESULT');
       return res;
    };
 
+   public function update(state:InputState, input:GenericInput, ...params:Any):MoveResult {
+      return REJECTED(null);
+   }
+
    public function shouldPerform(state:InputState, input:GenericInput):MoveResult {
       if (state == JUST_PRESSED)
          return SUCCESS("JUST_PRESSED");
 
       if (state == PRESSED)
-         return SUCCESS("PRESSED");
+         return REJECTED("PRESSED");
 
       return REJECTED('NOT_PRESSED');
    }
@@ -267,7 +272,7 @@ interface IFighter extends IMatchObjectWithHitbox {
    public function getDebugString():String;
    public var activeHitboxes:Array<AbstractHitbox>;
    public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45,
-      duration:Float = 0.2, knockback:Float = 1, growth:Float = 1):Void;
+      duration:Float = 0.2, knockback:Float = 1, growth:Float = 1, velX:Float = 0, velY:Float = 0):Void;
 }
 
 abstract class AbstractFighter extends FlxObject implements IFighter {
@@ -553,18 +558,21 @@ abstract class AbstractFighter extends FlxObject implements IFighter {
    public var activeHitboxes:Array<AbstractHitbox> = [];
 
    public function createRoundAttackHitbox(offsetX:Float, offsetY:Float, radius:Float, damage:Float, follow:Bool = true, angle:Float = 45,
-         duration:Float = 0.2, knockback:Float = 1, growth:Float = 1) {
+         duration:Float = 0.2, knockback:Float = 1, growth:Float = 1, velX:Float = 0, velY:Float = 0) {
       var newHitBox = new CircleHitbox(this.x + (this.width / 2) + (offsetX * (this.facing == LEFT ? 1 : -1)), this.y + offsetY, radius);
       newHitBox.duration = duration;
       newHitBox.damage = damage;
       newHitBox.knockback = knockback;
       newHitBox.kbGrowth = growth;
+      newHitBox.follow = follow;
       if (this.facing == RIGHT)
          angle *= -1;
       newHitBox.angle = angle;
       newHitBox.owner = this.getSlot();
       newHitBox.offsetX = offsetX;
       newHitBox.offsetY = offsetY;
+      newHitBox.velocityX = velX;
+      newHitBox.velocityY = velY;
       this.activeHitboxes.push(newHitBox);
    }
 

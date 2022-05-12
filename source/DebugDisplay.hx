@@ -78,10 +78,10 @@ class DebugDisplay extends FPS {
 
       this.notif = new TextField();
       this.notif.defaultTextFormat = new TextFormat("_sans", 10, 0xff00ff);
-      this.notif.autoSize = TextFieldAutoSize.RIGHT;
+      this.notif.autoSize = TextFieldAutoSize.LEFT;
       this.notif.selectable = false;
       this.notif.mouseEnabled = false;
-      this.notif.y = 30;
+      this.notif.y = Application.current.window.height - 10;
 
       addEventListener(Event.ADDED, __added);
    }
@@ -97,6 +97,7 @@ class DebugDisplay extends FPS {
    }
 
    public function notify(text:String) {
+      trace(text);
       this.notif.text = text;
       this.notif.alpha = 1;
 

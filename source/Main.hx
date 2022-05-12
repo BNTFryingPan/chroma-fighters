@@ -18,9 +18,9 @@ import match.Match;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
-import scripting.Script;
 import states.TitleScreenState;
 
+// import scripting.Script;
 class Main extends Sprite {
    public static var instance:Main;
 
@@ -118,7 +118,7 @@ class Main extends Sprite {
       FlxG.game.debugger.console.registerClass(PlayerBox);
       FlxG.game.debugger.console.registerClass(GameState);
       FlxG.game.debugger.console.registerClass(GameManager);
-      FlxG.game.debugger.console.registerClass(Script);
+      // FlxG.game.debugger.console.registerClass(Script);
       #end
       return;
    }

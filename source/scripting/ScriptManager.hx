@@ -34,8 +34,10 @@ class ScriptManager {
    }
 
    public function load(file:NamespacedKey, compile:Bool = true):Script {
-      var script = AssetHelper.getScriptAsset(file);
-      return add(script, compile);
+      // var script = AssetHelper.getScriptAsset(file);
+      // return add(script, compile);
+      // return new Script('l')
+      return null;
    }
 
    public function loadThenRun(file:NamespacedKey):Script {
