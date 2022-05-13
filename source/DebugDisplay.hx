@@ -81,7 +81,7 @@ class DebugDisplay extends FPS {
       this.notif.autoSize = TextFieldAutoSize.LEFT;
       this.notif.selectable = false;
       this.notif.mouseEnabled = false;
-      this.notif.y = Application.current.window.height - 10;
+      this.notif.y = Application.current.window.height - 30;
 
       addEventListener(Event.ADDED, __added);
    }
