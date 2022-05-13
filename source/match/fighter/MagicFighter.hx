@@ -75,26 +75,26 @@ abstract class MagicFighterStrongMove extends FighterMove {
    }
 
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
-      var elapsed:Float = params[0];
-      if (state.isPressed() && !this._isCharging) { // just pressed
+      var elapsed:Float = cast(params.toArray()[0], Float);
+      if (state.isPressed() && !this._isCharging) { // just pressed (not actually but whatever)
          this._isCharging = true;
          this.fighter.moveFreeze(this.maxChargeTime());
          this.playChargeAnimation();
-         // trace('charge start');
+         trace('charge start');
          return SUCCESS("CHARGE_START");
-      } else if (state == JUST_RELEASED || elapsed >= this.maxChargeTime()) {
+      } else if (state == JUST_RELEASED || this.chargeTime >= this.maxChargeTime()) {
          this._isCharging = false;
          this.releaseChargedAttack(input, this.chargeTime, ...params);
-         // trace('charge release');
+         trace('charge release');
          this.releaseTime = this.releaseLength;
          return SUCCESS('CHARGE_ATTACK_RELEASED');
       } else if (state == PRESSED && this._isCharging) {
          this.chargeTime += elapsed;
-         trace('charge progressed');
+         trace('charge progressed ${this.chargeTime}');
          return SUCCESS("CHARGING");
       } else if (!this._isCharging && this.releaseTime > 0) {
          this.releaseTime = Math.max(this.releaseTime - elapsed, 0);
-         trace(elapsed);
+         trace('charge released ${this.releaseTime}');
          return SUCCESS('RELEASING');
       }
       // trace('not pressed?');
@@ -106,6 +106,12 @@ abstract class MagicFighterStrongMove extends FighterMove {
    }
 
    override public function shouldPerform(state:InputState, input:GenericInput):MoveResult {
+      if (state != NOT_PRESSED) {
+         return SUCCESS('USABLE_INPUT');
+      }
+      if (_isCharging) {
+         return SUCCESS('IS_CHARGING');
+      }
       return SUCCESS('OK_I_GUESS'); // TODO : change this
    }
 
@@ -584,7 +590,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
                   attemptMove('ftilt', this.facing);
-                  attemptMove('fstrong', this.facing, elapsed);
+                  attemptMove('fstrong', elapsed, this.facing);
                } else {
                   if (this.facing == LEFT) {
                      attemptMove('fair', this.facing);
@@ -596,7 +602,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
                   attemptMove('ftilt', this.facing);
-                  attemptMove('fstrong', this.facing, elapsed);
+                  attemptMove('fstrong', elapsed, this.facing);
                } else {
                   if (this.facing == LEFT) {
                      attemptMove('bair', this.facing);

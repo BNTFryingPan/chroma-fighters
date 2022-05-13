@@ -77,7 +77,7 @@ class FighterMoves {
       var res:MoveResult;
 
       if (params.length > 0)
-         res = move.attempt(state, input, params);
+         res = move.attempt(state, input, ...params);
       res = move.attempt(state, input);
 
       if (res.match(SUCCESS(_))) {
