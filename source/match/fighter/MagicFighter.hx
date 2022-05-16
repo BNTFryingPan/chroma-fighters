@@ -28,17 +28,17 @@ class MagicFighterMoves extends FighterMoves {
       this.moves.set('jab', new MagicFighterJab(fighter));
       this.moves.set('taunt', new MagicFighterTaunt(fighter));
       this.moves.set('nspecial', new MagicFighterNeutralSpecial(fighter));
-      this.moves.set('uspecial', new MagicFighterUpwardSpecial(fighter));
-      this.moves.set('dspecial', new MagicFighterForwardSpecial(fighter));
+      // this.moves.set('uspecial', new MagicFighterUpwardSpecial(fighter));
+      // this.moves.set('dspecial', new MagicFighterForwardSpecial(fighter));
       this.moves.set('fspecial', new MagicFighterForwardSpecial(fighter));
       this.moves.set('uair', new MagicFighterUpwardAirMove(fighter));
       this.moves.set('nair', new MagicFighterNeutralAirMove(fighter));
       this.moves.set('fair', new MagicFighterForwardAirMove(fighter));
       this.moves.set('dair', new MagicFighterDownwardAirMove(fighter));
       this.moves.set('bair', new MagicFighterBackwardAirMove(fighter));
-      this.moves.set('ustrong', new MagicFighterUpwardStrong(fighter));
-      this.moves.set('fstrong', new MagicFighterForwardStrong(fighter));
-      this.moves.set('dstrong', new MagicFighterDownwardStrong(fighter));
+      // this.moves.set('ustrong', new MagicFighterUpwardStrong(fighter));
+      // this.moves.set('fstrong', new MagicFighterForwardStrong(fighter));
+      // this.moves.set('dstrong', new MagicFighterDownwardStrong(fighter));
       this.moves.set('utilt', new MagicFighterUpwardTilt(fighter));
       this.moves.set('ftilt', new MagicFighterForwardTilt(fighter));
       this.moves.set('dtilt', new MagicFighterDownwardTilt(fighter));
@@ -170,7 +170,7 @@ class MagicFighterDownwardStrong extends MagicFighterStrongMove {
 class MagicFighterNeutralSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('neutral_special', true, true);
-      this.fighter.createRoundAttackHitbox(33, 40, 20, 15, false, 60, 2, 0.5, 1, 5, 0);
+      this.fighter.createRoundAttackHitbox(33, 40, 20, 15, false, 40, 1, 0.25, 0.2, 5, 0);
       return SUCCESS(null);
    }
 
@@ -208,6 +208,7 @@ class MagicFighterUpwardSpecial extends FighterMove {
 class MagicFighterForwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('side_special', true, true);
+      this.fighter.createRoundAttackHitbox(30, 40, 15, 20, true, 65, 0.5, 0.5, 0.5);
       return SUCCESS(null);
    }
 
@@ -265,6 +266,7 @@ class MagicFighterUpwardTilt extends FighterMove {
 class MagicFighterForwardTilt extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('forward_tilt', true, true);
+      this.fighter.createRoundAttackHitbox(30, 40, 20, 5, true, 80, 0.3, 0.5, 0.5);
       return SUCCESS(null);
    }
 
@@ -276,6 +278,7 @@ class MagicFighterForwardTilt extends FighterMove {
 class MagicFighterDownwardTilt extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('down_tilt', true, true);
+      this.fighter.createRoundAttackHitbox(30, 60, 10, 5, true, 15, 0.25, 0.5, 0.5);
       return SUCCESS(null);
    }
 
@@ -310,6 +313,7 @@ class MagicFighterAerialMove extends FighterMove {
 class MagicFighterNeutralAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('neutral_air', true, true);
+      this.fighter.createRoundAttackHitbox(-2, 33, 40, 8, true, 0, 1, .2);
    }
 }
 
@@ -322,19 +326,22 @@ class MagicFighterUpwardAirMove extends MagicFighterAerialMove {
 class MagicFighterForwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('forward_air', true, true);
+      this.fighter.createRoundAttackHitbox(30, 40, 20, 5, true, 80, 0.3, 0.5, 0.5);
    }
 }
 
 class MagicFighterBackwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('back_air', true, true);
+      this.fighter.createRoundAttackHitbox(20, 40, 15, 10, true, -20, 0.2, 1, 0.75);
+      this.fighter.createRoundAttackHitbox(-25, 45, 20, 8, true, -65, 0.3, 0.5, 0.5);
    }
 }
 
 class MagicFighterDownwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('down_air', true, true);
-      this.fighter.createRoundAttackHitbox(30, 40, 15, 8, true, 180, -1, 1);
+      this.fighter.createRoundAttackHitbox(-2, 55, 30, 8, true, 180, 0.5, .5);
    }
 }
 
@@ -572,7 +579,7 @@ class MagicFighter extends AbstractFighter {
 
          switch (this.getAttackDirection(stick)) {
             case UP:
-               attemptMove('uspecial');
+               attemptMove('fspecial');
                if (this.airState == GROUNDED) {
                   // attemptMove('ustrong', elapsed);
                   attemptMove('utilt');
@@ -580,7 +587,7 @@ class MagicFighter extends AbstractFighter {
                   attemptMove('uair');
                }
             case DOWN:
-               attemptMove('dspecial');
+               attemptMove('fspecial');
                if (this.airState == GROUNDED) {
                   attemptMove('dtilt');
                   // attemptMove('dstrong', elapsed);
@@ -615,7 +622,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('nspecial');
                if (this.airState == GROUNDED) {
                   attemptMove('jab');
-                  attemptMove('fspecial', this.facing);
+                  // attemptMove('fspecial', this.facing);
                } else {
                   attemptMove('nair');
                }
