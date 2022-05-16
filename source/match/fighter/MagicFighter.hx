@@ -377,6 +377,7 @@ class MagicFighter extends AbstractFighter {
       this.sprite = new FlxSprite();
       AssetHelper.generateCombinedSpriteSheetForFighter(new NamespacedKey('cf_magic_fighter', 'sprites'), this.sprite, 112, "idle");
       this.sprite.graphic.persist = true;
+      // this.sprite.animation.
 
       // this.sprite.angularVelocity = 100;
 
@@ -448,7 +449,7 @@ class MagicFighter extends AbstractFighter {
             this.forceAnim = name;
          }
          if (applyEndLag) {
-            this.moveFreezeTime = ((this.sprite.animation.getByName(name).frames.length) * this.animFPS) / Main.targetFps; // * (1 / Main.targetFps);
+            this.moveFreezeTime = (this.sprite.animation.getByName(name).frames.length) / this.animFPS; // * (1 / Main.targetFps);
             this.moveset.remainingEndLag = this.moveFreezeTime;
             // this.moveFreeze(this.moveEndinmogLag);
             // trace('endlag: ${this.sprite.animation.getByName(name).frames.length} frames * ${this.animFPS} fps = ${this.moveFreezeTime} end lag frames');
@@ -573,7 +574,7 @@ class MagicFighter extends AbstractFighter {
             case UP:
                attemptMove('uspecial');
                if (this.airState == GROUNDED) {
-                  attemptMove('ustrong', elapsed);
+                  // attemptMove('ustrong', elapsed);
                   attemptMove('utilt');
                } else {
                   attemptMove('uair');
@@ -582,7 +583,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('dspecial');
                if (this.airState == GROUNDED) {
                   attemptMove('dtilt');
-                  attemptMove('dstrong', elapsed);
+                  // attemptMove('dstrong', elapsed);
                } else {
                   attemptMove('dair');
                }
@@ -590,7 +591,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
                   attemptMove('ftilt', this.facing);
-                  attemptMove('fstrong', elapsed, this.facing);
+                  // attemptMove('fstrong', elapsed, this.facing);
                } else {
                   if (this.facing == LEFT) {
                      attemptMove('fair', this.facing);
@@ -602,7 +603,7 @@ class MagicFighter extends AbstractFighter {
                attemptMove('fspecial', this.facing);
                if (this.airState == GROUNDED) {
                   attemptMove('ftilt', this.facing);
-                  attemptMove('fstrong', elapsed, this.facing);
+                  // attemptMove('fstrong', elapsed, this.facing);
                } else {
                   if (this.facing == LEFT) {
                      attemptMove('bair', this.facing);

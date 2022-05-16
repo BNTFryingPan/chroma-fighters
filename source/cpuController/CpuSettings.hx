@@ -15,7 +15,7 @@ enum abstract CPU_LEVEL(Int) to Int {
 
 /*
    training mode action. has no effect in normal matches
-*/
+ */
 enum CpuAction {
    NONE;
    CROUCH;
@@ -40,7 +40,7 @@ class CpuSettings {
    public var action:CpuAction = NONE;
    public var tech:CpuTeching = ROLL_IN_PLACE;
 
-   public function new(lv:CPU_LEVEL=LV5, action:CpuAction=NONE) {
+   public function new(lv:CPU_LEVEL = LV5, action:CpuAction = JUMP) {
       this.level = lv;
       this.action = action;
    }
