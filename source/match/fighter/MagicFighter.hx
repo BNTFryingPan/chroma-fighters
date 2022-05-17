@@ -64,7 +64,7 @@ class MagicFighterTaunt extends FighterMove {
    }
 }
 
-abstract class MagicFighterStrongMove extends FighterMove {
+/*abstract class MagicFighterStrongMove extends FighterMove {
    private var _isCharging = true;
    private var chargeTime:Float;
    private var releaseTime:Float;
@@ -120,9 +120,9 @@ abstract class MagicFighterStrongMove extends FighterMove {
    abstract function playChargeAnimation():Void;
 
    abstract function releaseChargedAttack(input:GenericInput, chargeTime:Float, ...params:Any):MoveResult;
-}
+   }
 
-class MagicFighterForwardStrong extends MagicFighterStrongMove {
+   class MagicFighterForwardStrong extends MagicFighterStrongMove {
    public function maxChargeTime():Float {
       return 1;
    }
@@ -135,9 +135,9 @@ class MagicFighterForwardStrong extends MagicFighterStrongMove {
       this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
       return SUCCESS(null);
    }
-}
+   }
 
-class MagicFighterUpwardStrong extends MagicFighterStrongMove {
+   class MagicFighterUpwardStrong extends MagicFighterStrongMove {
    function maxChargeTime():Float {
       return 1;
    }
@@ -150,9 +150,9 @@ class MagicFighterUpwardStrong extends MagicFighterStrongMove {
       // this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
       return SUCCESS(null);
    }
-}
+   }
 
-class MagicFighterDownwardStrong extends MagicFighterStrongMove {
+   class MagicFighterDownwardStrong extends MagicFighterStrongMove {
    function maxChargeTime():Float {
       return 1;
    }
@@ -165,8 +165,7 @@ class MagicFighterDownwardStrong extends MagicFighterStrongMove {
       // this.fighter.createRoundAttackHitbox(33, 40, 20, 15, true, 60, 0.2, 0.5);
       return SUCCESS(null);
    }
-}
-
+}*/
 class MagicFighterNeutralSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('neutral_special', true, true);
@@ -185,7 +184,7 @@ class MagicFighterNeutralSpecial extends FighterMove {
    }
 }
 
-class MagicFighterUpwardSpecial extends FighterMove {
+/*class MagicFighterUpwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('up_special', true, true);
       this.fighter.launch((Math.atan2(-input.getStick().y, -input.getStick().x) * FlxAngle.TO_DEG) - 90, 5, true);
@@ -203,8 +202,7 @@ class MagicFighterUpwardSpecial extends FighterMove {
          return REJECTED(null);
       return SUCCESS(null);
    }
-}
-
+}*/
 class MagicFighterForwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('side_special', true, true);
@@ -223,7 +221,7 @@ class MagicFighterForwardSpecial extends FighterMove {
    }
 }
 
-class MagicFighterDownwardSpecial extends FighterMove {
+/*class MagicFighterDownwardSpecial extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('down_special', true, true);
       return SUCCESS(null);
@@ -238,8 +236,7 @@ class MagicFighterDownwardSpecial extends FighterMove {
          return REJECTED(null);
       return SUCCESS(null);
    }
-}
-
+}*/
 class MagicFighterJab extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('jab', true, true);

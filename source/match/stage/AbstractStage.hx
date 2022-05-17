@@ -20,7 +20,7 @@ interface IStage extends IMatchObject {
 abstract class AbstractStage extends MatchObject implements IStage {
    // public var groundType = GroundType.SOLID_GROUND;
    public var mainGround:StageGround;
-   public var blastzone:Blastzone = {topBlastzone: 500, bottomBlastzone: 200, sideBlastzone: 500};
+   public var blastzone:Blastzone = {topBlastzone: 350, bottomBlastzone: 250, sideBlastzone: 450};
 
    public final options:Map<String, String>;
 

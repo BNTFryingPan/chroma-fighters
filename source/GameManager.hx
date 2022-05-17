@@ -18,6 +18,7 @@ import match.MatchObject;
 import match.Ruleset;
 import match.hitbox.AbstractHitbox;
 import states.MatchState;
+import states.TitleScreenState;
 #if cpp
 import flixel.addons.plugin.screengrab.FlxScreenGrab;
 #end
@@ -223,16 +224,19 @@ class GameManager {
       #end
    }
 
-   public static function draw() {
-      PlayerSlot.drawAll();
-
-      Main.screenSprite.draw();
-
-      // draw all the fighters
+   public static function draw_preSubState() {
       if (GameState.isInMatch)
          for (p in PlayerSlot.players)
             if (p.fighter != null)
                p.fighter.draw();
+   }
+
+   public static function draw() {
+      Main.screenSprite.draw();
+
+      PlayerSlot.drawAll();
+
+      // draw all the fighters
 
       // Main.debugDisplay.draw();
 
@@ -240,11 +244,14 @@ class GameManager {
    }
 
    public static function getAllObjects():Array<FlxBasic> {
-      var ret = [];
+      var ret:Array<FlxBasic> = [];
 
       // adds the children of the current FlxState
-      for (fb in FlxG.state.members) {
-         ret.push(fb);
+      var state = FlxG.state;
+      while (state != null) {
+         ret = ret.concat(state.members);
+         // trace('added ${state.members.length} things to list from ${state}');
+         state = state.subState;
       }
 
       for (player in PlayerSlot.players) {
@@ -258,7 +265,7 @@ class GameManager {
          ret.push(player.fighter);
          // ret.push(player.fighter.getBasicChildren());
       }
-
+      trace('got ${ret.length} items from all places');
       return ret;
    }
 
@@ -310,5 +317,8 @@ class GameManager {
       return false;
    }
 
-   public static function returnToTitleScreen() {}
+   public static function returnToTitleScreen() {
+      GameState.pausedPlayer = null;
+      FlxG.switchState(new TitleScreenState());
+   }
 }

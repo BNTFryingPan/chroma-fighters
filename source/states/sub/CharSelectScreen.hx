@@ -105,7 +105,7 @@ class CharSelectScreen extends BaseState {
             player.fighterSelection.ready = false;
             player.heldCoin = player.slot;
          } else if (!this.isFading && InputHelper.isPressed(player.input.getCancel())) {
-            if (player.cancelHoldTime >= 3) {
+            if (player.cancelHoldTime >= 1.5) {
                player.cancelHoldTime = 0;
                this.isFading = true;
                return FlxG.camera.fade(FlxColor.BLACK, 0.4, false, () -> {

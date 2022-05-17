@@ -685,7 +685,9 @@ class PlayerSlot {
    **/
    public function getCursorPosition():Coordinates {
       var inputCursor = this.input.getCursorPosition();
-      return inputCursor != null ? inputCursor : this.cursorPosition;
+      if (inputCursor != null)
+         this.cursorPosition.clone(inputCursor);
+      return this.cursorPosition;
    }
 
    public function update(elapsed:Float) {
@@ -759,7 +761,7 @@ class PlayerSlot {
       if (this.input.inputEnabled) {
          for (mem in GameManager.getAllObjects()) {
             // if (Std.isOfType(mem, CustomButton)) {
-            if ((mem is CustomButton) && GameState.isUIOpen) {
+            if ((mem is CustomButton) && (GameState.shouldDrawCursors || GameState.isPaused)) {
                var button:CustomButton = cast mem;
                var point = FlxPoint.get(cursorPos.x, cursorPos.y);
                if (button.overlapsPoint(point)) {
@@ -815,6 +817,7 @@ class PlayerSlot {
             this.coinSprite.draw();
          this.cursorSprite.draw();
          this.debugSprite.draw();
+         // ScreenSprite.circle(this.getCursorPosition(), 10);
       } else {
          // trace('not drawing, draw cursors: ${GameState.shouldDrawCursors}');
       }

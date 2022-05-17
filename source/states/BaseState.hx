@@ -53,10 +53,12 @@ class BaseState extends FlxState implements ChromaFightersState {
          FlxCamera._defaultCameras = oldDefaultCameras;
       }
 
-      GameManager.draw();
+      GameManager.draw_preSubState();
 
       if (this.subState != null)
          this.subState.draw();
+
+      GameManager.draw();
    }
 
    override public function update(elapsed:Float) {

@@ -90,6 +90,9 @@ class Coordinates implements IFlxPooled {
       return this;
    }
 
+   /**
+      sets this coordinates target to the given one, and puts the given one back into the pool if it is weak
+   **/
    public function clone(from:Coordinates):Coordinates {
       this.set(from.x, from.y);
       from.putWeak();

@@ -88,8 +88,8 @@ class DebugDisplay extends FPS {
 
    override function set_visible(value:Bool):Bool {
       this.rightText.visible = value;
-      return this.visible;
-      // return super.set_visible(value);
+      // return this. = value;
+      return super.set_visible(value);
    }
 
    private function round(f:Float):Float {
@@ -310,7 +310,24 @@ class DebugDisplay extends FPS {
 
       if (FlxG.keys.justReleased.F3) {
          if (!this.hasTriggeredDebugAction) {
-            DebugDisplay.showMinimalInfo = !DebugDisplay.showMinimalInfo;
+            /*if (!DebugDisplay.showMinimalInfo && !DebugDisplay.showReducedInfo) {
+                  Main.debugDisplay.visible = false;
+               } else if (!Main.debugDisplay.visible) {
+                  Main.debugDisplay.visible = true;
+                  DebugDisplay.showMinimalInfo = true;
+                  DebugDisplay.showReducedInfo = true;
+               } else if (DebugDisplay.showMinimalInfo && DebugDisplay.showReducedInfo) {
+                  Main.debugDisplay.visible = true;
+                  DebugDisplay.showMinimalInfo = false;
+                  DebugDisplay.showReducedInfo = true;
+               } else
+                  /*if (!DebugDisplay.showMinimalInfo && DebugDisplay.showReducedInfo)*\/ {
+                  Main.debugDisplay.visible = true;
+                  DebugDisplay.showMinimalInfo = false;
+                  DebugDisplay.showReducedInfo = false;
+            }*/
+            Main.debugDisplay.visible = !Main.debugDisplay.visible;
+            // DebugDisplay.showMinimalInfo = !DebugDisplay.showMinimalInfo;
          }
          this.hasTriggeredDebugAction = false;
       }
@@ -469,6 +486,7 @@ class DebugDisplay extends FPS {
 
    public function handleResize() {
       this.rightText.x = Application.current.window.width - this.rightText.width - 10;
+      this.notif.y = Application.current.window.height - 30;
       // this.notif.y = Application.current.window.height - this.notif.height - 10;
    }
 }

@@ -1,9 +1,11 @@
 package;
 
+import GameManager;
 import PlayerSlot.PlayerSlotIdentifier;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import flixel.util.typeLimit.OneOfThree;
+import inputManager.Coordinates;
 import inputManager.InputManager;
 
 enum abstract CustomButtonAsset(String) to String {
@@ -80,9 +82,11 @@ class CustomButton extends FlxButton {
          return false;
       var c = p.getCursorPosition();
       var point = FlxPoint.get(c.x, c.y);
+      // trace('checking overlap lol');
+      // ScreenSprite.circle(c, 10);
       var overlaps = overlapsPoint(point);
       point.put();
-      c.putWeak();
+
       return overlaps;
    }
 
@@ -172,5 +176,10 @@ class CustomButton extends FlxButton {
 
    override function updateButton() {
       return; // i think i literally need to do nothing here lol
+   }
+
+   override function draw() {
+      super.draw();
+      // ScreenSprite.rect(Coordinates.weak(this.x, this.y), Coordinates.weak(this.x + this.width, this.y + this.height));
    }
 }
