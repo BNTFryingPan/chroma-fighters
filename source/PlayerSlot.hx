@@ -659,6 +659,27 @@ class PlayerSlot {
       this.type = type;
    }
 
+   public function getName():String {
+      return "Player " + switch (this.slot) {
+         case P1:
+            "1";
+         case P2:
+            "2";
+         case P3:
+            "3";
+         case P4:
+            "4";
+         case P5:
+            "5";
+         case P6:
+            "6";
+         case P7:
+            "7";
+         case P8:
+            "8";
+      }
+   }
+
    public function moveToSlot(toSlot:PlayerSlotIdentifier) {
       trace('moving from ${this.slot} to ${toSlot}');
       if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)

@@ -8,6 +8,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import haxe.EnumFlags;
 import inputManager.Coordinates;
 import inputManager.InputDevice;
 import inputManager.InputHelper;
@@ -19,6 +20,7 @@ import match.Ruleset;
 import match.hitbox.AbstractHitbox;
 import states.MatchState;
 import states.TitleScreenState;
+import states.sub.MatchResults;
 #if cpp
 import flixel.addons.plugin.screengrab.FlxScreenGrab;
 #end
@@ -147,11 +149,24 @@ class GameManager {
       GameState.isInMatch = (FlxG.state is MatchState);
 
       if (GameState.shouldDoMatchTick()) {
+         var alivePlayers = 0;
+         var deadPlayers = 0;
+         var lastPlayer:String = "nobody?";
          for (p in PlayerSlot.players) {
-            if (p.fighter != null && p.fighter.alive)
-               p.fighter.update(elapsed);
+            if (p.fighter != null) {
+               if (p.fighter.alive) {
+                  lastPlayer = p.getName();
+                  p.fighter.update(elapsed);
+                  alivePlayers++;
+               } else
+                  deadPlayers++;
+            }
             if (!GameState.isPaused && p.input.getPause() == JUST_PRESSED)
                GameManager.pause(p.slot);
+         }
+         if (alivePlayers <= 1 && deadPlayers > 0) {
+            if (FlxG.state.subState == null)
+               FlxG.state.openSubState(new MatchResults(lastPlayer));
          }
       }
 
