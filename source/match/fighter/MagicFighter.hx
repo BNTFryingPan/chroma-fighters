@@ -252,6 +252,7 @@ class MagicFighterJab extends FighterMove {
 class MagicFighterUpwardTilt extends FighterMove {
    public function perform(state:InputState, input:GenericInput, ...params:Any):MoveResult {
       (cast this.fighter).play('up_tilt', true, true);
+      this.fighter.createRoundAttackHitbox(10, 25, 35, 5, true, 15, 0.3, 0.2, 1);
       return SUCCESS(null);
    }
 
@@ -310,13 +311,14 @@ class MagicFighterAerialMove extends FighterMove {
 class MagicFighterNeutralAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('neutral_air', true, true);
-      this.fighter.createRoundAttackHitbox(-2, 33, 40, 8, true, 0, 1, .2);
+      this.fighter.createRoundAttackHitbox(-2, 33, 40, 8, true, 0, 1, .4, 0.15);
    }
 }
 
 class MagicFighterUpwardAirMove extends MagicFighterAerialMove {
    override public function attack() {
       (cast this.fighter).play('up_air', true, true);
+      this.fighter.createRoundAttackHitbox(10, 25, 35, 5, true, 15, 0.5, 0.2, 1);
    }
 }
 
