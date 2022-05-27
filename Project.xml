@@ -81,6 +81,8 @@
 		<haxedef name="HXCPP_CHECK_POINTER" />
 	</section>
 
+	<haxedef name='no-traces' if='nt'/>
+
 	<define name="wackyassets" if="html5 || mobile" />
 	<echo value="using wackyassets" if="wackyassets" />
 	<echo value="mobile || html5" if="mobile || html5" />

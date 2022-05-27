@@ -26,7 +26,7 @@ class PauseScreen extends FlxSubState {
       this.exitButton.screenCenter(XY);
       this.exitButton.y += 15;
 
-      trace(resumeButton.x);
+      // trace(resumeButton.x);
 
       add(this.resumeButton);
       add(this.exitButton);

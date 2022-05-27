@@ -113,16 +113,16 @@ class ProfileInput {
          return InputHelper.getFromFlxKey(cast this.source);
       }
       try {
-         trace(!Std.isOfType(this.source, Int)); /*Std.isOfType(this.source, GenericButton)*/
+         // trace(!Std.isOfType(this.source, Int)); /*Std.isOfType(this.source, GenericButton)*/
          if ((!Std.isOfType(this.source, Int)) && gamepad != null) {
             var button:GenericButton = cast this.source;
             var ret = (cast gamepad).getButtonState(button);
-            trace(ret);
+            // trace(ret);
             return ret;
          }
       }
       catch (e) {
-         trace('failed!');
+         // trace('failed!');
       }
       // trace(this.source); // if (gamepad != null)
       // trace(gamepad == null ? 'no gamepad + fallback' : Std.string(gamepad));

@@ -95,6 +95,9 @@ class ScreenSprite extends FlxSprite {
       super(0, 0);
       this.scrollFactor.set(0, 0);
       this.makeGraphic(FlxG.width, FlxG.height, 0, true);
+      #if !debug
+      this.alpha = 0;
+      #end
    }
 
    override public function draw() {
@@ -280,7 +283,7 @@ class GameManager {
          ret.push(player.fighter);
          // ret.push(player.fighter.getBasicChildren());
       }
-      trace('got ${ret.length} items from all places');
+      // trace('got ${ret.length} items from all places');
       return ret;
    }
 
@@ -303,7 +306,7 @@ class GameManager {
          (cast FlxG.state).pause(slot); // casts to MatchState
          GameState.isUIOpen = true;
          GameState.shouldDrawCursors = true;
-         trace('set draw cursors: ${GameState.shouldDrawCursors}');
+         // trace('set draw cursors: ${GameState.shouldDrawCursors}');
       }
    }
 

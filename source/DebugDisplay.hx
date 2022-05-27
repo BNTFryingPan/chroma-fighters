@@ -97,7 +97,7 @@ class DebugDisplay extends FPS {
    }
 
    public function notify(text:String) {
-      trace(text);
+      // trace(text);
       this.notif.text = text;
       this.notif.alpha = 1;
 

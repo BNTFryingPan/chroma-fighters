@@ -618,7 +618,7 @@ class MagicFighter extends AbstractFighter {
                   }
                }
             case NEUTRAL:
-               attemptMove('nspecial');
+               attemptMove('fspecial');
                if (this.airState == GROUNDED) {
                   attemptMove('jab');
                   // attemptMove('fspecial', this.facing);

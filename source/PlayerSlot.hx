@@ -451,7 +451,7 @@ class PlayerSlot {
    }
 
    private function set_slot(v:PlayerSlotIdentifier) {
-      trace('set_slot called');
+      // trace('set_slot called');
       if (this.playerBox != null) {
          this.playerBox.slot = v;
          this.playerBox.configureCSS();
@@ -649,7 +649,7 @@ class PlayerSlot {
    private function new(slot:PlayerSlotIdentifier) {
       this.slot = slot;
       this.type = NONE;
-      trace('new player slot ${this.slot}');
+      // trace('new player slot ${this.slot}');
       this.input = new GenericInput(slot);
       this.fighterSelection = new FighterSelection(slot);
       this.heldCoin = this.slot;
@@ -681,7 +681,7 @@ class PlayerSlot {
    }
 
    public function moveToSlot(toSlot:PlayerSlotIdentifier) {
-      trace('moving from ${this.slot} to ${toSlot}');
+      // trace('moving from ${this.slot} to ${toSlot}');
       if (PlayerSlot.artificalPlayerLimit && (cast toSlot) > 4)
          return;
 
@@ -698,7 +698,7 @@ class PlayerSlot {
 
       PlayerSlot.players.set(target.slot, target);
       PlayerSlot.players.set(toSlot, this);
-      trace('after move: ${this.slot}');
+      // trace('after move: ${this.slot}');
    }
 
    /**
@@ -713,7 +713,7 @@ class PlayerSlot {
 
    public function update(elapsed:Float) {
       if (!this.ready) {
-         trace('P${this.slot + 1} not ready');
+         // trace('P${this.slot + 1} not ready');
          return;
       }
       if (this.slot == P8) {

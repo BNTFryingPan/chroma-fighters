@@ -95,7 +95,7 @@ class Main extends Sprite {
 
       stage.addEventListener(Event.RESIZE, __resize);
 
-      trace(Profile.defaultBindings[MENU_CONFIRM].map(b -> b.source));
+      // trace(Profile.defaultBindings[MENU_CONFIRM].map(b -> b.source));
    }
 
    function __resize(event:Event):Void {
